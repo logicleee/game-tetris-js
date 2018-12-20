@@ -1,0 +1,7 @@
+* Tetris Clone
+** Resources used
+https://en.wikipedia.org/wiki/Tetris
+https://codeincomplete.com/posts/javascript-tetris/
+
+** Important
+No warranties expressed or implied...use these examples at your own risk.
