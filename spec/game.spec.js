@@ -201,6 +201,50 @@ describe('Piece Object', () => {
 
 });
 
+describe('PieceList Object', () => {
+  const fullPieceList = [ { type: 'i', rotation: 0 },
+                          { type: 'i', rotation: 1 },
+                          { type: 'i', rotation: 2 },
+                          { type: 'i', rotation: 3 },
+                          { type: 'j', rotation: 0 },
+                          { type: 'j', rotation: 1 },
+                          { type: 'j', rotation: 2 },
+                          { type: 'j', rotation: 3 },
+                          { type: 'l', rotation: 0 },
+                          { type: 'l', rotation: 1 },
+                          { type: 'l', rotation: 2 },
+                          { type: 'l', rotation: 3 },
+                          { type: 'o', rotation: 0 },
+                          { type: 'o', rotation: 1 },
+                          { type: 'o', rotation: 2 },
+                          { type: 'o', rotation: 3 },
+                          { type: 's', rotation: 0 },
+                          { type: 's', rotation: 1 },
+                          { type: 's', rotation: 2 },
+                          { type: 's', rotation: 3 },
+                          { type: 't', rotation: 0 },
+                          { type: 't', rotation: 1 },
+                          { type: 't', rotation: 2 },
+                          { type: 't', rotation: 3 },
+                          { type: 'z', rotation: 0 },
+                          { type: 'z', rotation: 1 },
+                          { type: 'z', rotation: 2 },
+                          { type: 'z', rotation: 3 }
+                        ];
+
+  const pieceList = new game.PieceList();
+
+  test('Has property: list of all permutations of pieces', () =>{
+    expect(pieceList.types).toEqual(fullPieceList);
+  });
+
+  test('Shuffled list property is same length but does not equal full list', () =>{
+    expect(pieceList.list).not.toEqual(pieceList.types);
+    expect(pieceList.list.length).toBe(pieceList.types.length);
+  });
+
+});
+
 describe('Piece and Board integration', () => {
   test('Piece will not go out of bounds', () => {
     let board = new game.Board();
