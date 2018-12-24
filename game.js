@@ -15,7 +15,7 @@ function coords(cell, xMax) {
 }
 */
 function Piece(type) {
-  const types = {
+   this.types = {
     "i": {
       "blocks": [
         [1,5,9,13],
@@ -89,9 +89,11 @@ function Piece(type) {
   };
 
   this.type = type;
-  this.blocks = types[type].blocks;
-  this.size = types[type].size;
-  this.color = types[type].color;
+  this.blocks = this.types[type].blocks;
+  this.size = this.types[type].size;
+  this.color = this.types[type].color;
+  this.rotation = 0;
+
   this.resize = function (newXmax) {
     if (newXmax < 4)
       return false;
@@ -107,7 +109,7 @@ function Piece(type) {
   };
 
   this.shiftX = function (n) {
-    return this.blocks.map(x => x.map((y) =>  y + (this.size[0] * n)));
+    return this.blocks.map(x => x.map(y =>  y + (this.size[0] * n)));
   };
 
   this.shiftY = function(n) {
@@ -142,7 +144,66 @@ function Board(xMax = 10, yMax = 20) {
     };
     return true;  // if in bounds, return true
   };
-
 };
 
-module.exports = { Board, Piece};
+function PieceList () {
+  /*
+    implementing Fisher and Yates shuffle based on wikipedia:
+    https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
+      - Write down the numbers from 1 through N.
+      - Pick a random number k between one and the number of unstruck numbers remaining (inclusive).
+      - Counting from the low end, strike out the kth number not yet struck out, and write it down at the end of a separate list.
+      - Repeat from step 2 until all the numbers have been struck out.
+      - The sequence of numbers written down in step 3 is now a random permutation of the original numbers.
+*/
+
+  //const piece = new Piece('t');
+  //this.types = generateList(piece);
+  this.types = generateList(new Piece('t'));
+  this.list = shuffle(this.types);
+
+  function generateList (p) {
+    let result = [];
+    const typeList = Object.keys(p.types);
+    typeList.forEach(x => {
+      const permutations = p.types[x].blocks.length;
+      for (let i=0 ; i < permutations; i++) {
+        result.push({type: x, rotation: i});
+      };
+    });
+    return result;
+  }
+
+  function shuffle(array) {
+    let arr = array.slice();
+    const swapInArr = (a,x,y) => [a[x], a[y]] = [a[y], a[x]];
+    const len = arr.length;
+    const randomInt = (x) => Math.floor(Math.random() * x);
+    let result = [];
+    for (let i=arr.length - 1; i > 0; i--) {
+      swapInArr(arr,randomInt(i - 1), i);
+    }
+    //arr.map(fn, currentValue, index)
+    return arr;
+
+  }
+
+    /*
+  this.pieceTypes = () => {
+    let result = [];
+    typeList.forEach(x => {
+      result.push({name: x, rotations: piece.types[x].blocks.length});
+    });
+    return result;
+    // return typeList.map(x => return { name: x, rotations: piece.types[x].blocks.length});
+
+    return typeList.map(x => {
+      return { name: x, rotations: piece.types[x].blocks.length}
+    });
+  };
+    */
+
+
+}
+
+module.exports = { Board, Piece, PieceList };
