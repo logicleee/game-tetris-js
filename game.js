@@ -148,17 +148,10 @@ function Board(xMax = 10, yMax = 20) {
 
 function PieceList () {
   /*
-    implementing Fisher and Yates shuffle based on wikipedia:
+    Implementing Fisher and Yates shuffle based on wikipedia:
     https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
-      - Write down the numbers from 1 through N.
-      - Pick a random number k between one and the number of unstruck numbers remaining (inclusive).
-      - Counting from the low end, strike out the kth number not yet struck out, and write it down at the end of a separate list.
-      - Repeat from step 2 until all the numbers have been struck out.
-      - The sequence of numbers written down in step 3 is now a random permutation of the original numbers.
 */
 
-  //const piece = new Piece('t');
-  //this.types = generateList(piece);
   this.types = generateList(new Piece('t'));
   this.list = shuffle(this.types);
 
@@ -183,26 +176,10 @@ function PieceList () {
     for (let i=arr.length - 1; i > 0; i--) {
       swapInArr(arr,randomInt(i - 1), i);
     }
-    //arr.map(fn, currentValue, index)
+    //arr.map(function (currentValue, index) => {})
     return arr;
 
   }
-
-    /*
-  this.pieceTypes = () => {
-    let result = [];
-    typeList.forEach(x => {
-      result.push({name: x, rotations: piece.types[x].blocks.length});
-    });
-    return result;
-    // return typeList.map(x => return { name: x, rotations: piece.types[x].blocks.length});
-
-    return typeList.map(x => {
-      return { name: x, rotations: piece.types[x].blocks.length}
-    });
-  };
-    */
-
 
 }
 

@@ -111,8 +111,6 @@ describe('Board Object', () => {
     expect(board.fits([0,1,2,11])).toBe(false);
     expect(board.fits([201])).toBe(false); // out of bounds
   });
-
-  //test('', () => {});
 });
 
 describe('Piece Object', () => {
@@ -262,5 +260,4 @@ describe('Piece and Board integration', () => {
     board.grid[20] = 7;
     expect(board.fits(piece.shiftX(1)[0])).toBe(false);
   });
-  //test('', () => {});
 });

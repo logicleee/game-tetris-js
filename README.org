@@ -1,7 +1,9 @@
 * Tetris Clone
-** Resources used
-https://en.wikipedia.org/wiki/Tetris
-https://codeincomplete.com/posts/javascript-tetris/
-
+** Resources
+    [[https://en.wikipedia.org/wiki/Tetris][Tetris wiki]]
+    [[https://codeincomplete.com/posts/javascript-tetris/][Tutorial I loosely followed]]
+    [[https://en.wikipedia.org/wiki/Fisher–Yates_shuffle][Fisher–Yates shuffle]]
+** About
+   (Blog post link here)
 ** Important
 No warranties expressed or implied...use these examples at your own risk.
