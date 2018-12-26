@@ -1,21 +1,108 @@
-/*
-// REMOVE LATER
-function test (x) {
-  return x;
+function Piece(type, rotation = 0) {
+  this.type = type;
+  const pieces = new Pieces();
+  this.blocks = pieces.data[type].blocks;
+  this.size = pieces.data[type].size;
+  this.color = pieces.data[type].color;
+  this.rotation = rotation;
+
+  this.resize = function (newXmax) {
+    if (newXmax < 4)
+      return false;
+    const xMax = this.size[0];
+    for (let i=0; i < this.blocks.length; i++) {
+      for (let j=0; j < this.blocks[i].length; j++) {
+        let k = this.blocks[i][j];
+        this.blocks[i][j] = ((Math.floor(k / xMax)) * newXmax) + (k % xMax);
+      }
+    }
+    this.size[0] = newXmax;
+    return true;
+  };
+
+  this.shiftX = function (n) {
+    return this.blocks.map(x => x.map(y =>  y + (this.size[0] * n)));
+  };
+
+  function shiftPieceX (piece, n) {
+    let tmp = 0;
+    const newB = piece.blocks.map(x => x.map(y =>  y + (piece.size[0] * n)));
+    newB.forEach(x => x.forEach(y => y >= 0 ? tmp += 0 : tmp += 1));
+    if (tmp === 0)
+      piece.blocks = newB;
+    return piece.blocks;
+  };
+
+  this.up = function () { return shiftPieceX(this, -1); };
+  this.down = function () { return shiftPieceX(this, 1); };
+
+  this.shiftY = function(n) {
+    let newBlocks = [];
+    const size = this.size[0];
+    for (let i=0; i < this.blocks.length; i++) {
+      newBlocks[i] = [];
+      for (let j=0; j < this.blocks[i].length; j++) {
+        newBlocks[i][j] = this.blocks[i][j] + n ;
+        const oldX = Math.floor(this.blocks[i][j] / size) ;
+        const newX = Math.floor(newBlocks[i][j] / size) ;
+        if ( newX != oldX )
+          return undefined;
+      }
+    }
+    return newBlocks;
+  };
+
+  function shiftPieceY (piece, n) {
+    let newBlocks = [];
+    const size = piece.size[0];
+    for (let i=0; i < piece.blocks.length; i++) {
+      newBlocks[i] = [];
+      for (let j=0; j < piece.blocks[i].length; j++) {
+        newBlocks[i][j] = piece.blocks[i][j] + n ;
+        const oldX = Math.floor(piece.blocks[i][j] / size) ;
+        const newX = Math.floor(newBlocks[i][j] / size) ;
+        if ( newX != oldX )
+          return piece.blocks;
+      }
+    }
+    piece.blocks = newBlocks;
+    return piece.blocks;
+  };
+
+  this.rotate = () => {
+    if (this.rotation >= this.blocks.length - 1)
+      this.rotation = 0;
+    else
+      this.rotation++;
+  };
+
+  this.left = function () { return shiftPieceY(this, -1); };
+  this.right = function () { return shiftPieceY(this, 1); };
+
+  this.get = function () { return currentPiece(this); };
+  function currentPiece (p) { return p.blocks[p.rotation]; };
 }
 
 
-function coords(cell, xMax) {
-  const x = (c, xm) => (c % xm);
-  const y = (c, xm) => Math.floor(c / xm);
-  if (xMax > 0 && cell >= 0) {
-    return [x(cell, xMax), y(cell, xMax)];
-  }
-  return undefined;
-}
-*/
-function Piece(type) {
-   this.types = {
+function Board(xMax = 10, yMax = 20) {
+  this.size = [xMax, yMax];
+  this.grid = reset(this.size);
+  function reset ([x,y]) { return Array(x*y).fill(0); }
+
+  this.fits = (g) => {
+    if (g === undefined) // if passed undefined, return undefined
+      return undefined;
+    for (let i = 0; i < g.length; i++) {
+      if (this.grid[g[i]] != 0) {
+        return false;  // if calculated OOB, return false
+      }
+    };
+    return true;  // if in bounds, return true
+  };
+};
+
+function Pieces () {
+   this.data = {
     "i": {
       "blocks": [
         [1,5,9,13],
@@ -88,85 +175,16 @@ function Piece(type) {
     }
   };
 
-  this.type = type;
-  this.blocks = this.types[type].blocks;
-  this.size = this.types[type].size;
-  this.color = this.types[type].color;
-  this.rotation = 0;
-
-  this.resize = function (newXmax) {
-    if (newXmax < 4)
-      return false;
-    const xMax = this.size[0];
-    for (let i=0; i < this.blocks.length; i++) {
-      for (let j=0; j < this.blocks[i].length; j++) {
-        let k = this.blocks[i][j];
-        this.blocks[i][j] = ((Math.floor(k / xMax)) * newXmax) + (k % xMax);
-      }
-    }
-    this.size[0] = newXmax;
-    return true;
-  };
-
-  this.shiftX = function (n) {
-    return this.blocks.map(x => x.map(y =>  y + (this.size[0] * n)));
-  };
-
-  this.shiftY = function(n) {
-    let newBlocks = [];
-    const size = this.size[0];
-    for (let i=0; i < this.blocks.length; i++) {
-      newBlocks[i] = [];
-      for (let j=0; j < this.blocks[i].length; j++) {
-        newBlocks[i][j] = this.blocks[i][j] + n ;
-        const oldX = Math.floor(this.blocks[i][j] / size) ;
-        const newX = Math.floor(newBlocks[i][j] / size) ;
-        if ( newX != oldX )
-          return undefined;
-      }
-    }
-    return newBlocks;
-  };
-}
-
-function Board(xMax = 10, yMax = 20) {
-  this.size = [xMax, yMax];
-  this.grid = reset(this.size);
-  function reset ([x,y]) { return Array(x*y).fill(0); }
-
-  this.fits = (g) => {
-    if (g === undefined) // if passed undefined, return undefined
-      return undefined;
-    for (let i = 0; i < g.length; i++) {
-      if (this.grid[g[i]] != 0) {
-        return false;  // if calculated OOB, return false
-      }
-    };
-    return true;  // if in bounds, return true
-  };
-};
-
-function PieceList () {
-  /*
-    implementing Fisher and Yates shuffle based on wikipedia:
-    https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
-      - Write down the numbers from 1 through N.
-      - Pick a random number k between one and the number of unstruck numbers remaining (inclusive).
-      - Counting from the low end, strike out the kth number not yet struck out, and write it down at the end of a separate list.
-      - Repeat from step 2 until all the numbers have been struck out.
-      - The sequence of numbers written down in step 3 is now a random permutation of the original numbers.
-*/
-
-  //const piece = new Piece('t');
-  //this.types = generateList(piece);
-  this.types = generateList(new Piece('t'));
-  this.list = shuffle(this.types);
+  this.ordered = generateList(this.data);
+  this.list = shuffle(this.ordered);
+  this.shuffle = function() { this.shuffled = shuffle(this.ordered); };
+  this.shuffle();
 
   function generateList (p) {
     let result = [];
-    const typeList = Object.keys(p.types);
+    const typeList = Object.keys(p);
     typeList.forEach(x => {
-      const permutations = p.types[x].blocks.length;
+      const permutations = p[x].blocks.length;
       for (let i=0 ; i < permutations; i++) {
         result.push({type: x, rotation: i});
       };
@@ -174,6 +192,10 @@ function PieceList () {
     return result;
   }
 
+  /*
+    Implementing Fisher and Yates shuffle based on wikipedia:
+    https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
+  */
   function shuffle(array) {
     let arr = array.slice();
     const swapInArr = (a,x,y) => [a[x], a[y]] = [a[y], a[x]];
@@ -183,27 +205,9 @@ function PieceList () {
     for (let i=arr.length - 1; i > 0; i--) {
       swapInArr(arr,randomInt(i - 1), i);
     }
-    //arr.map(fn, currentValue, index)
+    //arr.map(function (currentValue, index) => {})
     return arr;
-
   }
-
-    /*
-  this.pieceTypes = () => {
-    let result = [];
-    typeList.forEach(x => {
-      result.push({name: x, rotations: piece.types[x].blocks.length});
-    });
-    return result;
-    // return typeList.map(x => return { name: x, rotations: piece.types[x].blocks.length});
-
-    return typeList.map(x => {
-      return { name: x, rotations: piece.types[x].blocks.length}
-    });
-  };
-    */
-
-
 }
 
-module.exports = { Board, Piece, PieceList };
+module.exports = { Board, Piece,  Pieces };
