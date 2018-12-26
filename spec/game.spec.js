@@ -62,28 +62,6 @@ const pieceTypes = {
 }
 */
 
-
-
-/*
-describe('Game module can be loaded', () => {
-  test('game.test returns whatever is passed', () => {
-    expect(game.test('hello')).toBe('hello');
-  });
-});
-
-describe('Coordinates function', () => {
-  test('Given a cell reference and dimensions, return x y values', () => {
-   expect(game.coords(10,0)).toEqual(undefined);
-   expect(game.coords(0,0)).toEqual(undefined);
-   expect(game.coords(0,4)).toEqual([0,0]);
-   expect(game.coords(5,4)).toEqual([1,1]);
-   expect(game.coords(11,10)).toEqual([1,1]);
-   expect(game.coords(95,10)).toEqual([5,9]);
-   expect(game.coords(13,3)).toEqual([1,4]);
- })
-});
-*/
-
 describe('Board Object', () => {
   test('Returns 1d array of board', () => {
     let arr6x4 = Array(6*4).fill(0);
@@ -139,49 +117,53 @@ describe('Piece Object', () => {
 
   });
 
-  test('shift methods', () => {
-    const downResult1 = [[10, 11, 12, 21],
+  const defaultResult = [[10, 11, 12, 21],
                          [1, 10, 11, 21],
                          [1, 10, 11, 12],
                          [1, 11, 12, 21]
                         ];
-    const downResult2 = [[20, 21, 22, 31, ],
-                         [11, 20, 21, 31, ],
-                         [11, 20, 21, 22, ],
-                         [11, 21, 22, 31, ]
-                        ];
-    const rightResult1 = [[11, 12, 13, 22],
-                          [2, 11, 12, 22],
-                          [2, 11, 12, 13],
-                          [2, 12, 13, 22]
-                         ];
+  const downResult2 = [[20, 21, 22, 31, ],
+                       [11, 20, 21, 31, ],
+                       [11, 20, 21, 22, ],
+                       [11, 21, 22, 31, ]
+                      ];
+  const rightResult1 = [[11, 12, 13, 22],
+                        [2, 11, 12, 22],
+                        [2, 11, 12, 13],
+                        [2, 12, 13, 22]
+                       ];
 
 
-    const rightResult2 = [[13, 14, 15, 24],
-                          [4, 13, 14, 24],
-                          [4, 13, 14, 15],
-                          [4, 14, 15, 24]
-                         ];
+  const rightResult2 = [[13, 14, 15, 24],
+                        [4, 13, 14, 24],
+                        [4, 13, 14, 15],
+                        [4, 14, 15, 24]
+                       ];
 
-    const rightResult3 = [[14, 15, 16, 25],
-                          [5, 14, 15, 25],
-                          [5, 14, 15, 16],
-                          [5, 15, 16, 25]
-                         ];
-
+  const rightResult3 = [[14, 15, 16, 25],
+                        [5, 14, 15, 25],
+                        [5, 14, 15, 16],
+                        [5, 15, 16, 25]
+                       ];
+  test('shift methods', () => {
     let piece = new game.Piece('t');
     expect(piece.resize(10)).toBe(true);
-    expect(piece.blocks).toEqual(downResult1);
+    expect(piece.blocks).toEqual(defaultResult);
 
-    expect(piece.shiftX(0)).toEqual(downResult1);
-    expect(piece.shiftX(1)).toEqual(downResult2);
+    expect(piece.shiftX(0)).toEqual(defaultResult);
+    // // OLD
+    //expect(piece.shiftX(1)).toEqual(downResult2);
+    // // END OLD
+
+
     expect(piece.blocks).not.toEqual(downResult2);
     piece.blocks = piece.shiftX(1);
-    expect(piece.shiftX(-1)).toEqual(downResult1);
+    expect(piece.shiftX(-1)).toEqual(defaultResult);
 
     piece.blocks = piece.shiftX(-1);
     expect(piece.shiftY(1)).toEqual(rightResult1);
-    expect(piece.blocks).toEqual(downResult1);
+
+    expect(piece.blocks).toEqual(defaultResult);
     expect(piece.shiftY(11)).toEqual(undefined);
     expect(piece.shiftY(-1)).toEqual(undefined);
 
@@ -192,15 +174,41 @@ describe('Piece Object', () => {
     expect(piece.blocks).toEqual(rightResult3);
 
     piece.blocks = piece.shiftY(-4);
-    expect(piece.blocks).toEqual(downResult1);
+    expect(piece.blocks).toEqual(defaultResult);
 
     expect(piece.shiftY(-2)).toEqual(undefined);
   });
 
+  test('Shift methods (new)', () => {
+    let piece = new game.Piece('t');
+    expect(piece.resize(10)).toBe(true);
+    expect(piece.blocks).toEqual(defaultResult);
+    expect(piece.up()).toEqual(defaultResult);
+    expect(piece.left()).toEqual(defaultResult);
+    expect(piece.down()).toEqual(downResult2);
+    expect(piece.up()).toEqual(defaultResult);
+    expect(piece.right()).toEqual(rightResult1);
+    expect(piece.blocks).toEqual(rightResult1);
+  });
+
+  test('rotate method', () => {
+    let piece = new game.Piece('t');
+    expect(piece.resize(10)).toBe(true);
+    expect(piece.blocks).toEqual(defaultResult);
+
+    expect(piece.get()).toEqual(defaultResult[0]);
+    piece.rotate();
+    expect(piece.get()).toEqual(defaultResult[1]);
+    piece.rotate();
+    expect(piece.get()).toEqual(defaultResult[2]);
+    piece.rotate();
+    piece.rotate();
+    expect(piece.get()).toEqual(defaultResult[0]);
+  });
 });
 
-describe('PieceList Object', () => {
-  const fullPieceList = [ { type: 'i', rotation: 0 },
+describe('Pieces Object', () => {
+  const fullPieces = [ { type: 'i', rotation: 0 },
                           { type: 'i', rotation: 1 },
                           { type: 'i', rotation: 2 },
                           { type: 'i', rotation: 3 },
@@ -230,17 +238,27 @@ describe('PieceList Object', () => {
                           { type: 'z', rotation: 3 }
                         ];
 
-  const pieceList = new game.PieceList();
+  const pieceList = new game.Pieces();
 
   test('Has property: list of all permutations of pieces', () =>{
-    expect(pieceList.types).toEqual(fullPieceList);
+    expect(pieceList.ordered).toEqual(fullPieces);
   });
 
-  test('Shuffled list property is same length but does not equal full list', () =>{
-    expect(pieceList.list).not.toEqual(pieceList.types);
-    expect(pieceList.list.length).toBe(pieceList.types.length);
+  test('Shuffled property does not equal full list', () =>{
+    expect(pieceList.shuffled).not.toEqual(pieceList.ordered);
   });
-
+  test('Shuffled property is same length ', () =>{
+    expect(pieceList.shuffled.length).toBe(pieceList.ordered.length);
+  });
+  test('Shuffle method generates new shuffled property', () =>{
+    expect(pieceList.shuffled).not.toEqual(() => {
+      pieceList.shuffle();
+      return pieceList.shuffled;
+    });
+  });
+  test('Shuffled property is still same length ', () =>{
+    expect(pieceList.shuffled.length).toBe(pieceList.ordered.length);
+  });
 });
 
 describe('Piece and Board integration', () => {
