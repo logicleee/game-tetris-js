@@ -92,9 +92,42 @@ describe('Board Object', () => {
 });
 
 describe('Piece Object', () => {
-  test('resize method', () => {
-    let piece = new game.Piece('t');
-    //piece.resizeGrid(10)
+
+  const defaultResult = [[10, 11, 12, 21],
+                         [1, 10, 11, 21],
+                         [1, 10, 11, 12],
+                         [1, 11, 12, 21]];
+  const downResult2 = [[20, 21, 22, 31, ],
+                       [11, 20, 21, 31, ],
+                       [11, 20, 21, 22, ],
+                       [11, 21, 22, 31, ]];
+  const downResult3 = [[ 120, 121, 122, 131 ],
+                       [ 111, 120, 121, 131 ],
+                       [ 111, 120, 121, 122 ],
+                       [ 111, 121, 122, 131 ]];
+  const downResult4 = [[ 230, 231, 232, 241 ],
+                       [ 221, 230, 231, 241 ],
+                       [ 221, 230, 231, 232 ],
+                       [ 221, 231, 232, 241 ]];
+  const rightResult1 = [[11, 12, 13, 22],
+                        [2, 11, 12, 22],
+                        [2, 11, 12, 13],
+                        [2, 12, 13, 22]];
+  const rightResult2 = [[13, 14, 15, 24],
+                        [4, 13, 14, 24],
+                        [4, 13, 14, 15],
+                        [4, 14, 15, 24]];
+  const rightResult3 = [[14, 15, 16, 25],
+                        [5, 14, 15, 25],
+                        [5, 14, 15, 16],
+                        [5, 15, 16, 25]];
+  const rightResultMax = [[ 19, 20, 21, 30 ],
+                          [ 10, 19, 20, 30 ],
+                          [ 10, 19, 20, 21 ],
+                          [ 10, 20, 21, 30 ]];
+
+  test('Piece resizes', () => {
+    let piece = new game.Piece('t', 0);
     expect(piece.size[0]).toBe(4);
     expect(piece.blocks[0]).toEqual([4,5,6,9]);
 
@@ -117,83 +150,60 @@ describe('Piece Object', () => {
 
   });
 
-  const defaultResult = [[10, 11, 12, 21],
-                         [1, 10, 11, 21],
-                         [1, 10, 11, 12],
-                         [1, 11, 12, 21]
-                        ];
-  const downResult2 = [[20, 21, 22, 31, ],
-                       [11, 20, 21, 31, ],
-                       [11, 20, 21, 22, ],
-                       [11, 21, 22, 31, ]
-                      ];
-  const rightResult1 = [[11, 12, 13, 22],
-                        [2, 11, 12, 22],
-                        [2, 11, 12, 13],
-                        [2, 12, 13, 22]
-                       ];
-
-
-  const rightResult2 = [[13, 14, 15, 24],
-                        [4, 13, 14, 24],
-                        [4, 13, 14, 15],
-                        [4, 14, 15, 24]
-                       ];
-
-  const rightResult3 = [[14, 15, 16, 25],
-                        [5, 14, 15, 25],
-                        [5, 14, 15, 16],
-                        [5, 15, 16, 25]
-                       ];
-  test('shift methods', () => {
-    let piece = new game.Piece('t');
-    expect(piece.resize(10)).toBe(true);
-    expect(piece.blocks).toEqual(defaultResult);
-
-    expect(piece.shiftX(0)).toEqual(defaultResult);
-    // // OLD
-    //expect(piece.shiftX(1)).toEqual(downResult2);
-    // // END OLD
-
-
-    expect(piece.blocks).not.toEqual(downResult2);
-    piece.blocks = piece.shiftX(1);
-    expect(piece.shiftX(-1)).toEqual(defaultResult);
-
-    piece.blocks = piece.shiftX(-1);
-    expect(piece.shiftY(1)).toEqual(rightResult1);
-
-    expect(piece.blocks).toEqual(defaultResult);
-    expect(piece.shiftY(11)).toEqual(undefined);
-    expect(piece.shiftY(-1)).toEqual(undefined);
-
-    piece.blocks = piece.shiftY(3);
-    expect(piece.blocks).toEqual(rightResult2);
-
-    piece.blocks = piece.shiftY(1);
-    expect(piece.blocks).toEqual(rightResult3);
-
-    piece.blocks = piece.shiftY(-4);
-    expect(piece.blocks).toEqual(defaultResult);
-
-    expect(piece.shiftY(-2)).toEqual(undefined);
+  test('Piece obj accepts size argument', () => {
+    let piece = new game.Piece('t', 0, 10);
+    expect(piece.size[0]).toBe(10);
   });
 
-  test('Shift methods (new)', () => {
-    let piece = new game.Piece('t');
-    expect(piece.resize(10)).toBe(true);
+  test('Piece shifts right/left with valid values', () => {
+    let piece = new game.Piece('t', 0, 10);
+    expect(piece.size[0]).toBe(10);
     expect(piece.blocks).toEqual(defaultResult);
-    expect(piece.up()).toEqual(defaultResult);
-    expect(piece.left()).toEqual(defaultResult);
-    expect(piece.down()).toEqual(downResult2);
-    expect(piece.up()).toEqual(defaultResult);
-    expect(piece.right()).toEqual(rightResult1);
+    piece.right();
     expect(piece.blocks).toEqual(rightResult1);
+    piece.right();
+    piece.right();
+    expect(piece.blocks).toEqual(rightResult2);
+    piece.right();
+    expect(piece.blocks).toEqual(rightResult3);
+    for (let i=0; i<=2; i++) {piece.right();}
+    expect(piece.blocks[0]).toEqual([17, 18, 19, 28]);
+    piece.right();
+    piece.right();
+    expect(piece.blocks).toEqual(rightResultMax);
+    piece.right();
+    expect(piece.blocks).toEqual(rightResultMax);
+    piece.left();
+    piece.left();
+    expect(piece.blocks[0]).toEqual([17, 18, 19, 28]);
+    for (let i=0; i<=3; i++) {piece.left();}
+    expect(piece.blocks).toEqual(rightResult2);
+    piece.left();
+    piece.left();
+    expect(piece.blocks).toEqual(rightResult1);
+    piece.left();
+    expect(piece.blocks).toEqual(defaultResult);
   });
 
-  test('rotate method', () => {
-    let piece = new game.Piece('t');
-    expect(piece.resize(10)).toBe(true);
+  test('Piece shifts up/down with valid values (no max bound)', () => {
+    let piece = new game.Piece('t', 0, 10);
+    expect(piece.blocks).toEqual(defaultResult);
+    piece.up();
+    expect(piece.blocks).toEqual(defaultResult);
+    piece.down();
+    expect(piece.blocks).toEqual(downResult2);
+    piece.up();
+    for (let i=0; i<11; i++) {piece.down();}
+    expect(piece.blocks).toEqual(downResult3);
+    for (let i=0; i<11; i++) {piece.down();}
+    expect(piece.blocks).toEqual(downResult4);
+    for (let i=0; i<11; i++) {piece.up();}
+    expect(piece.blocks).toEqual(downResult3);
+  });
+
+  test('Piece rotates', () => {
+    let piece = new game.Piece('t', 0, 10);
+    expect(piece.size[0]).toBe(10);
     expect(piece.blocks).toEqual(defaultResult);
 
     expect(piece.get()).toEqual(defaultResult[0]);
@@ -205,9 +215,16 @@ describe('Piece Object', () => {
     piece.rotate();
     expect(piece.get()).toEqual(defaultResult[0]);
   });
+
+  test('Piece has default offset property of [0,0]', () => {
+    let piece = new game.Piece('t', 0);
+    expect(piece.offset).toEqual([0,0]);
+  });
+
 });
 
 describe('Pieces Object', () => {
+
   const fullPieces = [ { type: 'i', rotation: 0 },
                           { type: 'i', rotation: 1 },
                           { type: 'i', rotation: 2 },
@@ -235,8 +252,7 @@ describe('Pieces Object', () => {
                           { type: 'z', rotation: 0 },
                           { type: 'z', rotation: 1 },
                           { type: 'z', rotation: 2 },
-                          { type: 'z', rotation: 3 }
-                        ];
+                          { type: 'z', rotation: 3 }];
 
   const pieceList = new game.Pieces();
 
@@ -247,35 +263,46 @@ describe('Pieces Object', () => {
   test('Shuffled property does not equal full list', () =>{
     expect(pieceList.shuffled).not.toEqual(pieceList.ordered);
   });
+
   test('Shuffled property is same length ', () =>{
     expect(pieceList.shuffled.length).toBe(pieceList.ordered.length);
   });
+
   test('Shuffle method generates new shuffled property', () =>{
     expect(pieceList.shuffled).not.toEqual(() => {
       pieceList.shuffle();
       return pieceList.shuffled;
     });
   });
+
   test('Shuffled property is still same length ', () =>{
     expect(pieceList.shuffled.length).toBe(pieceList.ordered.length);
+  });
+/*
+*** TODO piece.? = current piece[rotation]
+    piece.update & piece.rotate ALWAYS updates piece.?
+    Piece.? returns object {blocks: [], data: {color: }}
+       template
+  */
+  test('Piece.update and Piece.rotate update Piece.blocks', () => {
+
   });
 });
 
 describe('Piece and Board integration', () => {
-  test('Piece will not go out of bounds', () => {
+
+  test('Piece will not exceed Y bound', () => {
     let board = new game.Board();
-    let piece = new game.Piece('t');
-    piece.resize(10);
+    let piece = new game.Piece('t', 0, 10);
+    expect(piece.size[0]).toBe(10);
 
-    expect(board.fits(piece.shiftY(3)[0])).toBe(true);
-    expect(board.fits(piece.shiftY(7)[0])).toBe(true);
-    expect(board.fits(piece.shiftY(8))).toBe(undefined);
+    for (let i=0; i<=3; i++) {piece.right();}
+    expect(board.fits(piece.blocks[0])).toBe(true);
+    for (let i=0; i<=4; i++) {piece.right();}
+    expect(board.fits(piece.blocks[0])).toBe(true);
+    for (let i=0; i<=6; i++) {piece.right();}
+    expect(board.fits(piece.blocks[0])).toBe(true);
 
-    expect(board.fits(piece.shiftX(3)[0])).toBe(true);
-    expect(board.fits(piece.shiftX(17)[0])).toBe(true);
-    expect(board.fits(piece.shiftX(18)[0])).toBe(false);
-
-    board.grid[20] = 7;
-    expect(board.fits(piece.shiftX(1)[0])).toBe(false);
   });
+
 });

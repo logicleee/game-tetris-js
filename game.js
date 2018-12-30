@@ -1,41 +1,19 @@
-function Piece(type, rotation = 0) {
-  this.type = type;
-  const pieces = new Pieces();
-  this.blocks = pieces.data[type].blocks;
-  this.size = pieces.data[type].size;
-  this.color = pieces.data[type].color;
-  this.rotation = rotation;
-
-  this.resize = function (newXmax) {
-    if (newXmax < 4)
-      return false;
-    const xMax = this.size[0];
-    for (let i=0; i < this.blocks.length; i++) {
-      for (let j=0; j < this.blocks[i].length; j++) {
-        let k = this.blocks[i][j];
-        this.blocks[i][j] = ((Math.floor(k / xMax)) * newXmax) + (k % xMax);
-      }
-    }
-    this.size[0] = newXmax;
-    return true;
-  };
-
-  this.shiftX = function (n) {
-    return this.blocks.map(x => x.map(y =>  y + (this.size[0] * n)));
-  };
-
+  /*
   function shiftPieceX (piece, n) {
     let tmp = 0;
+    // this does the calcuation
     const newB = piece.blocks.map(x => x.map(y =>  y + (piece.size[0] * n)));
+    // this is just a check
     newB.forEach(x => x.forEach(y => y >= 0 ? tmp += 0 : tmp += 1));
+    // if OK, return new, else return old
     if (tmp === 0)
       piece.blocks = newB;
     return piece.blocks;
   };
+  */
 
-  this.up = function () { return shiftPieceX(this, -1); };
-  this.down = function () { return shiftPieceX(this, 1); };
 
+  /*
   this.shiftY = function(n) {
     let newBlocks = [];
     const size = this.size[0];
@@ -68,19 +46,191 @@ function Piece(type, rotation = 0) {
     piece.blocks = newBlocks;
     return piece.blocks;
   };
+  */
+  //this.left = function () { return shiftPieceY(this, -1); };
+  //this.right = function () { return shiftPieceY(this, 1); };
+  //this.up = function () { return shiftPieceX(this, -1); };
+  //this.down = function () { return shiftPieceX(this, 1); };
+  /*
+  this.shiftX = function (n) {
+    return this.blocks.map(x => x.map(y =>  y + (this.size[0] * n)));
+  };
+  */
+  /*
+    the value of mixing the validation concerns with the resize is:
+    optimization: only 1 time through array (although both are still O(n))
+    optimization: if check fails, you don't bother finishing
+  */
+
+  /*
+    a wrapper method could emulate old functionality
+    returning blocks, too, but we should get rid of this
+  */
+  /*
+    shiftPieceX does too much by itself
+        the goal is to update all 4 positions to the new offset
+        returns piece state
+    here's what should happen:
+        rotation and offset are properties of object
+        grid stays same
+        1 function manipulates offset (takes array of movement in x,y)
+        helper this.up/down/left/right methods just put in arrays of correct x,y
+           Calls a function that
+              calls a function that adds x,y to existing array
+                  (checks that all are >= 0)
+              calls a function that calculates grid
+              CHECKS grid to see if it is valid
+              if new grid is OK
+                updates offset
+                returns newGrid
+              returns oldGrid
+
+    // ORIGINAL WORKING CODE
+  function shiftPieceX (piece, n) {
+    let tmp = 0;
+    const newB = piece.blocks.map(x => x.map(y =>  y + (piece.size[0] * n)));
+    newB.forEach(x => x.forEach(y => y >= 0 ? tmp += 0 : tmp += 1));
+    if (tmp === 0)
+      piece.blocks = newB;
+    return piece.blocks;
+  };
+    */
+  /*
+  const isNewValidOffset = (piece, newOffset) => {
+    const ax = piece.offset[0];
+    const ay = piece.offset[0];
+    const bx = newOffset[0];
+    const by = newOffset[1];
+    const maxY = piece.size[1] - 1;
+    return (ax === bx && ay === by && bx >= 0 && by >= 0 && by <= maxY);
+  };
+  */
+
+function Piece(type, rotation = 0, size = 4) {
+
+  const getRow = (index, maxX) => Math.floor(index / size);
+  const getCol = (index, maxX) => (index % size);
+  const getIndex = (x, y, maxX) => (x * maxX) + y;
+  const isSameRow = (a, aMaxX, b, bMaxX) => {
+    return getRow(a, aMaxX) === getRow(b, bMaxX);
+  };
+  const isNotSameRow = (a, aMaxX, b, bMaxX) => ! isSameRow(a, aMaxX, b, bMaxX);
+
+
+  function isValidOffset(offset, size) {
+    const o = offset;
+    const s = size;
+    return (o[0] >= 0 && o[1] >= 0 && o[0] < s[0]);
+  }
+
+  function calculateOffset (piece, offset) {
+    let result =  [ piece.offset[0] + offset[0], piece.offset[1] + offset[1]];
+    if (isValidOffset(result, piece.size))
+      return result;
+    //console.log('calculateOffset: invalid offset result!', result);
+    return piece.offset;
+  };
+
+
+  function resizeIndex(index, oldXmax, newXmax) {
+      return ((Math.floor(index / oldXmax)) * newXmax) + (index % oldXmax);
+  };
+
+  function getNewIndex(templateIndex, templateMaxX, offset, maxX) {
+    const index = resizeIndex(templateIndex, templateMaxX, maxX);
+    return  (index + offset[0]) + (maxX * offset[1]);
+  };
+
+  function calculateBlocks(piece) {
+    const templateBlocks = template.blocks;
+    const templateMaxX = template.size[0];
+    const blocks = piece.blocks;
+    const offset = piece.offset;
+    const maxX = piece.size[0];
+    let newBlocks = [];
+
+    for (let i=0; i < templateBlocks.length; i++) {
+      newBlocks[i] = [];
+      for (let j=0; j< templateBlocks[i].length; j++) {
+        const a = templateBlocks[i][j];
+        const b = getNewIndex(templateBlocks[i][j], templateMaxX, offset, maxX);
+        if  ( b < 0 && isNotSameRow(a,templateMaxX,b,maxX) ) {
+          return false;
+        }
+        newBlocks[i][j] = b;
+      };
+    };
+    return newBlocks;
+  }
+
+  /*
+  function areValidBlocks(aBlocks, aMaxX, bBlocks, bMaxX) {
+    for (let i=0; i < bBlocks.length; i++) {
+      for (let j=0; j< bBlocks[i].length; j++) {
+        const a = aBlocks[i][j];
+        const b = bBlocks[i][j];
+        if  ( b < 0 && isNotSameRow(a,aMaxX,b,bMaxX) ) {
+          return false;
+        }
+      };
+    };
+    return true;
+  };
+  */
+  this.resize = function (newMaxX = 4) {
+    if (newMaxX > 3) {
+      this.size[0] = newMaxX;
+      this.update();
+      return true;
+    }
+    return false;
+  };
 
   this.rotate = () => {
     if (this.rotation >= this.blocks.length - 1)
       this.rotation = 0;
     else
       this.rotation++;
+    return true;
   };
 
-  this.left = function () { return shiftPieceY(this, -1); };
-  this.right = function () { return shiftPieceY(this, 1); };
-
-  this.get = function () { return currentPiece(this); };
+  this.left = function () {this.update(this, [-1,0]); return this.blocks;};
+  this.right = function () {this.update(this, [1,0]); return this.blocks;};
+  this.up = function () {this.update(this, [0,-1]); return this.blocks;};
+  this.down = function () {this.update(this, [0,1]); return this.blocks;};
   function currentPiece (p) { return p.blocks[p.rotation]; };
+  this.get = function () { return currentPiece(this); };
+  this.update = function (piece = this, offset = [0,0]) {
+    const oldOffset = piece.offset.slice();
+    piece.offset = calculateOffset(piece, offset);
+    const newBlocks = calculateBlocks(piece);
+    const maxX = piece.size[0];
+    const aBlocks = piece.blocks;
+
+    if (newBlocks != false )  {
+      piece.blocks = newBlocks;
+      //console.log('updated offset!', piece.offset, piece.blocks[0]);
+      return true;
+    }
+    piece.offset = oldOffset;
+    return false;
+  };
+
+  // generate piece and resize
+  this.type = type;
+  const pieces = new Pieces();
+  const template = {
+    'size':  pieces.data[type].size.slice(),
+    'blocks': pieces.data[type].blocks.slice(),
+    'color': pieces.data[type].color
+  };
+  this.size = pieces.data[type].size;
+  this.color = pieces.data[type].color;
+  this.rotation = rotation;
+  this.offset = [0,0];
+  this.blocks = calculateBlocks(this);
+  this.resize(size);
+
 }
 
 
