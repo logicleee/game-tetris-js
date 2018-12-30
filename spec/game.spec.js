@@ -129,24 +129,24 @@ describe('Piece Object', () => {
   test('Piece resizes', () => {
     let piece = new game.Piece('t', 0);
     expect(piece.size[0]).toBe(4);
-    expect(piece.blocks[0]).toEqual([4,5,6,9]);
+    expect(piece.allBlocks[0]).toEqual([4,5,6,9]);
 
     piece.resize(6);
     expect(piece.size[0]).toBe(6);
-    expect(piece.blocks[0]).toEqual([6, 7, 8, 13]);
+    expect(piece.allBlocks[0]).toEqual([6, 7, 8, 13]);
 
     piece.resize(10);
     expect(piece.size[0]).toBe(10);
-    expect(piece.blocks[0]).toEqual([10, 11, 12, 21]);
-    expect(piece.blocks[1]).toEqual([1, 10, 11, 21]);
+    expect(piece.allBlocks[0]).toEqual([10, 11, 12, 21]);
+    expect(piece.allBlocks[1]).toEqual([1, 10, 11, 21]);
 
     expect(piece.resize(4)).toBe(true);
     expect(piece.size[0]).toBe(4);
-    expect(piece.blocks[0]).toEqual([4,5,6,9]);
+    expect(piece.allBlocks[0]).toEqual([4,5,6,9]);
 
     expect(piece.resize(2)).toBe(false);
     expect(piece.size[0]).toBe(4);
-    expect(piece.blocks[0]).toEqual([4,5,6,9]);
+    expect(piece.allBlocks[0]).toEqual([4,5,6,9]);
 
   });
 
@@ -158,53 +158,53 @@ describe('Piece Object', () => {
   test('Piece shifts right/left with valid values', () => {
     let piece = new game.Piece('t', 0, 10);
     expect(piece.size[0]).toBe(10);
-    expect(piece.blocks).toEqual(defaultResult);
+    expect(piece.allBlocks).toEqual(defaultResult);
     piece.right();
-    expect(piece.blocks).toEqual(rightResult1);
+    expect(piece.allBlocks).toEqual(rightResult1);
     piece.right();
     piece.right();
-    expect(piece.blocks).toEqual(rightResult2);
+    expect(piece.allBlocks).toEqual(rightResult2);
     piece.right();
-    expect(piece.blocks).toEqual(rightResult3);
+    expect(piece.allBlocks).toEqual(rightResult3);
     for (let i=0; i<=2; i++) {piece.right();}
-    expect(piece.blocks[0]).toEqual([17, 18, 19, 28]);
+    expect(piece.allBlocks[0]).toEqual([17, 18, 19, 28]);
     piece.right();
     piece.right();
-    expect(piece.blocks).toEqual(rightResultMax);
+    expect(piece.allBlocks).toEqual(rightResultMax);
     piece.right();
-    expect(piece.blocks).toEqual(rightResultMax);
+    expect(piece.allBlocks).toEqual(rightResultMax);
     piece.left();
     piece.left();
-    expect(piece.blocks[0]).toEqual([17, 18, 19, 28]);
+    expect(piece.allBlocks[0]).toEqual([17, 18, 19, 28]);
     for (let i=0; i<=3; i++) {piece.left();}
-    expect(piece.blocks).toEqual(rightResult2);
+    expect(piece.allBlocks).toEqual(rightResult2);
     piece.left();
     piece.left();
-    expect(piece.blocks).toEqual(rightResult1);
+    expect(piece.allBlocks).toEqual(rightResult1);
     piece.left();
-    expect(piece.blocks).toEqual(defaultResult);
+    expect(piece.allBlocks).toEqual(defaultResult);
   });
 
   test('Piece shifts up/down with valid values (no max bound)', () => {
     let piece = new game.Piece('t', 0, 10);
-    expect(piece.blocks).toEqual(defaultResult);
+    expect(piece.allBlocks).toEqual(defaultResult);
     piece.up();
-    expect(piece.blocks).toEqual(defaultResult);
+    expect(piece.allBlocks).toEqual(defaultResult);
     piece.down();
-    expect(piece.blocks).toEqual(downResult2);
+    expect(piece.allBlocks).toEqual(downResult2);
     piece.up();
     for (let i=0; i<11; i++) {piece.down();}
-    expect(piece.blocks).toEqual(downResult3);
+    expect(piece.allBlocks).toEqual(downResult3);
     for (let i=0; i<11; i++) {piece.down();}
-    expect(piece.blocks).toEqual(downResult4);
+    expect(piece.allBlocks).toEqual(downResult4);
     for (let i=0; i<11; i++) {piece.up();}
-    expect(piece.blocks).toEqual(downResult3);
+    expect(piece.allBlocks).toEqual(downResult3);
   });
 
   test('Piece rotates', () => {
     let piece = new game.Piece('t', 0, 10);
     expect(piece.size[0]).toBe(10);
-    expect(piece.blocks).toEqual(defaultResult);
+    expect(piece.allBlocks).toEqual(defaultResult);
 
     expect(piece.get()).toEqual(defaultResult[0]);
     piece.rotate();
@@ -284,7 +284,7 @@ describe('Pieces Object', () => {
     Piece.? returns object {blocks: [], data: {color: }}
        template
   */
-  test('Piece.update and Piece.rotate update Piece.blocks', () => {
+  test('Piece.update and Piece.rotate update piece.allBlocks', () => {
 
   });
 });
@@ -297,11 +297,11 @@ describe('Piece and Board integration', () => {
     expect(piece.size[0]).toBe(10);
 
     for (let i=0; i<=3; i++) {piece.right();}
-    expect(board.fits(piece.blocks[0])).toBe(true);
+    expect(board.fits(piece.allBlocks[0])).toBe(true);
     for (let i=0; i<=4; i++) {piece.right();}
-    expect(board.fits(piece.blocks[0])).toBe(true);
+    expect(board.fits(piece.allBlocks[0])).toBe(true);
     for (let i=0; i<=6; i++) {piece.right();}
-    expect(board.fits(piece.blocks[0])).toBe(true);
+    expect(board.fits(piece.allBlocks[0])).toBe(true);
 
   });
 
