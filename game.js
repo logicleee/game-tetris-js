@@ -132,13 +132,13 @@ function Piece(type, rotation = 0, size = 4) {
 function Board(xMax = 10, yMax = 20) {
   this.size = [xMax, yMax];
   this.grid = reset(this.size);
-  function reset ([x,y]) { return Array(x*y).fill(0); }
+  function reset ([x,y]) { return Array(x*y).fill({'color': 0}); }
 
   this.fits = (g) => {
     if (g === undefined) // if passed undefined, return undefined
       return undefined;
     for (let i = 0; i < g.length; i++) {
-      if (this.grid[g[i]] != 0) {
+      if ( (! this.grid[g[i]]) || this.grid[g[i]].color != 0) {
         return false;  // if calculated OOB, return false
       }
     };
