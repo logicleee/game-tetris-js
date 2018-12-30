@@ -31,6 +31,8 @@ function Piece(type, rotation = 0, size = 4) {
     return  (index + offset[0]) + (maxX * offset[1]);
   };
 
+  function getCurrentPiece (p) { return p.allBlocks[p.rotation]; };
+
   function calculateBlocks(piece) {
     const templateBlocks = template.allBlocks;
     const templateMaxX = template.size[0];
@@ -63,10 +65,14 @@ function Piece(type, rotation = 0, size = 4) {
   };
 
   this.rotate = () => {
-    if (this.rotation >= this.allBlocks.length - 1)
+    if (this.rotation >= this.allBlocks.length - 1) {
       this.rotation = 0;
-    else
+      this.blocks = getCurrentPiece(this);
+    }
+    else {
       this.rotation++;
+      this.blocks = getCurrentPiece(this);
+    }
     return true;
   };
 
@@ -74,8 +80,6 @@ function Piece(type, rotation = 0, size = 4) {
   this.right = function () {this.update(this, [1,0]); return this.allBlocks;};
   this.up = function () {this.update(this, [0,-1]); return this.allBlocks;};
   this.down = function () {this.update(this, [0,1]); return this.allBlocks;};
-  function currentPiece (p) { return p.allBlocks[p.rotation]; };
-  this.get = function () { return currentPiece(this); };
   this.update = function (piece = this, offset = [0,0]) {
     const oldOffset = piece.offset.slice();
     piece.offset = calculateOffset(piece, offset);
@@ -85,9 +89,11 @@ function Piece(type, rotation = 0, size = 4) {
 
     if (newBlocks != false )  {
       piece.allBlocks = newBlocks;
+      piece.blocks = getCurrentPiece(piece);
       return true;
     }
     piece.offset = oldOffset;
+    piece.blocks = getCurrentPiece(piece);
     return false;
   };
 
@@ -244,7 +250,6 @@ function Pieces () {
     for (let i=arr.length - 1; i > 0; i--) {
       swapInArr(arr,randomInt(i - 1), i);
     }
-    //arr.map(function (currentValue, index) => {})
     return arr;
   }
 }

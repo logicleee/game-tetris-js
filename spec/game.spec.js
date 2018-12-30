@@ -204,16 +204,17 @@ describe('Piece Object', () => {
   test('Piece rotates', () => {
     let piece = new game.Piece('t', 0, 10);
     expect(piece.size[0]).toBe(10);
+    expect(piece.blocks).toEqual(piece.allBlocks[piece.rotation]);
     expect(piece.allBlocks).toEqual(defaultResult);
 
-    expect(piece.get()).toEqual(defaultResult[0]);
+    expect(piece.blocks).toEqual(defaultResult[0]);
     piece.rotate();
-    expect(piece.get()).toEqual(defaultResult[1]);
+    expect(piece.blocks).toEqual(defaultResult[1]);
     piece.rotate();
-    expect(piece.get()).toEqual(defaultResult[2]);
+    expect(piece.blocks).toEqual(defaultResult[2]);
     piece.rotate();
     piece.rotate();
-    expect(piece.get()).toEqual(defaultResult[0]);
+    expect(piece.blocks).toEqual(defaultResult[0]);
   });
 
   test('Piece has default offset property of [0,0]', () => {
@@ -278,15 +279,7 @@ describe('Pieces Object', () => {
   test('Shuffled property is still same length ', () =>{
     expect(pieceList.shuffled.length).toBe(pieceList.ordered.length);
   });
-/*
-*** TODO piece.? = current piece[rotation]
-    piece.update & piece.rotate ALWAYS updates piece.?
-    Piece.? returns object {blocks: [], data: {color: }}
-       template
-  */
-  test('Piece.update and Piece.rotate update piece.allBlocks', () => {
 
-  });
 });
 
 describe('Piece and Board integration', () => {
