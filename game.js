@@ -1,5 +1,5 @@
 //
-function Piece(type, rotation = 0, size = 4) {
+function Piece (type, rotation = 0, size = 4) {
 
   const getRow = (index, maxX) => Math.floor(index / size);
   const getCol = (index, maxX) => (index % size);
@@ -131,6 +131,7 @@ function Piece(type, rotation = 0, size = 4) {
 
 function Board(xMax = 10, yMax = 20) {
   function reset ([x,y]) { return Array(x*y).fill({'color': 0}); }
+
   this.size = [xMax, yMax];
   this.grid = reset(this.size);
 
@@ -146,8 +147,26 @@ function Board(xMax = 10, yMax = 20) {
   };
 
   this.overlay = function (piece) {
-    return true;
+    let result = this.grid.slice();
+    piece.blocks.forEach(b =>{
+      result[b] = {'color': piece.color};
+    });
+
+    return result;
   };
+
+  this.update = function (piece) {
+    let rowsCleared=0;
+    let hardDrop=false;
+    this.grid = this.overlay(piece);
+    return {
+      'boardUpdated': true,
+      'rowsCleared': rowsCleared,
+      'hardDrop': hardDrop,
+      'grid': this.grid.slice(),
+    };
+  };
+
 };
 
 function Pieces () {

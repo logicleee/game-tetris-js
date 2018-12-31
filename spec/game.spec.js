@@ -298,5 +298,48 @@ describe('Piece and Board integration', () => {
     expect(board.fits(piece.allBlocks[0])).toBe(true);
 
   });
+  test('Piece overlays on board but does not affect board.grid', () => {
+    let board = new game.Board();
+    let piece = new game.Piece('t', 0, 10);
+    function reset ([x,y]) { return Array(x*y).fill({'color': 0}); }
 
+    const defaultResult = reset([10,20]);
+    const result1 = reset([10,20]);
+    ([10,11,12,21]).forEach(x => result1[x] = {color: 7});
+    const result2 = reset([10,20]);
+    ([13, 14, 15, 24]).forEach(x => result2[x] = {color: 7});
+    const result3 = reset([10,20]);
+    ([14, 15, 16, 25]).forEach(x => result3[x] = {color: 7});
+
+    expect(board.grid).toEqual(defaultResult);
+    expect(board.overlay(piece)).toEqual(result1);
+    expect(board.grid).toEqual(defaultResult);
+    piece.right();
+    piece.right();
+    piece.right();
+    expect(board.overlay(piece)).toEqual(result2);
+    piece.right();
+    expect(board.overlay(piece)).toEqual(result3);
+    expect(board.grid).toEqual(defaultResult);
+
+  });
+
+  test('Piece can be permanently added to grid with board.update', () => {
+    let board = new game.Board();
+    let piece = new game.Piece('t', 0, 10);
+    function reset ([x,y]) { return Array(x*y).fill({'color': 0}); }
+
+    const defaultResult = reset([10,20]);
+    const result2 = reset([10,20]);
+    ([13, 14, 15, 24]).forEach(x => result2[x] = {color: 7});
+
+    expect(board.grid).toEqual(defaultResult);
+    piece.right();
+    piece.right();
+    piece.right();
+    expect(board.update(piece).boardUpdated).toBe(true);
+    expect(board.update(piece).grid).toEqual(result2);
+    expect(board.grid).toEqual(result2);
+
+  });
 });
