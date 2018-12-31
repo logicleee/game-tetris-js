@@ -130,9 +130,9 @@ function Piece(type, rotation = 0, size = 4) {
 
 
 function Board(xMax = 10, yMax = 20) {
+  function reset ([x,y]) { return Array(x*y).fill({'color': 0}); }
   this.size = [xMax, yMax];
   this.grid = reset(this.size);
-  function reset ([x,y]) { return Array(x*y).fill({'color': 0}); }
 
   this.fits = (g) => {
     if (g === undefined) // if passed undefined, return undefined
@@ -143,6 +143,10 @@ function Board(xMax = 10, yMax = 20) {
       }
     };
     return true;  // if in bounds, return true
+  };
+
+  this.overlay = function (piece) {
+    return true;
   };
 };
 

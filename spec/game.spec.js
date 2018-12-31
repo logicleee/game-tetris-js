@@ -89,6 +89,7 @@ describe('Board Object', () => {
     expect(board.fits([0,1,2,11])).toBe(false);
     expect(board.fits([201])).toBe(false); // out of bounds
   });
+
 });
 
 describe('Piece Object', () => {
