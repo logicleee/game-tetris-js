@@ -130,9 +130,50 @@ function Piece (type, rotation = 0, size = 4) {
 
 
 function Board(xMax = 10, yMax = 20) {
-  function reset ([x,y]) { return Array(x*y).fill({'color': 0}); }
+  const block = {'color': 0};
+  //function reset ([x,y]) { return Array(x*y).fill({'color': 0}); }
+  function reset ([x,y]) { return Array(x*y).fill(block); }
+
+  function blockNotEmpty (grid, index) {return grid[index].color > 0; }
+  function clearRows (grid, newGrid, size, fn) {
+    let oldGrid = grid.slice();
+    let maxX = size[0];
+    let blocksFull = maxX;
+    let currRow = 0;
+    let currOffset = 0;
+    let newIndex = 0;
+    let oldIndex, lastRow;
+
+    while (oldGrid.length > 0) {
+      oldIndex = oldGrid.length - 1;
+      newIndex = oldIndex + (currOffset * maxX);
+      newGrid[newIndex] = oldGrid.pop();
+      currRow = Math.floor(oldIndex / maxX);
+
+      if (lastRow != currRow) {
+        lastRow = currRow;
+        blocksFull = maxX;
+      }
+
+      if (fn(grid,oldIndex)) {
+        blocksFull -= 1;
+      }
+
+      if (blocksFull === 0) {
+        currOffset += 1;
+        blocksFull = maxX;
+      }
+
+    }
+
+    return {'grid': newGrid,
+            'rowsCleared': currOffset
+           };
+
+  };
 
   this.size = [xMax, yMax];
+  //const blankGrid = () => reset([xMax, yMax]); //new
   this.grid = reset(this.size);
 
   this.fits = (g) => {
@@ -156,16 +197,21 @@ function Board(xMax = 10, yMax = 20) {
   };
 
   this.update = function (piece) {
-    let rowsCleared=0;
     let hardDrop=false;
-    this.grid = this.overlay(piece);
+    const overlay = this.overlay(piece);
+    const newRowsObject = clearRows(overlay,reset(this.size),this.size, blockNotEmpty);
+    this.grid = newRowsObject.grid;
+
     return {
       'boardUpdated': true,
-      'rowsCleared': rowsCleared,
+      'rowsCleared': newRowsObject.rowsCleared,
       'hardDrop': hardDrop,
       'grid': this.grid.slice(),
     };
   };
+
+
+  this.clearRows = (grid, newGrid, size, fn) => clearRows(grid, newGrid, size, fn);
 
 };
 

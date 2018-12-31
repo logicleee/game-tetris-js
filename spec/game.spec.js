@@ -89,6 +89,22 @@ describe('Board Object', () => {
     expect(board.fits([0,1,2,11])).toBe(false);
     expect(board.fits([201])).toBe(false); // out of bounds
   });
+  test('clearRows clears rows and shifts blocks down', ( ) => {
+    let board = new game.Board();
+    function new0Grid ([x,y]) { return Array(x*y).fill(0); }
+    function blockNotEmpty  (grid, index) {return grid[index] > 0;};
+    let grid = new0Grid([5,5]);
+    for (let i=10; i < 15; i++) { grid[i] = 1;};
+    for (let i=20; i < 25; i++) { grid[i] = 1;};
+    grid[8] = 1;
+    grid[16] = 1;
+    let expectedGrid = new0Grid([5,5]);
+    expectedGrid[18] = 1;
+    expectedGrid[21] = 1;
+    const result = board.clearRows(grid, new0Grid([5,5]),[5,5], blockNotEmpty);
+    expect(result.grid).toEqual(expectedGrid);
+    expect(result.rowsCleared).toBe(2);
+  });
 
 });
 
