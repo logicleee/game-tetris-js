@@ -699,7 +699,6 @@ function Controller () {
   }
 
   function initTextUI () {
-    let form = document.createElement('form');
 
   }
 
@@ -725,6 +724,13 @@ function Controller () {
   }
   run();
 
+  /*
+    run > frame
+            update > handle > move
+            draw
+            recurse (frame)
+  */
 
 }
+
 module.exports = {Piece, Pieces, Board, Controller};
