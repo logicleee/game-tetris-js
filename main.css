@@ -1,0 +1,23 @@
+#menu {
+    background-color: teal;
+}
+#upcoming {
+    background-color: blue;
+}
+#upcomingParent {
+    background-color: black;
+}
+#canvasDiv {
+    font-family: monospace;
+    white-space: pre-wrap;
+    background-color: red;
+}
+#canvas {
+    background-color: pink;
+}
+#score {
+    background-color: green;
+}
+#start {
+    background-color: grey;
+}
