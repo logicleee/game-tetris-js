@@ -419,39 +419,6 @@ function Board(size = [10,20]) {
   this.clearRows = (grid, newGrid, size, fn) =>
     clearRows(grid, newGrid, size, fn);
 
-  this.renderGridAsText = (grid = this.grid, size = this.size) => {
-    const maxX = size[0];
-    let j = 0;
-    let result = '';
-    for (let i=0; i < grid.length; i++) {
-      const currBlock = grid[i].color;
-      //result += ' ';
-      if ( j === 0)
-        result += ' |';
-      if (currBlock === 0) {
-        //result += '.';
-        if (j % 2)
-          result += ' ';
-        else
-          result += '.';
-
-      } else {
-
-        result += currBlock;
-
-      }
-
-      j++;
-      if (j >= maxX) {
-        result += '| \n';
-        j = 0;
-      }
-
-    }
-
-    return result;
-
-  };
 
 };
 
@@ -459,6 +426,7 @@ function Controller () {
   const boardSize = [10,20];
   let board = new Board(boardSize);
   let pieces = new Pieces(boardSize);
+  let ui = new UI(boardSize);
   let piece = pieces.nextPiece();
   piece.generateBlockData();
   let pieceData = [];
@@ -470,17 +438,13 @@ function Controller () {
   let timeDelta = 0;
   let step = 1;
 
-  const getElementById = (id) => document.getElementById(id);
-  const hideElementById = (id) => getElementById(id).style.visibility='hidden';
-  const showElementById = (id) => getElementById(id).style.visibility=null;
-  const setElementInnerText = (id, text) => getElementById(id).innerText = text;
   const timeStamp = () => new Date().getTime();
   const randomInt = (min, max) =>
         Math.floor(min + (Math.random()*(max - min + 1)));
   const sleep = (ms) =>
           new Promise(resolve => setTimeout(resolve, ms));
 
-  let textGrid; // TODO get rid of this!
+  let textGrid = ''; // TODO get rid of this!
   // for testing START
   this.board = () => board;
   this.piece = () => piece;
@@ -623,11 +587,11 @@ function Controller () {
 
   function playGame () {
     if (playingGame) {
-      showElementById('start');
+      ui.showElementById('start');
       playingGame = false;
       eventQueue.push('startGame');
     } else {
-      hideElementById('start');
+      ui.hideElementById('start');
       playingGame = true;
     }
   }
@@ -645,14 +609,14 @@ function Controller () {
     function frame () {
       now = timeStamp();
       update(Math.min(1, (now - last) / 1000.0));
-      draw();
+      ui.draw(boardChanged, textGrid, board.size);
+      boardChanged = ui.getBoardUIisUpdated();
       last = now;
-        sleep(50).then(() => {
-          if (playingGame)
-                setElementInnerText('score', timeStamp());
-                //setElementInnerText('score', timeDelta);
-            requestAnimationFrame(frame, canvas);
-        });
+      sleep(50).then(() => {
+        if (playingGame)
+          ui.updateScore(timeStamp());
+        requestAnimationFrame(frame, canvas);
+      });
     }
 
     addEvents();
@@ -685,9 +649,10 @@ function Controller () {
   }
 
   function reset () {
-    initTextUI();
+    ui = new UI(boardSize);
 
-    showElementById('start');
+    ui.initUI();
+    ui.showElementById('start');
     board = new Board(boardSize);
     pieces = new Pieces(boardSize);
     piece = pieces.nextPiece();
@@ -698,17 +663,7 @@ function Controller () {
 
   }
 
-  function initTextUI () {
 
-  }
-
-  function draw () {
-    if (boardChanged) {
-      setElementInnerText('canvasDiv', board.renderGridAsText(textGrid));
-      boardChanged = false;
-    }
-
-  }
 
 
   // BEGIN FUNCTION
@@ -733,4 +688,110 @@ function Controller () {
 
 }
 
-module.exports = {Piece, Pieces, Board, Controller};
+function UI (gridSize) {
+  const getElementById = (id) => document.getElementById(id);
+  const hideElementById = (id) => getElementById(id).style.visibility='hidden';
+  const showElementById = (id) => getElementById(id).style.visibility=null;
+  const setElementInnerText = (id, text) => getElementById(id).innerText = text;
+  let boardNeedsUIrefresh = false;
+
+  function domElement (tag, parent = false,
+                       id = false, innerText = false) {
+    let result = document.createElement(tag);
+    if (id)
+        result.id = id;
+    if (innerText)
+      result.innerText = innerText;
+    if (parent)
+      parent.appendChild(result);
+    return result;
+  }
+
+  function initUI () {
+    let tetrisGame = getElementById('tetris');
+    let menu = new domElement('div', tetrisGame, 'menu');
+    let start = new domElement('p', menu, 'start', 'Press space to play.');
+    let nextPieceWrapper = new domElement('p', menu, 'nextPieceWrapper');
+    let nextPiece = new domElement('canvas', nextPieceWrapper, 'nextPiece');
+    let scoreWrapper = new domElement('p', menu);
+    let score = new domElement('span', scoreWrapper, 'score', '0000');
+    let rowsWrapper = new domElement('p', menu);
+    let rows = new domElement('span', rowsWrapper, 'rows', '0');
+    let gameBoardDiv = new domElement('div', tetrisGame, 'gameBoardDiv');
+    let gameBoard = new domElement('canvas', gameBoardDiv, 'gameBoard');
+
+    // specific to tty
+    gameBoardDiv.style.fontFamily = 'monospace';
+    gameBoardDiv.style.whiteSpace = 'pre-wrap';
+
+    /*
+    let menu = document.createElement('div');
+    menu.id = 'menu';
+    let start = document.createElement('p');
+    start.id = 'start';
+    let nextPieceWrapper = document.createElement('p');
+    nextPieceWrapper.id = 'nextPieceWrapper';
+    let nextPiece = document.createElement('canvas');
+    nextPiece.id = 'nextPiece';
+    let scoreWrapper = document.createElement('p');
+    let score = document.createElement('span');
+    score.id =
+
+    let rowsWrapper = document.createElement('p');
+    let rows = document.createElement('span');
+
+    let gameBoardDiv = document.createElement('div');
+    gameBoardDiv.id = 'gameBoardDiv';
+    let gameBoard = document.createElement('canvas');
+    gameBoard.id = 'gameBoard';
+    */
+
+  }
+
+  function renderGridAsText (grid = [], size = gridSize) {
+    const maxX = size[0];
+    let j = 0;
+    let result = '';
+    for (let i=0; i < grid.length; i++) {
+      const currBlock = grid[i].color;
+      if ( j === 0)
+        result += ' |';
+      if (currBlock === 0) {
+        if (j % 2)
+          result += ' ';
+        else
+          result += '.';
+      } else {
+        result += currBlock;
+      }
+      j++;
+      if (j >= maxX) {
+        result += '| \n';
+        j = 0;
+      }
+    }
+    return result;
+  };
+
+  function draw (boardChanged, grid) {
+    if (boardChanged) {
+      //setElementInnerText('canvasDiv', renderGridAsText(grid));
+      setElementInnerText('gameBoardDiv', renderGridAsText(grid));
+      boardNeedsUIrefresh = false;
+    }
+  };
+
+  this.getGridSize = () => gridSize;
+  this.draw = (boardChanged, grid, size) => draw(boardChanged, grid, size);
+  this.renderGridAsText = (grid) => renderGridAsText(grid);
+  this.initUI = () => initUI();
+  //this.getElementById = (id) => getElementById(id);
+  this.hideElementById = (id) => hideElementById(id);
+  this.showElementById = (id) => showElementById(id);
+  this.setElementInnerText = (id, text) => setElementInnerText(id,text);
+  this.getBoardUIisUpdated = () => boardNeedsUIrefresh;
+  this.updateScore = (score) => setElementInnerText('score', score);
+
+};
+
+module.exports = {Piece, Pieces, Board, Controller, UI};
