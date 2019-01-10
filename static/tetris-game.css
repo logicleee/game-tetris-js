@@ -1,3 +1,15 @@
+#tetris-content {
+
+}
+
+#statsDiv {
+
+}
+
+#gameBoardDiv {
+
+}
+
 #menu {
     background-color: teal;
 }
@@ -7,17 +19,21 @@
 #upcomingParent {
     background-color: black;
 }
+
 #canvasDiv {
     font-family: monospace;
     white-space: pre-wrap;
     background-color: red;
 }
+
 #canvas {
     background-color: pink;
 }
+
 #score {
     background-color: green;
 }
+
 #start {
-    background-color: grey;
+    background-color: pink;
 }

@@ -1,7 +1,8 @@
 #PATH := :$(PATH)
 SHELL := /bin/bash
 
-app_bundle := index.html tetris-game.js
+app_bundle := index.html tetris-game.css tetris-game.js
+
 .PHONY: all
 
 all: test clean app openIndex
@@ -14,6 +15,9 @@ tetris-game.js: game.js
 index.html: static/index.html
 	cp -pv $< $(dir $@)
 
+tetris-game.css: static/tetris-game.css
+	cp -pv $< $(dir $@)
+
 test:
 	date
 	npm test
@@ -23,4 +27,5 @@ openIndex:
 
 clean:
 	rm -f index.html
+	rm -f tetris-game.css
 	rm -f tetris-game.js
