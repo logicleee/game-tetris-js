@@ -461,7 +461,9 @@ function Controller () {
     case 'moveUp': move('up'); break;
     case 'moveDown': move('down'); break;
     case 'moveRotate': move('rotate'); break;
-    case 'togglePause': playingGame = ! playingGame; break;
+    case 'pauseGame': playingGame = playGame(false); break;
+    case 'startGame': playingGame = playGame(true); break;
+    case 'togglePlayingGame': playingGame = playGame(! playingGame); break;
     case 'toggleNormalMode': piece.toggleNormalMode(); break;
     };
   }
@@ -577,21 +579,38 @@ function Controller () {
       }
     }
     if (kbEvent.code === 'Space'){
+      eventQueue.push('togglePlayingGame');
       handled = true;
-      playGame();
     }
     if (handled)
         kbEvent.preventDefault();
   }
 
-  function playGame () {
-    if (playingGame) {
-      ui.setState('paused');
-      playingGame = false;
+  function windowOnClick(event) {
+    let modal = document.querySelector(".modal");
+    let openModal = document.querySelector(".open-modal");
+    let closeModal = document.querySelector(".close-button");
+    switch (event.target) {
+    case openModal:
+      eventQueue.push('pauseGame');
+      break;
+    case closeModal:
       eventQueue.push('startGame');
-    } else {
+      break;
+    case modal:
+      eventQueue.push('startGame');
+      ui.toggleModalState();
+      break;
+    }
+  }
+
+  function playGame (playingGame) {
+    if (playingGame) {
       ui.setState('playing');
-      playingGame = true;
+      return true;
+    } else {
+      ui.setState('paused');
+      return false;
     }
   }
 
@@ -630,6 +649,7 @@ function Controller () {
   function addEvents() {
     document.addEventListener('keydown', keydown, false);
     window.addEventListener('resize', resize, false);
+    window.addEventListener("click", windowOnClick);
   }
 
   function update (idt) {
@@ -697,12 +717,14 @@ function UI (gridSize) {
   let uiMode = textUI;
 
   function domElement (tag, parent = false,
-                       id = false, innerText = false) {
+                       id = false, classList = false, innerText = false) {
     let result = document.createElement(tag);
     if (id)
-        result.id = id;
+      result.id = id;
     if (innerText)
       result.innerText = innerText;
+    if (classList)
+      result.classList.add(classList);
     if (parent)
       parent.appendChild(result);
     return result;
@@ -717,7 +739,7 @@ function UI (gridSize) {
     result.style.width = width;
 
     if (fixed)
-        result.style.layout = 'fixed';
+      result.style.layout = 'fixed';
 
     if (id)
       result.id = id;
@@ -739,26 +761,101 @@ function UI (gridSize) {
     return result;
 
   }
+  // (parent , id , name , value , checked , label )
+  function RadioButtonAndLabel (parent = false, id = false, name = false,
+                                value = false, checked = false, label = false) {
+
+    let result = {'button': document.createElement('input')};
+    result['button'].setAttribute('type', 'radio');
+
+    if (id)
+      result['button'].setAttribute('id', id);
+
+    if (name)
+      result['button'].setAttribute('name', name);
+
+    if (value)
+      result['button'].setAttribute('value', value);
+
+    if (checked)
+      result['button'].setAttribute('checked', checked);
+
+    if (parent)
+      parent.appendChild(result['button']);
+
+    if (label) {
+      result['label'] = document.createElement('label');
+      if (id)
+        result['label'].setAttribute('for', id);
+      result['label'].innerText = label;
+      if (parent)
+        parent.appendChild(result['label']);
+    }
+
+    return result;
+
+  }
 
   function initUI () {
     let viewPort = getElementById('tetris');
+    if (viewPort.children[0])
+      viewPort.children[0].remove();
     let tetrisGame = new domElement('div', viewPort, 'tetris-content');
-    let statsDiv = new domElement('div', tetrisGame, 'statsDiv');
-    let start = new domElement('p', statsDiv, 'start', 'Press space to play.');
-    let nextPieceWrapper = new domElement('p', statsDiv, 'nextPieceWrapper');
+    let statsDiv = new domElement('div', tetrisGame, 'statsDiv', 'stats');
+    let start = new domElement('p', statsDiv, 'start', false, 'Press space to play.');
+
+    let settingsWrapper = new domElement('div', statsDiv, 'settingsWrapper');
+    let settingsButton = new domElement('button', settingsWrapper, false, 'button', 'Settings');
+    settingsButton.classList.add('open-modal');
+    let nextPieceWrapper = new domElement('div', statsDiv, 'nextPieceWrapper');
     let statsWrapper = new domElement('div', statsDiv);
 
     //let a = new TableElement (parent, id, colWidths, fixed, width)
     let statsTable = new TableElement(statsWrapper, 'statsTable',
-                                      ['50%', '50%'], true, '100%');
+                                      ['30%', '70%'], true, '100%');
     let row0 = new domElement('tr',statsTable);
     let row1 = new domElement('tr',statsTable);
-    let scoreLabel = new domElement('td', row0, false, 'Score:');
-    let score = new domElement('td', row0, 'score', '0000');
-    let rowsClearedLabel = new domElement('td', row1, false, 'Rows:');
-    let rowsCleared = new domElement('td', row1, 'rowsCleared', '1010');
+    let scoreLabel = new domElement('td', row0, false, false, 'Score:');
+    let score = new domElement('td', row0, 'score', false, '0000');
+    let rowsClearedLabel = new domElement('td', row1, false, false, 'Rows:');
+    let rowsCleared = new domElement('td', row1, 'rowsCleared', false, '1010');
     let gameBoardDiv = new domElement('div', tetrisGame, 'gameBoardDiv');
     let gameBoard = new domElement('canvas', gameBoardDiv, 'gameBoard');
+    let modalDiv = new domElement('div', tetrisGame, false, 'modal');
+    let modalContent = new domElement('div', modalDiv, false, 'modal-content');
+    let modalCloseButton = new domElement('span', modalContent, false,
+                                          'close-button', 'x');
+    let modalTitle = new domElement('h1', modalContent, false, false,
+                                    'Game Paused');
+    let modalForm = new domElement('form', modalContent);
+    let modalRadioTitle1 = new domElement('h2', modalForm, false, false,
+                                          'Play Setting');
+    let modalRadioDiv1 = new domElement('div', modalForm, false, false);
+
+    // (parent , id , name , value , checked , label )
+    let modalPlayNormalButton =
+        new RadioButtonAndLabel(modalRadioDiv1, 'tetris-modal-normal-mode',
+                                'playMode', 'normal', true, 'Normal Mode');
+    let modalPlayNoBoundButton =
+        new RadioButtonAndLabel(modalRadioDiv1,
+                                'tetris-modal-boundaryless-mode', 'playMode',
+                                'boundaryless', false, 'No Side Boundaries');
+    let modalRadioTitle2 =
+        new domElement('h2', modalForm, false, false, 'Game Board Setting');
+    let modalRadioDiv2 = new domElement('div', modalForm, false, false);
+    let modalUiGraphic =
+        new RadioButtonAndLabel(modalRadioDiv2, 'tetris-modal-ui-graphic',
+                                'uiMode', 'graphic', true, 'Graphical Board');
+    let modalUiText =
+        new RadioButtonAndLabel(modalRadioDiv2, 'tetris-modal-ui-text',
+                                'uiMode', 'text', false, 'Retro Text Board');
+
+    let modal = document.querySelector(".modal");
+    let openModal = document.querySelector(".open-modal");
+    let closeModal = document.querySelector(".close-button");
+
+    openModal.addEventListener("click", toggleModalState);
+    closeModal.addEventListener("click", toggleModalState);
 
     if (uiMode == textUI) {
       // specific to text-mode
@@ -821,12 +918,17 @@ function UI (gridSize) {
   function draw (boardChanged, grid) {
     if (boardChanged) {
       //setElementInnerText('canvasDiv', renderGridAsText(grid));
-      if (uiMode = textUI)
+      if (uiMode == textUI)
         setElementInnerText('gameBoardDiv', renderGridAsText(grid));
       //if (uiMode = canvasUI)
       boardNeedsUIrefresh = false;
     }
   };
+
+  function toggleModalState() {
+    let modal = document.querySelector(".modal");
+    modal.classList.toggle("show-modal");
+  }
 
   this.getGridSize = () => gridSize;
   this.draw = (boardChanged, grid, size) => draw(boardChanged, grid, size);
@@ -839,7 +941,7 @@ function UI (gridSize) {
   this.setElementInnerText = (id, text) => setElementInnerText(id,text);
   this.getBoardUIisUpdated = () => boardNeedsUIrefresh;
   this.updateScore = (score) => setElementInnerText('score', score);
-
+  this.toggleModalState = () => toggleModalState();
 };
 
 module.exports = {Piece, Pieces, Board, Controller, UI};
