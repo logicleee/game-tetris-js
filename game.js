@@ -461,18 +461,24 @@ function Controller () {
     case 'moveUp': move('up'); break;
     case 'moveDown': move('down'); break;
     case 'moveRotate': move('rotate'); break;
-    case 'pauseGame': playingGame = playGame(false); break;
-    case 'startGame': playingGame = playGame(true); break;
-    case 'togglePlayingGame': playingGame = playGame(! playingGame); break;
     case 'toggleNormalMode': piece.toggleNormalMode(); break;
+    case 'pauseGame':
+      playingGame = playGame(false);
+      ui.modalIsVisible(true);
+      break;
+    case 'startGame':
+      playingGame = playGame(true);
+      ui.modalIsVisible(false);
+      break;
+    case 'togglePlayingGame':
+      if (playingGame != true)
+        eventQueue.push('startGame');
+      else
+        eventQueue.push('pauseGame');
+      break;
     };
   }
 
-  /*
-  function Event() {
-    return;
-  }
-  */
 
   function move (event) {
     let currentGrid = [];
@@ -539,17 +545,6 @@ function Controller () {
       }
       break;
     case 'rotate':
-      /*
-        event: piece rotate
-        calls piece.rotate()
-        if board.fits(piece.blocks)
-        pushes stats to pieceData array
-        currentGrid = board.overlay(piece)
-        boardChanged = true
-        if ! board.fits(piece.blocks)
-        set piece to last pieceData
-        call piece.update()
-      */
       piece.rotate();
       pieceData.push(piece.getPieceSpecs());
       currentGrid = board.overlay(piece);
@@ -590,6 +585,7 @@ function Controller () {
     let modal = document.querySelector(".modal");
     let openModal = document.querySelector(".open-modal");
     let closeModal = document.querySelector(".close-button");
+
     switch (event.target) {
     case openModal:
       eventQueue.push('pauseGame');
@@ -599,7 +595,6 @@ function Controller () {
       break;
     case modal:
       eventQueue.push('startGame');
-      ui.toggleModalState();
       break;
     }
   }
@@ -802,8 +797,6 @@ function UI (gridSize) {
       viewPort.children[0].remove();
     let tetrisGame = new domElement('div', viewPort, 'tetris-content');
     let statsDiv = new domElement('div', tetrisGame, 'statsDiv', 'stats');
-    let start = new domElement('p', statsDiv, 'start', false, 'Press space to play.');
-
     let settingsWrapper = new domElement('div', statsDiv, 'settingsWrapper');
     let settingsButton = new domElement('button', settingsWrapper, false, 'button', 'Settings');
     settingsButton.classList.add('open-modal');
@@ -819,14 +812,18 @@ function UI (gridSize) {
     let score = new domElement('td', row0, 'score', false, '0000');
     let rowsClearedLabel = new domElement('td', row1, false, false, 'Rows:');
     let rowsCleared = new domElement('td', row1, 'rowsCleared', false, '1010');
+
     let gameBoardDiv = new domElement('div', tetrisGame, 'gameBoardDiv');
     let gameBoard = new domElement('canvas', gameBoardDiv, 'gameBoard');
+
     let modalDiv = new domElement('div', tetrisGame, false, 'modal');
     let modalContent = new domElement('div', modalDiv, false, 'modal-content');
     let modalCloseButton = new domElement('span', modalContent, false,
                                           'close-button', 'x');
     let modalTitle = new domElement('h1', modalContent, false, false,
                                     'Game Paused');
+    let modalSubTitle = new domElement('p', modalContent, false, 'subtitle',
+                                    'Press space to play');
     let modalForm = new domElement('form', modalContent);
     let modalRadioTitle1 = new domElement('h2', modalForm, false, false,
                                           'Play Setting');
@@ -849,13 +846,6 @@ function UI (gridSize) {
     let modalUiText =
         new RadioButtonAndLabel(modalRadioDiv2, 'tetris-modal-ui-text',
                                 'uiMode', 'text', false, 'Retro Text Board');
-
-    let modal = document.querySelector(".modal");
-    let openModal = document.querySelector(".open-modal");
-    let closeModal = document.querySelector(".close-button");
-
-    openModal.addEventListener("click", toggleModalState);
-    closeModal.addEventListener("click", toggleModalState);
 
     if (uiMode == textUI) {
       // specific to text-mode
@@ -901,15 +891,18 @@ function UI (gridSize) {
   function setUIstate (state) {
     switch (state) {
     case 'paused':
-      showElementById('start');
+      modalIsVisible(true);
       break;
     case 'playing':
-      hideElementById('start');
+      modalIsVisible(false);
       break;
     case 'text':
       uiMode = 'text';
       break;
     case 'canvas':
+      uiMode = 'canvas';
+      break;
+    case 'normalMode':
       uiMode = 'canvas';
       break;
     }
@@ -925,9 +918,19 @@ function UI (gridSize) {
     }
   };
 
+  /*
   function toggleModalState() {
+    console.log('toggleModalState called');
     let modal = document.querySelector(".modal");
     modal.classList.toggle("show-modal");
+  }
+  */
+
+  function modalIsVisible(newState) {
+    let modal = document.querySelector(".modal");
+    const currentState = modal.classList.contains("show-modal");
+    if (currentState != newState)
+        modal.classList.toggle("show-modal");
   }
 
   this.getGridSize = () => gridSize;
@@ -941,7 +944,8 @@ function UI (gridSize) {
   this.setElementInnerText = (id, text) => setElementInnerText(id,text);
   this.getBoardUIisUpdated = () => boardNeedsUIrefresh;
   this.updateScore = (score) => setElementInnerText('score', score);
-  this.toggleModalState = () => toggleModalState();
+  //this.toggleModalState = () => toggleModalState();
+  this.modalIsVisible = (x) => modalIsVisible(x);
 };
 
 module.exports = {Piece, Pieces, Board, Controller, UI};
