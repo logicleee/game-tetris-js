@@ -437,6 +437,7 @@ function Controller () {
   let eventQueue = [];
   let timeDelta = 0;
   let step = 1;
+  let settings;
 
   const timeStamp = () => new Date().getTime();
   const randomInt = (min, max) =>
@@ -467,6 +468,8 @@ function Controller () {
       ui.modalIsVisible(true);
       break;
     case 'startGame':
+      settings = ui.currentSettings();
+      console.log('settings', settings);
       playingGame = playGame(true);
       ui.modalIsVisible(false);
       break;
@@ -478,7 +481,6 @@ function Controller () {
       break;
     };
   }
-
 
   function move (event) {
     let currentGrid = [];
@@ -632,7 +634,7 @@ function Controller () {
       });
     }
 
-    addEvents();
+    addAllEventListeners();
     now = timeStamp();
     last = now;
 
@@ -641,10 +643,10 @@ function Controller () {
     frame();
   }
 
-  function addEvents() {
+  function addAllEventListeners() {
     document.addEventListener('keydown', keydown, false);
     window.addEventListener('resize', resize, false);
-    window.addEventListener("click", windowOnClick);
+    window.addEventListener('click', windowOnClick);
   }
 
   function update (idt) {
@@ -664,7 +666,6 @@ function Controller () {
 
   function reset () {
     ui = new UI(boardSize);
-
     ui.initUI();
     ui.setState('paused');
     board = new Board(boardSize);
@@ -708,8 +709,9 @@ function UI (gridSize) {
   const showElementById = (id) => getElementById(id).style.visibility=null;
   const setElementInnerText = (id, text) => getElementById(id).innerText = text;
   let boardNeedsUIrefresh = false;
-  const [textUI, canvasUI] = ['text', 'canvas'];
-  let uiMode = textUI;
+  const uiMode = {'text': 'text', 'canvas': 'canvas'};
+  const gameMode = {'normal': 'normalMode', 'noBoundaries': 'noBoundaries'};
+  let settings = {'uiMode': uiMode.text, 'gameMode': gameMode.normal};
 
   function domElement (tag, parent = false,
                        id = false, classList = false, innerText = false) {
@@ -756,6 +758,21 @@ function UI (gridSize) {
     return result;
 
   }
+
+  function getRadioButtonValue (buttonName) {
+    return Array.from(document.getElementsByName(buttonName))
+          .filter(x => x.checked === true)
+          .map(x => x.value)[0];
+  }
+
+  function getCurrentSettings () {
+    return {
+      'playMode': getRadioButtonValue('playMode'),
+      'uiMode': getRadioButtonValue('uiMode')
+    };
+  }
+
+
   // (parent , id , name , value , checked , label )
   function RadioButtonAndLabel (parent = false, id = false, name = false,
                                 value = false, checked = false, label = false) {
@@ -814,7 +831,9 @@ function UI (gridSize) {
     let rowsCleared = new domElement('td', row1, 'rowsCleared', false, '1010');
 
     let gameBoardDiv = new domElement('div', tetrisGame, 'gameBoardDiv');
-    let gameBoard = new domElement('canvas', gameBoardDiv, 'gameBoard');
+    let gameBoardText = new domElement('div', gameBoardDiv, 'gameBoardText');
+    let gameBoardCanvas = new domElement('canvas', gameBoardDiv,
+                                         'gameBoardCanvas');
 
     let modalDiv = new domElement('div', tetrisGame, false, 'modal');
     let modalContent = new domElement('div', modalDiv, false, 'modal-content');
@@ -832,32 +851,42 @@ function UI (gridSize) {
     // (parent , id , name , value , checked , label )
     let modalPlayNormalButton =
         new RadioButtonAndLabel(modalRadioDiv1, 'tetris-modal-normal-mode',
-                                'playMode', 'normal', true, 'Normal Mode');
+                                'playMode', gameMode.normal,
+                                settings.gameMode === gameMode.normal,
+                                'Normal Mode');
     let modalPlayNoBoundButton =
         new RadioButtonAndLabel(modalRadioDiv1,
-                                'tetris-modal-boundaryless-mode', 'playMode',
-                                'boundaryless', false, 'No Side Boundaries');
+                                'tetris-modal-boundaryless-mode',
+                                'playMode', gameMode.noBoundaries,
+                                settings.gameMode === gameMode.noBoundaries,
+                                'No Side Boundaries');
     let modalRadioTitle2 =
         new domElement('h2', modalForm, false, false, 'Game Board Setting');
     let modalRadioDiv2 = new domElement('div', modalForm, false, false);
     let modalUiGraphic =
         new RadioButtonAndLabel(modalRadioDiv2, 'tetris-modal-ui-graphic',
-                                'uiMode', 'graphic', true, 'Graphical Board');
+                                'uiMode', uiMode.canvas,
+                                settings.uiMode === uiMode.canvas,
+                                'Graphical Board');
+
     let modalUiText =
         new RadioButtonAndLabel(modalRadioDiv2, 'tetris-modal-ui-text',
-                                'uiMode', 'text', false, 'Retro Text Board');
+                                'uiMode', uiMode.text,
+                                settings.uiMode === uiMode.text,
+                                'Retro Text Board');
 
-    if (uiMode == textUI) {
-      // specific to text-mode
-      gameBoardDiv.style.fontFamily = 'monospace';
-      gameBoardDiv.style.whiteSpace = 'pre-wrap';
+      gameBoardText.style.fontFamily = 'monospace';
+      gameBoardText.style.whiteSpace = 'pre-wrap';
+      gameBoardText.style.whiteSpace = 'pre-wrap';
+      gameBoardCanvas.classList.toggle("is-hidden");
+        /*
       let nextPiece = new domElement('div', nextPieceWrapper, 'nextPiece');
-    }
+      let nextPiece = new domElement('canvas', nextPieceWrapper,
+                                     'nextPiece');
+                                     */
+  }
 
-    if (uiMode == canvasUI) {
-      console.log('canvasUI selected');
-      let nextPiece = new domElement('canvas', nextPieceWrapper, 'nextPiece');
-    }
+  function renderCanvas(canvasId, grid = [], size = gridSize) {
 
   }
 
@@ -897,13 +926,10 @@ function UI (gridSize) {
       modalIsVisible(false);
       break;
     case 'text':
-      uiMode = 'text';
+      settings.uiMode = 'text';
       break;
     case 'canvas':
-      uiMode = 'canvas';
-      break;
-    case 'normalMode':
-      uiMode = 'canvas';
+      settings.uiMode = 'canvas';
       break;
     }
   }
@@ -911,20 +937,12 @@ function UI (gridSize) {
   function draw (boardChanged, grid) {
     if (boardChanged) {
       //setElementInnerText('canvasDiv', renderGridAsText(grid));
-      if (uiMode == textUI)
-        setElementInnerText('gameBoardDiv', renderGridAsText(grid));
-      //if (uiMode = canvasUI)
+      if (settings.uiMode === uiMode.text)
+        setElementInnerText('gameBoardText', renderGridAsText(grid));
+      //if (uiMode = uiMode.canvas)
       boardNeedsUIrefresh = false;
     }
   };
-
-  /*
-  function toggleModalState() {
-    console.log('toggleModalState called');
-    let modal = document.querySelector(".modal");
-    modal.classList.toggle("show-modal");
-  }
-  */
 
   function modalIsVisible(newState) {
     let modal = document.querySelector(".modal");
@@ -946,6 +964,7 @@ function UI (gridSize) {
   this.updateScore = (score) => setElementInnerText('score', score);
   //this.toggleModalState = () => toggleModalState();
   this.modalIsVisible = (x) => modalIsVisible(x);
+  this.currentSettings = () => getCurrentSettings();
 };
 
 module.exports = {Piece, Pieces, Board, Controller, UI};
