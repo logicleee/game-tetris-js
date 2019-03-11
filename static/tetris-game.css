@@ -110,7 +110,7 @@ html {
 }
 
 .is-hidden {
-    visibility: hidden;
+    display: none;
 }
 
 button {
