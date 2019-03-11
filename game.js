@@ -719,9 +719,9 @@ function UI (gridSize, canvasSize = [225, 450]) {
     'yellow': '#f1c40f',
     'purple': '#8e44ad',
     'darkBlue': '#2980b9',
-    'teal': '#29EEEE',
+    'teal': '#29eeee',
     'green': '#2ecc71',
-    'orange': '#2ecc71',
+    'orange': '#d35400',
   };
 
   const colors = ['slateBlueLight', 'slateBlue', 'red', 'yellow',
