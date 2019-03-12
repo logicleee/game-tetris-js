@@ -424,7 +424,7 @@ function Board(size = [10,20]) {
 
 function Controller () {
   const boardSize = [10,20];
-  const canvasSize = [225, 450];
+  let canvasSize = [225, 450];
   let board = new Board(boardSize);
   let pieces = new Pieces(boardSize);
   let ui = new UI(boardSize, canvasSize);
@@ -439,6 +439,7 @@ function Controller () {
   let timeDelta = 0;
   let step = 1;
   let settings;
+  let recentTouches = [];
 
   const timeStamp = () => new Date().getTime();
   const randomInt = (min, max) =>
@@ -560,9 +561,11 @@ function Controller () {
     }
   }
 
+  /*
+    */
   // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code
   function keydown (kbEvent) {
-      let handled = false;
+    let handled = false;
     console.log('pressed', kbEvent.code);
     if (playingGame) {
       switch (kbEvent.code) {
@@ -583,7 +586,7 @@ function Controller () {
       handled = true;
     }
     if (handled)
-        kbEvent.preventDefault();
+      kbEvent.preventDefault();
   }
 
   function windowOnClick(event) {
@@ -637,20 +640,137 @@ function Controller () {
       });
     }
 
-    addAllEventListeners();
     now = timeStamp();
     last = now;
 
     resize();
     reset();
+    addAllEventListeners();
     frame();
   }
 
   function addAllEventListeners() {
+    // touch
+    //let el = document.getElementById("gameBoardDiv");
+    let el = document.getElementById("tetris");
+    el.addEventListener("touchstart", handleStart, false);
+    el.addEventListener("touchmove", handleMove, false);
+    el.addEventListener("touchend", handleEnd, false);
+
     document.addEventListener('keydown', keydown, false);
     window.addEventListener('resize', resize, false);
     window.addEventListener('click', windowOnClick);
   }
+
+  //////////////////////////////
+  // BEGIN TOUCH
+
+
+
+  const copyTouch = (t) => { return { pageX: t.pageX, pageY: t.pageY } };
+
+  function Touches() {
+  }
+
+  function handleMove(evt) {
+    evt.preventDefault();
+  }
+
+  function handleStart(evt) {
+    //evt.preventDefault();
+    const el = document.getElementsByTagName("canvas")[0];
+    const ctx = el.getContext("2d");
+    let touches = evt.changedTouches;
+
+    recentTouches.push(copyTouch(touches[touches.length - 1]));
+  };
+
+  function handleEnd(evt) {
+    //evt.preventDefault();
+    const el = document.getElementsByTagName("canvas")[0];
+    const ctx = el.getContext("2d");
+    let touches = evt.changedTouches;
+    let modal = document.querySelector(".modal");
+    let openModal = document.querySelector(".open-modal");
+    let closeModal = document.querySelector(".close-button");
+    let gameBoardDiv = document.querySelector('.gameBoardDiv');
+
+    function determineDirection (m) {
+      let result;
+      switch (true) {
+      case m.ratioX === m.ratioY:
+        result = "STATIC";
+        break;
+      case m.ratioX > m.ratioY && m.ratioX >= 1:
+        result = "RIGHT";
+        break;
+      case m.ratioX < m.ratioY && m.ratioX < 1:
+        result = "LEFT";
+        break;
+      case m.ratioX < m.ratioY && m.ratioY >= 1:
+        result = "DOWN";
+        break;
+      case m.ratioY < 1:
+        result = "UP";
+        break;
+      }
+      return result;
+    }
+
+    recentTouches.push(copyTouch(touches[touches.length - 1]));
+
+    const end = recentTouches.pop();
+    const start = recentTouches.pop();
+    let movement = {
+      deltaX: end.pageX - start.pageX,
+      deltaY: end.pageY - start.pageY,
+      ratioX: end.pageX / start.pageX,
+      ratioY: end.pageY / start.pageY,
+    };
+    movement.dir = determineDirection(movement);
+    console.log('swipe event:', movement.dir, movement);
+
+    let handled = false;
+    if (playingGame) {
+      switch (movement.dir) {
+      case 'DOWN':
+        for (let i = 0; i < movement.deltaY / 50 ; i++) {
+            eventQueue.push('moveDown');
+        }
+        handled = true;
+        break;
+      case 'LEFT': eventQueue.push('moveLeft'); handled = true; break;
+      case 'RIGHT': eventQueue.push('moveRight'); handled = true; break;
+      case 'UP': eventQueue.push('moveRotate'); handled = true; break;
+      }
+    }
+
+    if (movement.dir === 'STATIC') {
+      switch (evt.target) {
+      case openModal:
+        eventQueue.push('pauseGame');
+        handled = true;
+        break;
+      case closeModal:
+        eventQueue.push('startGame');
+        handled = true;
+        break;
+      case gameBoardDiv:
+        eventQueue.push('moveRotate');
+        handled = true;
+        break;
+      case modal:
+       eventQueue.push('startGame');
+       break;
+      }
+      //eventQueue.push('togglePlayingGame');
+    }
+    if (handled)
+      evt.preventDefault();
+  };
+
+  // END TOUCH
+  /////////////////////////////
 
   function update (idt) {
     if (playingGame) {
@@ -664,7 +784,16 @@ function Controller () {
   }
 
   function resize () {
+    //canvasSize = [225, 450];
+    //let proportion = [225, 450];
+    let proportion = [225, 450];
+    const padding = .8;
+    const maxXY = [window.innerWidth * padding / proportion[0],
+                   window.innerHeight * padding / proportion[1]];
+    const factor = maxXY[0] > maxXY[1] ? maxXY[1] : maxXY[0];
 
+    canvasSize = [Math.floor(proportion[0] * factor),
+                  Math.floor(proportion[1] * factor)];
   }
 
   function reset () {
@@ -696,13 +825,6 @@ function Controller () {
       };
   }
   run();
-
-  /*
-    run > frame
-            update > handle > move
-            draw
-            recurse (frame)
-  */
 
 }
 
