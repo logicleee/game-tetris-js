@@ -5,5 +5,11 @@
     [[https://en.wikipedia.org/wiki/Fisher–Yates_shuffle][Fisher–Yates shuffle]]
 ** About
    (Blog post link here)
+   An interseing note I found near the end of working on this priject while trying to do setters/getters and a more OOP style:
+   https://codereview.stackexchange.com/questions/29343/javascript-prototype-getters-setters-functions
+   "Though dynamic, you should not force JavaScript it to use complicated patterns that aren't worth the hassle."
+   "Another thing is that JavaScript has no natural concept of privacy (save closures of course). So when doing some prototypal OOP, almost everything is public. Getters and setters might not hold much purpose.
+   The key to a big JavaScript app is to never make it big in the first place. Keep components small, simple and easy to debug in case they go wild. Additional baggage will drag you down eventually."
+
 ** Important
 No warranties expressed or implied...use these examples at your own risk.

@@ -338,6 +338,7 @@ function Board(size = [10,20]) {
   const [xMax,yMax] = size;
   function reset ([x,y]) { return Array(x*y).fill(block); }
 
+
   function blockNotEmpty (grid, index) {return grid[index].color > 0; }
   function clearRows (grid, newGrid, size, fn) {
     let oldGrid = grid.slice();
@@ -364,7 +365,6 @@ function Board(size = [10,20]) {
       }
 
       if (blocksFull === 0) {
-        //console.log(' => clearRows clearing row', currRow);
         currOffset += 1;
         blocksFull = maxX;
       }
@@ -376,6 +376,8 @@ function Board(size = [10,20]) {
            };
 
   };
+
+  this.score = new Score();
 
   this.size = [xMax, yMax];
   //const blankGrid = () => reset([xMax, yMax]); //new
@@ -407,6 +409,7 @@ function Board(size = [10,20]) {
     const newRowsObject =
           clearRows(overlay,reset(this.size),this.size, blockNotEmpty);
     this.grid = newRowsObject.grid;
+    this.score.awardPoints(newRowsObject.rowsCleared);
 
     return {
       'boardUpdated': true,
@@ -418,8 +421,6 @@ function Board(size = [10,20]) {
 
   this.clearRows = (grid, newGrid, size, fn) =>
     clearRows(grid, newGrid, size, fn);
-
-
 };
 
 function Controller () {
@@ -431,15 +432,21 @@ function Controller () {
   let piece = pieces.nextPiece();
   piece.generateBlockData();
   let pieceData = [];
-  let scoreData = {};
   let playingGame = false;
   let boardChanged = true;
   let scoreChanged = true;
   let eventQueue = [];
   let timeDelta = 0;
   let step = 1;
+  let speed = {inital: 1, min: .1, multiplier: .05};
   let settings;
   let recentTouches = [];
+
+  this.updateStep = () => {
+    const l = Math.floor(board.score.clearedLines / 10);
+    const s = speed;
+    step = Math.max(s.inital - (s.multiplier * l), s.min);
+  };
 
   const timeStamp = () => new Date().getTime();
   const randomInt = (min, max) =>
@@ -529,6 +536,7 @@ function Controller () {
     case 'down':
       const oldOffset = piece.indexOffset;
       piece.down();
+      board.score.awardDrop();
       const newOffset = piece.indexOffset;
       if (oldOffset != newOffset && board.fits(piece.blocks)) {
         pieceData.push(piece.getPieceSpecs());
@@ -544,7 +552,6 @@ function Controller () {
         boardEvent = board.update(piece);
         boardChanged = boardEvent.boardChanged;
         scoreChanged = boardEvent.scoreChanged;
-        scoreData = boardEvent.scoreData;
         piece = pieces.nextPiece();
         piece.generateBlockData();
         eventQueue = [];
@@ -635,8 +642,8 @@ function Controller () {
       last = now;
       sleep(50).then(() => {
         if (playingGame)
-          ui.updateScore(timeStamp());
-        requestAnimationFrame(frame, canvas);
+          ui.updateScore(board.score.current, board.score.clearedLines);
+            requestAnimationFrame(frame, canvas);
       });
     }
 
@@ -780,6 +787,7 @@ function Controller () {
     if (timeDelta > step) {
       timeDelta = timeDelta - step;
       eventQueue.push('moveDown');
+      this.updateStep();
     }
   }
 
@@ -805,7 +813,6 @@ function Controller () {
     piece = pieces.nextPiece();
     piece.generateBlockData();
     pieceData = [];
-    scoreData = {};
     playingGame = false;
 
   }
@@ -1057,7 +1064,7 @@ function UI (gridSize, canvasSize = [225, 450]) {
       height:  Math.floor(board.width / gSize[1])
     };
 
-    console.log('renderCanvas adjusted', cSize, board, gSize, block)
+    //console.log('renderCanvas adjusted', cSize, board, gSize, block)
     function drawBlock (ctx, block) {
       //console.log('drawing', block)
       ctx.fillStyle = block.color;
@@ -1236,7 +1243,10 @@ function UI (gridSize, canvasSize = [225, 450]) {
   this.showElementById = (id) => showElementById(id);
   this.setElementInnerText = (id, text) => setElementInnerText(id,text);
   this.getBoardUIisUpdated = () => boardNeedsUIrefresh;
-  this.updateScore = (score) => setElementInnerText('score', score);
+  this.updateScore = (score, rows) => {
+    setElementInnerText('score', score);
+    setElementInnerText('rowsCleared', rows);
+  };
   //this.toggleModalState = () => toggleModalState();
   this.modalIsVisible = (x) => modalIsVisible(x);
   this.currentSettings = () => getCurrentSettings();
@@ -1264,4 +1274,27 @@ Grid.prototype.renderCoords = function (data) {
 
 };
 
-module.exports = {Piece, Pieces, Board, Controller, UI, Grid};
+function Score(initialScore = 0, initialLevel = 0, initialLines = 0) {
+
+  this.awardPoints = (lines = 0, level = this.level) => {
+    const multiplier = [1,40,100,300,1200];
+    this.current += (multiplier[lines] * (level + 1));
+    this.clearedLines += lines;
+    this.level = Math.floor(this.clearedLines / 10);
+  };
+
+  this.awardDrop = () => {
+    this.awardPoints();
+  };
+
+  this.reset = (initialScore = 0, initialLevel = 0, initialLines = 0) => {
+    this.current = initialScore;
+    this.clearedLines = initialLines;
+    this.level = initialLevel;
+  };
+
+  this.reset(initialScore, initialLevel, initialLines);
+};
+
+
+module.exports = {Piece, Pieces, Board, Score, Controller, UI, Grid};
