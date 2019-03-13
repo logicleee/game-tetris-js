@@ -338,6 +338,7 @@ function Board(size = [10,20]) {
   const [xMax,yMax] = size;
   function reset ([x,y]) { return Array(x*y).fill(block); }
 
+
   function blockNotEmpty (grid, index) {return grid[index].color > 0; }
   function clearRows (grid, newGrid, size, fn) {
     let oldGrid = grid.slice();
@@ -364,7 +365,6 @@ function Board(size = [10,20]) {
       }
 
       if (blocksFull === 0) {
-        //console.log(' => clearRows clearing row', currRow);
         currOffset += 1;
         blocksFull = maxX;
       }
@@ -376,6 +376,8 @@ function Board(size = [10,20]) {
            };
 
   };
+
+  this.score = new Score();
 
   this.size = [xMax, yMax];
   //const blankGrid = () => reset([xMax, yMax]); //new
@@ -407,6 +409,7 @@ function Board(size = [10,20]) {
     const newRowsObject =
           clearRows(overlay,reset(this.size),this.size, blockNotEmpty);
     this.grid = newRowsObject.grid;
+    this.score.awardPoints(newRowsObject.rowsCleared);
 
     return {
       'boardUpdated': true,
@@ -418,25 +421,32 @@ function Board(size = [10,20]) {
 
   this.clearRows = (grid, newGrid, size, fn) =>
     clearRows(grid, newGrid, size, fn);
-
-
 };
 
 function Controller () {
   const boardSize = [10,20];
+  let canvasSize = [225, 450];
   let board = new Board(boardSize);
   let pieces = new Pieces(boardSize);
-  let ui = new UI(boardSize);
+  let ui = new UI(boardSize, canvasSize);
   let piece = pieces.nextPiece();
   piece.generateBlockData();
   let pieceData = [];
-  let scoreData = {};
   let playingGame = false;
   let boardChanged = true;
   let scoreChanged = true;
   let eventQueue = [];
   let timeDelta = 0;
   let step = 1;
+  let speed = {inital: 1, min: .1, multiplier: .05};
+  let settings;
+  let recentTouches = [];
+
+  this.updateStep = () => {
+    const l = Math.floor(board.score.clearedLines / 10);
+    const s = speed;
+    step = Math.max(s.inital - (s.multiplier * l), s.min);
+  };
 
   const timeStamp = () => new Date().getTime();
   const randomInt = (min, max) =>
@@ -467,8 +477,14 @@ function Controller () {
       ui.modalIsVisible(true);
       break;
     case 'startGame':
+      settings = ui.currentSettings();
+      console.log('settings', settings);
+      ui.setState(settings.uiMode);
+      console.log('settings', settings);
       playingGame = playGame(true);
       ui.modalIsVisible(false);
+      let uiSettings = ui.currentSettings();
+      piece.normalMode =  (uiSettings.normalMode === 'normalMode');
       break;
     case 'togglePlayingGame':
       if (playingGame != true)
@@ -478,7 +494,6 @@ function Controller () {
       break;
     };
   }
-
 
   function move (event) {
     let currentGrid = [];
@@ -523,6 +538,7 @@ function Controller () {
     case 'down':
       const oldOffset = piece.indexOffset;
       piece.down();
+      board.score.awardDrop();
       const newOffset = piece.indexOffset;
       if (oldOffset != newOffset && board.fits(piece.blocks)) {
         pieceData.push(piece.getPieceSpecs());
@@ -538,10 +554,12 @@ function Controller () {
         boardEvent = board.update(piece);
         boardChanged = boardEvent.boardChanged;
         scoreChanged = boardEvent.scoreChanged;
-        scoreData = boardEvent.scoreData;
         piece = pieces.nextPiece();
         piece.generateBlockData();
         eventQueue = [];
+        // FIX THIS
+        let uiSettings = ui.currentSettings();
+        piece.normalMode = (uiSettings.normalMode === 'normalMode');
       }
       break;
     case 'rotate':
@@ -555,9 +573,11 @@ function Controller () {
     }
   }
 
+  /*
+    */
   // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code
   function keydown (kbEvent) {
-      let handled = false;
+    let handled = false;
     console.log('pressed', kbEvent.code);
     if (playingGame) {
       switch (kbEvent.code) {
@@ -573,12 +593,12 @@ function Controller () {
       case 'KeyN': eventQueue.push('toggleNormalMode'); handled = true; break;
       }
     }
-    if (kbEvent.code === 'Space'){
+    if (kbEvent.code === 'Space' || kbEvent.code === 'Escape'){
       eventQueue.push('togglePlayingGame');
       handled = true;
     }
     if (handled)
-        kbEvent.preventDefault();
+      kbEvent.preventDefault();
   }
 
   function windowOnClick(event) {
@@ -622,30 +642,147 @@ function Controller () {
     function frame () {
       now = timeStamp();
       update(Math.min(1, (now - last) / 1000.0));
-      ui.draw(boardChanged, textGrid, board.size);
+      ui.draw(boardChanged, textGrid, board.size, canvasSize);
       boardChanged = ui.getBoardUIisUpdated();
       last = now;
       sleep(50).then(() => {
         if (playingGame)
-          ui.updateScore(timeStamp());
-        requestAnimationFrame(frame, canvas);
+          ui.updateScore(board.score.current, board.score.clearedLines);
+            requestAnimationFrame(frame, canvas);
       });
     }
 
-    addEvents();
     now = timeStamp();
     last = now;
 
     resize();
     reset();
+    addAllEventListeners();
     frame();
   }
 
-  function addEvents() {
+  function addAllEventListeners() {
+    // touch
+    //let el = document.getElementById("gameBoardDiv");
+    let el = document.getElementById("tetris");
+    el.addEventListener("touchstart", handleStart, false);
+    el.addEventListener("touchmove", handleMove, false);
+    el.addEventListener("touchend", handleEnd, false);
+
     document.addEventListener('keydown', keydown, false);
     window.addEventListener('resize', resize, false);
-    window.addEventListener("click", windowOnClick);
+    window.addEventListener('click', windowOnClick);
   }
+
+  //////////////////////////////
+  // BEGIN TOUCH
+
+
+
+  const copyTouch = (t) => { return { pageX: t.pageX, pageY: t.pageY } };
+
+  function Touches() {
+  }
+
+  function handleMove(evt) {
+    evt.preventDefault();
+  }
+
+  function handleStart(evt) {
+    //evt.preventDefault();
+    const el = document.getElementsByTagName("canvas")[0];
+    const ctx = el.getContext("2d");
+    let touches = evt.changedTouches;
+
+    recentTouches.push(copyTouch(touches[touches.length - 1]));
+  };
+
+  function handleEnd(evt) {
+    //evt.preventDefault();
+    const el = document.getElementsByTagName("canvas")[0];
+    const ctx = el.getContext("2d");
+    let touches = evt.changedTouches;
+    let modal = document.querySelector(".modal");
+    let openModal = document.querySelector(".open-modal");
+    let closeModal = document.querySelector(".close-button");
+    let gameBoardDiv = document.querySelector('.gameBoardDiv');
+
+    function determineDirection (m) {
+      let result;
+      switch (true) {
+      case m.ratioX === m.ratioY:
+        result = "STATIC";
+        break;
+      case m.ratioX > m.ratioY && m.ratioX >= 1:
+        result = "RIGHT";
+        break;
+      case m.ratioX < m.ratioY && m.ratioX < 1:
+        result = "LEFT";
+        break;
+      case m.ratioX < m.ratioY && m.ratioY >= 1:
+        result = "DOWN";
+        break;
+      case m.ratioY < 1:
+        result = "UP";
+        break;
+      }
+      return result;
+    }
+
+    recentTouches.push(copyTouch(touches[touches.length - 1]));
+
+    const end = recentTouches.pop();
+    const start = recentTouches.pop();
+    let movement = {
+      deltaX: end.pageX - start.pageX,
+      deltaY: end.pageY - start.pageY,
+      ratioX: end.pageX / start.pageX,
+      ratioY: end.pageY / start.pageY,
+    };
+    movement.dir = determineDirection(movement);
+    console.log('swipe event:', movement.dir, movement);
+
+    let handled = false;
+    if (playingGame) {
+      switch (movement.dir) {
+      case 'DOWN':
+        for (let i = 0; i < movement.deltaY / 50 ; i++) {
+            eventQueue.push('moveDown');
+        }
+        handled = true;
+        break;
+      case 'LEFT': eventQueue.push('moveLeft'); handled = true; break;
+      case 'RIGHT': eventQueue.push('moveRight'); handled = true; break;
+      case 'UP': eventQueue.push('moveRotate'); handled = true; break;
+      }
+    }
+
+    if (movement.dir === 'STATIC') {
+      switch (evt.target) {
+      case openModal:
+        eventQueue.push('pauseGame');
+        handled = true;
+        break;
+      case closeModal:
+        eventQueue.push('startGame');
+        handled = true;
+        break;
+      case gameBoardDiv:
+        eventQueue.push('moveRotate');
+        handled = true;
+        break;
+      case modal:
+       eventQueue.push('startGame');
+       break;
+      }
+      //eventQueue.push('togglePlayingGame');
+    }
+    if (handled)
+      evt.preventDefault();
+  };
+
+  // END TOUCH
+  /////////////////////////////
 
   function update (idt) {
     if (playingGame) {
@@ -655,16 +792,25 @@ function Controller () {
     if (timeDelta > step) {
       timeDelta = timeDelta - step;
       eventQueue.push('moveDown');
+      this.updateStep();
     }
   }
 
   function resize () {
+    //canvasSize = [225, 450];
+    //let proportion = [225, 450];
+    let proportion = [225, 450];
+    const padding = .8;
+    const maxXY = [window.innerWidth * padding / proportion[0],
+                   window.innerHeight * padding / proportion[1]];
+    const factor = maxXY[0] > maxXY[1] ? maxXY[1] : maxXY[0];
 
+    canvasSize = [Math.floor(proportion[0] * factor),
+                  Math.floor(proportion[1] * factor)];
   }
 
   function reset () {
-    ui = new UI(boardSize);
-
+    ui = new UI(boardSize, canvasSize);
     ui.initUI();
     ui.setState('paused');
     board = new Board(boardSize);
@@ -672,7 +818,6 @@ function Controller () {
     piece = pieces.nextPiece();
     piece.generateBlockData();
     pieceData = [];
-    scoreData = {};
     playingGame = false;
 
   }
@@ -693,23 +838,33 @@ function Controller () {
   }
   run();
 
-  /*
-    run > frame
-            update > handle > move
-            draw
-            recurse (frame)
-  */
-
 }
 
-function UI (gridSize) {
-  const getElementById = (id) => document.getElementById(id);
-  const hideElementById = (id) => getElementById(id).style.visibility='hidden';
-  const showElementById = (id) => getElementById(id).style.visibility=null;
-  const setElementInnerText = (id, text) => getElementById(id).innerText = text;
+function UI (gridSize, canvasSize = [225, 450]) {
+  console.log('this is the canvas size', canvasSize)
   let boardNeedsUIrefresh = false;
-  const [textUI, canvasUI] = ['text', 'canvas'];
-  let uiMode = textUI;
+  const uiMode = {'text': 'text', 'canvas': 'canvas'};
+  const gameMode = {'normal': 'normalMode', 'noBoundaries': 'noBoundaries'};
+  let settings = {'uiMode': uiMode.text, 'gameMode': gameMode.normal};
+  const colorScheme = {
+    'slateBlueLight': '#3B5269',
+    'slateBlue': '#34495e',
+    'red': '#c0392b',
+    'yellow': '#f1c40f',
+    'purple': '#8e44ad',
+    'darkBlue': '#2980b9',
+    'teal': '#29eeee',
+    'green': '#2ecc71',
+    'orange': '#d35400',
+  };
+
+  const colors = ['slateBlueLight', 'slateBlue', 'red', 'yellow',
+                  'purple', 'darkBlue', 'teal', 'green', 'orange'];
+  const getColor = (n) => colorScheme[colors[n]];
+
+
+  const getElementById = (id) => document.getElementById(id);
+  const setElementInnerText = (id, text) => getElementById(id).innerText = text;
 
   function domElement (tag, parent = false,
                        id = false, classList = false, innerText = false) {
@@ -724,7 +879,6 @@ function UI (gridSize) {
       parent.appendChild(result);
     return result;
   }
-
 
   //let a = new TableElement (parent, id, colWidths, fixed, width)
   function TableElement (parent = false, id = false, colWidths = [],
@@ -756,6 +910,21 @@ function UI (gridSize) {
     return result;
 
   }
+
+  function getRadioButtonValue (buttonName) {
+    return Array.from(document.getElementsByName(buttonName))
+          .filter(x => x.checked === true)
+          .map(x => x.value)[0];
+  }
+
+  function getCurrentSettings () {
+    return {
+      'playMode': getRadioButtonValue('playMode'),
+      'uiMode': getRadioButtonValue('uiMode')
+    };
+  }
+
+
   // (parent , id , name , value , checked , label )
   function RadioButtonAndLabel (parent = false, id = false, name = false,
                                 value = false, checked = false, label = false) {
@@ -814,7 +983,9 @@ function UI (gridSize) {
     let rowsCleared = new domElement('td', row1, 'rowsCleared', false, '1010');
 
     let gameBoardDiv = new domElement('div', tetrisGame, 'gameBoardDiv');
-    let gameBoard = new domElement('canvas', gameBoardDiv, 'gameBoard');
+    let gameBoardText = new domElement('div', gameBoardDiv, 'gameBoardText');
+    let gameBoardCanvas = new domElement('canvas', gameBoardDiv,
+                                         'gameBoardCanvas');
 
     let modalDiv = new domElement('div', tetrisGame, false, 'modal');
     let modalContent = new domElement('div', modalDiv, false, 'modal-content');
@@ -832,39 +1003,168 @@ function UI (gridSize) {
     // (parent , id , name , value , checked , label )
     let modalPlayNormalButton =
         new RadioButtonAndLabel(modalRadioDiv1, 'tetris-modal-normal-mode',
-                                'playMode', 'normal', true, 'Normal Mode');
+                                'playMode', gameMode.normal,
+                                settings.gameMode === gameMode.normal,
+                                'Normal Mode');
     let modalPlayNoBoundButton =
         new RadioButtonAndLabel(modalRadioDiv1,
-                                'tetris-modal-boundaryless-mode', 'playMode',
-                                'boundaryless', false, 'No Side Boundaries');
+                                'tetris-modal-boundaryless-mode',
+                                'playMode', gameMode.noBoundaries,
+                                settings.gameMode === gameMode.noBoundaries,
+                                'No Side Boundaries');
     let modalRadioTitle2 =
         new domElement('h2', modalForm, false, false, 'Game Board Setting');
     let modalRadioDiv2 = new domElement('div', modalForm, false, false);
     let modalUiGraphic =
         new RadioButtonAndLabel(modalRadioDiv2, 'tetris-modal-ui-graphic',
-                                'uiMode', 'graphic', true, 'Graphical Board');
+                                'uiMode', uiMode.canvas,
+                                settings.uiMode === uiMode.canvas,
+                                'Graphical Board');
+
     let modalUiText =
         new RadioButtonAndLabel(modalRadioDiv2, 'tetris-modal-ui-text',
-                                'uiMode', 'text', false, 'Retro Text Board');
+                                'uiMode', uiMode.text,
+                                settings.uiMode === uiMode.text,
+                                'Retro Text Board');
 
-    if (uiMode == textUI) {
-      // specific to text-mode
-      gameBoardDiv.style.fontFamily = 'monospace';
-      gameBoardDiv.style.whiteSpace = 'pre-wrap';
+    gameBoardText.style.fontFamily = 'monospace';
+    gameBoardText.style.whiteSpace = 'pre-wrap';
+    gameBoardText.style.whiteSpace = 'pre-wrap';
+
+    gameBoardCanvas.classList.toggle('is-hidden');
+    gameBoardCanvas.setAttribute('width', canvasSize[0]);
+    gameBoardCanvas.setAttribute('height', canvasSize[1]);
+    const ctx = gameBoardCanvas.getContext('2d');
+    console.log('canvas ctx', ctx)
+
+        /*
       let nextPiece = new domElement('div', nextPieceWrapper, 'nextPiece');
-    }
-
-    if (uiMode == canvasUI) {
-      console.log('canvasUI selected');
-      let nextPiece = new domElement('canvas', nextPieceWrapper, 'nextPiece');
-    }
-
+      let nextPiece = new domElement('canvas', nextPieceWrapper,
+                                     'nextPiece');
+                                     */
   }
+
+  function toggleVisibility (elementList) {
+    console.log('element list:', elementList);
+    elementList.forEach(x => getElementById(x).classList.toggle('is-hidden'));
+  }
+
+  //function renderCanvas(canvasId, cSize, grid, gSize)
+  function renderCanvas (canvasId, cSize = canvasSize,
+                         gSize = gridSize, blocks) {
+    const canvas = getElementById(canvasId);
+    const ctx =  canvas.getContext('2d');
+
+    let board = {
+      width: (Math.floor(cSize[0] / gSize[0]) * gSize[0]),
+      height: (Math.floor(cSize[1] / gSize[1]) * gSize[1]),
+      blockCount: gSize[0] * gSize[1],
+      color: getColor(0),
+    };
+
+    board.blockData = [0, 0, board.width, board.height];
+
+    let block = {
+      width: Math.floor(board.height / gSize[0]),
+      height:  Math.floor(board.width / gSize[1])
+    };
+
+    //console.log('renderCanvas adjusted', cSize, board, gSize, block)
+    function drawBlock (ctx, block) {
+      //console.log('drawing', block)
+      ctx.fillStyle = block.color;
+      ctx.fillRect(...block.blockData);
+    }
+
+    ctx.save();
+    ctx.lineWidth = 1;
+    ctx.translate(0.5, 0.5);
+    //ctx.clearRect(0, 0, cSize[0], cSize[1]);
+
+    drawBlock(ctx, board);
+    blocks.forEach(x => drawBlock(ctx, x));
+    ctx.restore();
+  };
+
+  function calcBoards (grid = [], size = gridSize, cSize = canvasSize) {
+    const maxX = size[0];
+    const canvasWidth = cSize[0];
+    let result = {text: '', canvas: []};
+    const board = {
+      width: (Math.floor(cSize[0] / size[0]) * size[0]),
+      height: (Math.floor(cSize[1] / size[1]) * size[1]),
+      blockCount: size[0] * size[1]
+    };
+
+
+    const block = {
+      width:  Math.floor(board.width / size[0]),
+      height: Math.floor(board.height / size[1])
+    };
+
+    const col = (index, columnCount) => Math.floor(index % columnCount);
+    const row = (index, columnCount) => Math.floor(index / columnCount);
+    const colOffset = (i, cc, w) => col(i, cc / w) * w;
+    const rowOffset = (i, cc, w, h) => row(i, cc / w) * h;
+    let j = 0;
+    //let result = '';
+    // create top border
+    result.text = '  ' + ('_').repeat(maxX) +' \n';
+    for (let i=0; i < grid.length; i++) {
+      result.canvas[i] = {};
+      const currBlock = grid[i].color;
+      //console.log('data',i, board.width, block.width, block.height);
+      if ( j === 0)
+        result.text += ' |';
+      if (currBlock === 0) {
+        if (j % 2) {
+          result.canvas[i].color = getColor(0);
+          result.canvas[i].index = i;
+          result.canvas[i].blockData = [
+            colOffset(i, board.width, block.width),
+            rowOffset(i, board.width, block.width, block.height),
+            block.width,
+            block.height
+          ];
+          result.text += ' ';
+        }
+        else {
+          result.canvas[i].color = getColor(1);
+          result.canvas[i].index = i;
+          result.canvas[i].blockData = [
+            colOffset(i, board.width, block.width),
+            rowOffset(i, board.width, block.width, block.height),
+            block.width,
+            block.height
+          ];
+          result.text += '.';
+        }
+      } else {
+        result.text += currBlock;
+        result.canvas[i].color = getColor(grid[i].color);
+        result.canvas[i].index = i;
+        result.canvas[i].blockData = [
+          colOffset(i, board.width, block.width),
+          rowOffset(i, board.width, block.width, block.height),
+          block.width,
+          block.height
+          ];
+      }
+      j++;
+      if (j >= maxX) {
+        result.text += '| \n';
+        j = 0;
+      }
+    }
+    result.text += ' ^' + ('^').repeat(maxX) +'^';
+    return result;
+  };
 
   function renderGridAsText (grid = [], size = gridSize) {
     const maxX = size[0];
     let j = 0;
     //let result = '';
+    // create top border
     let result = '  ' + ('_').repeat(maxX) +' \n';
     for (let i=0; i < grid.length; i++) {
       const currBlock = grid[i].color;
@@ -896,35 +1196,30 @@ function UI (gridSize) {
     case 'playing':
       modalIsVisible(false);
       break;
-    case 'text':
-      uiMode = 'text';
+    case uiMode.text:
+      canvasIsVisible(false);
       break;
-    case 'canvas':
-      uiMode = 'canvas';
-      break;
-    case 'normalMode':
-      uiMode = 'canvas';
+    case uiMode.canvas:
+      canvasIsVisible(true);
       break;
     }
   }
 
-  function draw (boardChanged, grid) {
+  function draw (boardChanged, grid, gridSize, canvasSize) {
+    settings = getCurrentSettings();
     if (boardChanged) {
-      //setElementInnerText('canvasDiv', renderGridAsText(grid));
-      if (uiMode == textUI)
-        setElementInnerText('gameBoardDiv', renderGridAsText(grid));
-      //if (uiMode = canvasUI)
+      const boardData = calcBoards(grid);
+      //console.log(boardData.canvas)
+      setElementInnerText('gameBoardText', boardData.text);
+
+      if (settings.uiMode === uiMode.canvas) {
+        renderCanvas('gameBoardCanvas', canvasSize, gridSize,
+                     boardData.canvas);
+      }
+
       boardNeedsUIrefresh = false;
     }
   };
-
-  /*
-  function toggleModalState() {
-    console.log('toggleModalState called');
-    let modal = document.querySelector(".modal");
-    modal.classList.toggle("show-modal");
-  }
-  */
 
   function modalIsVisible(newState) {
     let modal = document.querySelector(".modal");
@@ -933,8 +1228,18 @@ function UI (gridSize) {
         modal.classList.toggle("show-modal");
   }
 
+  function canvasIsVisible(newState) {
+    let canvas = getElementById('gameBoardCanvas');
+    let text = getElementById('gameBoardText');
+    const currentState = text.classList.contains("is-hidden");
+    if (currentState != newState)
+      toggleVisibility(['gameBoardText', 'gameBoardCanvas']);
+  }
+
   this.getGridSize = () => gridSize;
-  this.draw = (boardChanged, grid, size) => draw(boardChanged, grid, size);
+  this.getCanvasSize = () => canvasSize;
+  this.draw = (boardChanged, grid, size, canvasSize) =>
+    draw(boardChanged, grid, size, canvasSize);
   this.renderGridAsText = (grid) => renderGridAsText(grid);
   this.initUI = () => initUI();
   this.setState = (state) => setUIstate(state);
@@ -943,9 +1248,58 @@ function UI (gridSize) {
   this.showElementById = (id) => showElementById(id);
   this.setElementInnerText = (id, text) => setElementInnerText(id,text);
   this.getBoardUIisUpdated = () => boardNeedsUIrefresh;
-  this.updateScore = (score) => setElementInnerText('score', score);
+  this.updateScore = (score, rows) => {
+    setElementInnerText('score', score);
+    setElementInnerText('rowsCleared', rows);
+  };
   //this.toggleModalState = () => toggleModalState();
   this.modalIsVisible = (x) => modalIsVisible(x);
+  this.currentSettings = () => getCurrentSettings();
 };
 
-module.exports = {Piece, Pieces, Board, Controller, UI};
+function Grid() {
+};
+
+Grid.prototype.renderCoords = function (data) {
+  const calcBlockX = () => colOffset(data.index, data.gridSize[0],
+                                    data.blockSize[0]);
+  const calcBlockY = () => rowOffset(data.index, data.gridSize[0],
+                                    ...data.blockSize);
+  const col = (index, columnCount) => Math.floor(index % columnCount);
+  const row = (index, columnCount) => Math.floor(index / columnCount);
+  const colOffset = (i, cc, w) => col(i, cc / w) * w;
+  const rowOffset = (i, cc, w, h) => row(i, cc / w) * h;
+
+  return [
+    calcBlockX(data.index,data.gridSize[0],data.blockSize[0]),
+    calcBlockY(data.index,data.gridSize[0],...data.blockSize),
+    data.blockSize[0],
+    data.blockSize[1]
+  ];
+
+};
+
+function Score(initialScore = 0, initialLevel = 0, initialLines = 0) {
+
+  this.awardPoints = (lines = 0, level = this.level) => {
+    const multiplier = [1,40,100,300,1200];
+    this.current += (multiplier[lines] * (level + 1));
+    this.clearedLines += lines;
+    this.level = Math.floor(this.clearedLines / 10);
+  };
+
+  this.awardDrop = () => {
+    this.awardPoints();
+  };
+
+  this.reset = (initialScore = 0, initialLevel = 0, initialLines = 0) => {
+    this.current = initialScore;
+    this.clearedLines = initialLines;
+    this.level = initialLevel;
+  };
+
+  this.reset(initialScore, initialLevel, initialLines);
+};
+
+
+module.exports = {Piece, Pieces, Board, Score, Controller, UI, Grid};

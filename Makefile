@@ -5,7 +5,7 @@ app_bundle := index.html tetris-game.css tetris-game.js
 
 .PHONY: all
 
-all: test clean app openIndex
+all: test clean app openIndex pushToWWW
 
 app: $(app_bundle)
 
@@ -24,6 +24,12 @@ test:
 
 openIndex:
 	open index.html
+
+pushToWWW:
+	cp -pv index.html ~/www/logicleee.github.io/tetris/
+	cp -pv tetris-game.css ~/www/logicleee.github.io/tetris/
+	cp -pv tetris-game.js ~/www/logicleee.github.io/tetris/
+
 
 clean:
 	rm -f index.html

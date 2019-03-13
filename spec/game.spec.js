@@ -503,3 +503,67 @@ describe('Piece and Board integration', () => {
 describe('Game controller', () => {
 
 });
+
+describe('grid functions', () => {
+  const gridExamples = [
+    {gridSize: [10,10], blockSize:[1,1], index:0, fillRect:[0,0,1,1]},
+    {gridSize: [10,10], blockSize:[1,1], index:9, fillRect:[9,0,1,1]},
+    {gridSize: [10,10], blockSize:[1,1], index:10, fillRect:[0,1,1,1]},
+    {gridSize: [10,10], blockSize:[1,1], index:19, fillRect:[9,1,1,1]},
+    {gridSize: [10,10], blockSize:[2,2], index:0, fillRect:[0,0,2,2]},
+    {gridSize: [10,10], blockSize:[2,2], index:4, fillRect:[8,0,2,2]},
+    {gridSize: [10,10], blockSize:[2,2], index:10, fillRect:[0,4,2,2]},
+    {gridSize: [10,10], blockSize:[2,2], index:14, fillRect:[8,4,2,2]},
+
+    {gridSize: [10,10], blockSize:[1,2], index:0, fillRect:[0,0,1,2]},
+    {gridSize: [10,10], blockSize:[1,2], index:4, fillRect:[4,0,1,2]},
+    {gridSize: [10,10], blockSize:[1,2], index:10, fillRect:[0,2,1,2]},
+    {gridSize: [10,10], blockSize:[1,2], index:14, fillRect:[4,2,1,2]},
+
+    {gridSize: [10,10], blockSize:[2,1], index:0, fillRect:[0,0,2,1]},
+    {gridSize: [10,10], blockSize:[2,1], index:4, fillRect:[8,0,2,1]},
+    {gridSize: [10,10], blockSize:[2,1], index:10, fillRect:[0,2,2,1]},
+    {gridSize: [10,10], blockSize:[2,1], index:14, fillRect:[8,2,2,1]},
+  ];
+
+  //test('', () => {});
+  test('function renders coordinates based on index', () => {
+    let grid = new game.Grid();
+    gridExamples.forEach((x, index) => {
+      expect(grid.renderCoords(x)).toEqual(x.fillRect);
+      //console.log(index, x.index);
+    });
+  });
+});
+
+describe('Score Object', () => {
+  let score = new game.Score(0);
+  test('Original score is 0', () => {
+    expect(score.current).toBe(0);
+  });
+  test('Drop increments score by 1', () => {
+    score.awardDrop();
+    expect(score.current).toBe(1);
+    score.awardDrop();
+    expect(score.current).toBe(2);
+    score.awardDrop();
+    expect(score.current).toBe(3);
+    expect(score.level).toBe(0);
+  });
+  test('awardPoints increments score, lines, and level', () => {
+    score.awardPoints(4,0);
+    expect(score.current).toBe(1203);
+    expect(score.clearedLines).toBe(4);
+    expect(score.level).toBe(0);
+    score.awardPoints(4,2);
+    expect(score.current).toBe(4803);
+    expect(score.clearedLines).toBe(8);
+    expect(score.level).toBe(0);
+    score.awardPoints(3,0);
+    expect(score.current).toBe(5103);
+    expect(score.clearedLines).toBe(11);
+    expect(score.level).toBe(1);
+    score.awardPoints(2,0);
+    expect(score.current).toBe(5203);
+  });
+});
