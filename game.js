@@ -293,13 +293,27 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
   this.list = shuffle(this.ordered);
   this.shuffle = function() { this.shuffled = shuffle(this.ordered); };
   this.shuffle();
+
+  this.currentPiece = {};
+  this.getCurrentPiece = () => this.currentPiece;
+
+  //FIX -- this should return a different piece
   this.nextPiece = function() {
+    this.refreshList();
+    return this.currentPiece;
+  };
+
+  this.refreshList = function() {
+    // refreshes list of pieces if needed
+    // if we are almost out of pieces, generate a new list of pieces
     if (this.shuffled.length < 1) {
       this.shuffle();
     }
+    // refreshes list of pieces then prepares to return current piece
+    // pop the new value from the stack of pieces so it won't get reused
     const p = this.shuffled.pop();
-    let newPiece = new Piece(p.type, p.rotation, p.gridSize, p.indexOffset);
-    return newPiece;
+    this.currentPiece = new Piece(p.type, p.rotation,
+                                  p.gridSize, p.indexOffset);
   };
 
   function generateList (p) {
@@ -404,6 +418,7 @@ function Board(size = [10,20]) {
   };
 
   this.update = function (piece) {
+    //FIX/REMOVE hardDrop doesn't do anything
     let hardDrop=false;
     const overlay = this.overlay(piece);
     const newRowsObject =
@@ -429,7 +444,9 @@ function Controller () {
   let board = new Board(boardSize);
   let pieces = new Pieces(boardSize);
   let ui = new UI(boardSize, canvasSize);
-  let piece = pieces.nextPiece();
+  //REMOVE-Z let piece = pieces.nextPiece();
+  pieces.refreshList();
+  let piece = pieces.getCurrentPiece();
   piece.generateBlockData();
   let pieceData = [];
   let playingGame = false;
@@ -554,7 +571,9 @@ function Controller () {
         boardEvent = board.update(piece);
         boardChanged = boardEvent.boardChanged;
         scoreChanged = boardEvent.scoreChanged;
-        piece = pieces.nextPiece();
+        //REMOVE- piece = pieces.nextPiece();
+        pieces.refreshList();
+        piece = pieces.getCurrentPiece();
         piece.generateBlockData();
         eventQueue = [];
         // FIX THIS
@@ -815,7 +834,11 @@ function Controller () {
     ui.setState('paused');
     board = new Board(boardSize);
     pieces = new Pieces(boardSize);
-    piece = pieces.nextPiece();
+
+    //REMOVE- piece = pieces.nextPiece();
+    pieces.refreshList();
+    piece = pieces.getCurrentPiece();
+
     piece.generateBlockData();
     pieceData = [];
     playingGame = false;
