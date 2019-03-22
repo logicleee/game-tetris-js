@@ -419,18 +419,22 @@ describe('Pieces Object', () => {
     expect(pieceList.shuffled.length).toBe(pieceList.ordered.length);
   });
 
-  test('nextPiece returns unique pieces', () => {
-    //console.log(pieceList.nextPiece());
-    let p1 = pieceList.nextPiece();
-    let p2 = pieceList.nextPiece();
+  test('It returns unique pieces when Pieces.refreshList() is called', () => {
+    pieceList.refreshList();
+    let p1 = pieceList.getCurrentPiece();
+    pieceList.refreshList();
+    let p2 = pieceList.getCurrentPiece();
     expect(Array.isArray(p1.gridSize)).toBe(true);
     expect(p1.gridSize).toEqual([10,20]);
     expect((p1.type != p2.type) || (p1.rotation != p2.rotation)).toBe(true);
-    for (let i=0; i < 28; i++) {pieceList.nextPiece();}
-    let p3 = pieceList.nextPiece();
+    for (let i=0; i < 28; i++) {
+      pieceList.refreshList();
+    }
+    pieceList.refreshList();
+    // REMOVE
+    let p3 = pieceList.getCurrentPiece();
     expect(Array.isArray(p3.gridSize)).toBe(true);
   });
-
 });
 
 describe('Piece and Board integration', () => {

@@ -291,17 +291,23 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
 
   this.ordered = generateList(this.data);
   this.list = shuffle(this.ordered);
-  this.shuffle = function() { this.shuffled = shuffle(this.ordered); };
+  this.shuffle = function() {
+    this.shuffled = shuffle(this.ordered);
+  };
+
   this.shuffle();
 
   this.currentPiece = {};
   this.getCurrentPiece = () => this.currentPiece;
+  this.getNextPiece = () => this.nextPiece;
 
   //FIX -- this should return a different piece
+  /*
   this.nextPiece = function() {
     this.refreshList();
     return this.currentPiece;
   };
+  */
 
   this.refreshList = function() {
     // refreshes list of pieces if needed
