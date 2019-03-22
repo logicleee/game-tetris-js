@@ -292,7 +292,9 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
   this.ordered = generateList(this.data);
   this.list = shuffle(this.ordered);
   this.shuffle = function() {
-    this.shuffled = shuffle(this.ordered);
+    if (! Array.isArray(this.shuffled))
+      this.shuffled = [];
+    this.shuffled = this.shuffled.concat(shuffle(this.ordered));
   };
 
   this.shuffle();
