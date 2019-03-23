@@ -218,72 +218,37 @@ function Piece (type, rotation = 0, gridSize = [10,20], indexOffset = 3) {
 function Pieces (gridSize = [10,20], indexOffset = 3) {
    this.data = {
     "i": {
-      "allBlocks": [
-        [1,5,9,13],
-        [4,5,6,7],
-        [2,6,10,14],
-        [8,9,10,11]
-      ],
+      "allBlocks": [[1,5,9,13], [4,5,6,7], [2,6,10,14], [8,9,10,11]],
       "size": [4,4],
       "color": 2
     },
     "j": {
-      "allBlocks": [
-        [1,5,8,9],
-        [0,4,5,6],
-        [1,2,5,9],
-        [0,1,2,6]
-      ],
+      "allBlocks": [[1,5,8,9], [0,4,5,6], [1,2,5,9], [0,1,2,6]],
       "size": [4,4],
       "color": 3
     },
     "l": {
-      "allBlocks": [
-        [1,5,9,10],
-        [4,5,6,8],
-        [0,1,5,9],
-        [2,4,5,6]
-      ],
+      "allBlocks": [[1,5,9,10], [4,5,6,8], [0,1,5,9], [2,4,5,6]],
       "size": [4,4],
       "color": 4
     },
     "o": {
-      "allBlocks": [
-        [0,1,4,5],
-        [0,1,4,5],
-        [0,1,4,5],
-        [0,1,4,5]
-      ],
+      "allBlocks": [[0,1,4,5], [0,1,4,5], [0,1,4,5], [0,1,4,5]],
       "size": [4,4],
       "color": 5
     },
     "s": {
-      "allBlocks": [
-        [5,6,8,9],
-        [0,4,5,9],
-        [1,2,4,5],
-        [1,5,6,10]
-      ],
+      "allBlocks": [[5,6,8,9], [0,4,5,9], [1,2,4,5], [1,5,6,10]],
       "size": [4,4],
       "color": 6
     },
     "t": {
-      "allBlocks": [
-        [4,5,6,9],
-        [1,4,5,9],
-        [1,4,5,6],
-        [1,5,6,9]
-      ],
+      "allBlocks": [[4,5,6,9], [1,4,5,9], [1,4,5,6], [1,5,6,9]],
       "size": [4,4],
       "color": 7
     },
     "z": {
-      "allBlocks": [
-        [4,5,9,10],
-        [1,4,5,8],
-        [0,1,5,6],
-        [2,5,6,9]
-      ],
+      "allBlocks": [[4,5,9,10], [1,4,5,8], [0,1,5,6], [2,5,6,9]],
       "size": [4,4],
       "color": 8
     }
@@ -291,19 +256,15 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
 
   this.ordered = generateList(this.data);
   this.list = shuffle(this.ordered);
+  this.getCurrentPiece = () => this.currentPiece;
+  this.getNextPiece = () => this.nextPiece;
+
   this.shuffle = function() {
     if (! Array.isArray(this.shuffled))
       this.shuffled = [];
     //this.shuffled = this.shuffled.concat(shuffle(this.ordered));
     this.shuffled = shuffle(this.ordered).concat(this.shuffled);
   };
-
-  this.shuffle();
-
-  this.currentPiece = {};
-  this.getCurrentPiece = () => this.currentPiece;
-  this.getNextPiece = () => this.nextPiece;
-  this.nextPiece = [];
 
   this.refreshList = function() {
     if (this.shuffled.length < 3) {
@@ -331,11 +292,11 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
     return result;
   }
 
-  /*
-    Implementing Fisher and Yates shuffle based on wikipedia:
-    https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
-  */
   function shuffle(array) {
+    /*
+      Implementing Fisher and Yates shuffle based on wikipedia:
+      https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
+    */
     let arr = array.slice();
     const swapInArr = (a,x,y) => [a[x], a[y]] = [a[y], a[x]];
     const len = arr.length;
@@ -347,6 +308,14 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
     }
     return arr;
   }
+
+  this.init = () => {
+    this.shuffle();
+    this.currentPiece = {};
+    this.nextPiece = [];
+  };
+
+  this.init();
 }
 
 function Board(size = [10,20]) {
