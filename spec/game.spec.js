@@ -435,6 +435,37 @@ describe('Pieces Object', () => {
     let p3 = pieceList.getCurrentPiece();
     expect(Array.isArray(p3.gridSize)).toBe(true);
   });
+
+  test('It returns correct value for Pieces.getNextPiece()', () => {
+    pieceList.refreshList();
+    let p1 = pieceList.getCurrentPiece();
+    let np2 = pieceList.getNextPiece();
+    expect(np2.gridSize).toEqual([10,20]);
+
+    const len = pieceList.shuffled.length
+
+    pieceList.refreshList();
+    let p2 = pieceList.getCurrentPiece();
+    let np3 = pieceList.getNextPiece();
+
+    expect(Array.isArray(p1.gridSize)).toBe(true);
+    expect(np2.type === p2.type).toBe(true);
+    expect(np2.rotation === p2.rotation).toBe(true);
+
+    pieceList.refreshList();
+    let p3 = pieceList.getCurrentPiece();
+    expect(np3.type === p3.type).toBe(true);
+    expect(np3.rotation === p3.rotation).toBe(true);
+    //console.log(Object.keys(pieceList))
+
+    for (let i=0; i < 60; i++) {
+      const np = pieceList.getNextPiece();
+      pieceList.refreshList();
+      const p = pieceList.getCurrentPiece();
+      expect(np.type).toEqual(p.type);
+      expect(np.rotation).toEqual(p.rotation);
+    }
+  });
 });
 
 describe('Piece and Board integration', () => {

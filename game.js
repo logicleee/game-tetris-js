@@ -294,7 +294,8 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
   this.shuffle = function() {
     if (! Array.isArray(this.shuffled))
       this.shuffled = [];
-    this.shuffled = this.shuffled.concat(shuffle(this.ordered));
+    //this.shuffled = this.shuffled.concat(shuffle(this.ordered));
+    this.shuffled = shuffle(this.ordered).concat(this.shuffled);
   };
 
   this.shuffle();
@@ -302,26 +303,19 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
   this.currentPiece = {};
   this.getCurrentPiece = () => this.currentPiece;
   this.getNextPiece = () => this.nextPiece;
-
-  //FIX -- this should return a different piece
-  /*
-  this.nextPiece = function() {
-    this.refreshList();
-    return this.currentPiece;
-  };
-  */
+  this.nextPiece = [];
 
   this.refreshList = function() {
-    // refreshes list of pieces if needed
-    // if we are almost out of pieces, generate a new list of pieces
-    if (this.shuffled.length < 1) {
+    if (this.shuffled.length < 3) {
       this.shuffle();
     }
-    // refreshes list of pieces then prepares to return current piece
-    // pop the new value from the stack of pieces so it won't get reused
     const p = this.shuffled.pop();
     this.currentPiece = new Piece(p.type, p.rotation,
                                   p.gridSize, p.indexOffset);
+    const np = this.shuffled[this.shuffled.length - 1];
+    this.nextPiece = new Piece(np.type, np.rotation,
+                               np.gridSize, np.indexOffset);
+
   };
 
   function generateList (p) {
