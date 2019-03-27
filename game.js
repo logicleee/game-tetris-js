@@ -835,7 +835,6 @@ function Controller () {
 }
 
 function UI (gridSize, canvasSize = [225, 450]) {
-  console.log('this is the canvas size', canvasSize)
   let boardNeedsUIrefresh = false;
   const uiMode = {'text': 'text', 'canvas': 'canvas'};
   const gameMode = {'normal': 'normalMode', 'noBoundaries': 'noBoundaries'};
@@ -854,9 +853,8 @@ function UI (gridSize, canvasSize = [225, 450]) {
 
   const colors = ['slateBlueLight', 'slateBlue', 'red', 'yellow',
                   'purple', 'darkBlue', 'teal', 'green', 'orange'];
+
   const getColor = (n) => colorScheme[colors[n]];
-
-
   const getElementById = (id) => document.getElementById(id);
   const setElementInnerText = (id, text) => getElementById(id).innerText = text;
 
@@ -874,7 +872,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
     return result;
   }
 
-  //let a = new TableElement (parent, id, colWidths, fixed, width)
   function TableElement (parent = false, id = false, colWidths = [],
                          fixed = true, width = '100%') {
 
@@ -918,8 +915,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
     };
   }
 
-
-  // (parent , id , name , value , checked , label )
   function RadioButtonAndLabel (parent = false, id = false, name = false,
                                 value = false, checked = false, label = false) {
 
@@ -961,13 +956,16 @@ function UI (gridSize, canvasSize = [225, 450]) {
     let tetrisGame = new domElement('div', viewPort, 'tetris-content');
     let statsDiv = new domElement('div', tetrisGame, 'statsDiv', 'stats');
     let settingsWrapper = new domElement('div', statsDiv, 'settingsWrapper');
-    let settingsButton = new domElement('button', settingsWrapper, false, 'button', 'Settings');
+    let settingsButton = new domElement('button', settingsWrapper,
+                                        false, 'button', 'Settings');
     settingsButton.classList.add('open-modal');
-    let nextPieceWrapper = new domElement('div', statsDiv, 'nextPieceWrapper');
-    let statsWrapper = new domElement('div', statsDiv);
+    let nextPieceWrapperText = new domElement('div', statsDiv,
+                                             'nextPieceWrapperText');
+    let nextPieceWrapperCanvas = new domElement('div', statsDiv,
+                                             'nextPieceWrapperCanvas');
+    let statsWrapperText = new domElement('div', statsDiv);
 
-    //let a = new TableElement (parent, id, colWidths, fixed, width)
-    let statsTable = new TableElement(statsWrapper, 'statsTable',
+    let statsTable = new TableElement(statsWrapperText, 'statsTable',
                                       ['30%', '70%'], true, '100%');
     let row0 = new domElement('tr',statsTable);
     let row1 = new domElement('tr',statsTable);
@@ -994,7 +992,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
                                           'Play Setting');
     let modalRadioDiv1 = new domElement('div', modalForm, false, false);
 
-    // (parent , id , name , value , checked , label )
     let modalPlayNormalButton =
         new RadioButtonAndLabel(modalRadioDiv1, 'tetris-modal-normal-mode',
                                 'playMode', gameMode.normal,
@@ -1026,14 +1023,15 @@ function UI (gridSize, canvasSize = [225, 450]) {
     gameBoardText.style.whiteSpace = 'pre-wrap';
 
     gameBoardCanvas.classList.toggle('is-hidden');
+    nextPieceWrapperCanvas.classList.toggle('is-hidden');
     gameBoardCanvas.setAttribute('width', canvasSize[0]);
     gameBoardCanvas.setAttribute('height', canvasSize[1]);
     const ctx = gameBoardCanvas.getContext('2d');
     console.log('canvas ctx', ctx)
 
         /*
-      let nextPiece = new domElement('div', nextPieceWrapper, 'nextPiece');
-      let nextPiece = new domElement('canvas', nextPieceWrapper,
+      let nextPiece = new domElement('div', nextPieceWrapperText, 'nextPiece');
+      let nextPiece = new domElement('canvas', nextPieceWrapperText,
                                      'nextPiece');
                                      */
   }
