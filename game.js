@@ -1078,6 +1078,80 @@ function UI (gridSize, canvasSize = [225, 450]) {
     ctx.restore();
   };
 
+  function calcBoards2 (grid = [], size = gridSize, cSize = canvasSize) {
+    const maxX = size[0];
+    const canvasWidth = cSize[0];
+    let result = {text: '', canvas: []};
+    const board = {
+      width: (Math.floor(cSize[0] / size[0]) * size[0]),
+      height: (Math.floor(cSize[1] / size[1]) * size[1]),
+      blockCount: size[0] * size[1]
+    };
+
+
+    const block = {
+      width:  Math.floor(board.width / size[0]),
+      height: Math.floor(board.height / size[1])
+    };
+
+    const col = (index, columnCount) => Math.floor(index % columnCount);
+    const row = (index, columnCount) => Math.floor(index / columnCount);
+    const colOffset = (i, cc, w) => col(i, cc / w) * w;
+    const rowOffset = (i, cc, w, h) => row(i, cc / w) * h;
+    let j = 0;
+    //let result = '';
+    // create top border
+    result.text = '  ' + ('_').repeat(maxX) +' \n';
+    for (let i=0; i < grid.length; i++) {
+      result.canvas[i] = {};
+      const currBlock = grid[i].color;
+      //console.log('data',i, board.width, block.width, block.height);
+      if ( j === 0)
+        result.text += ' |';
+      if (currBlock === 0) {
+        if (j % 2) {
+          result.canvas[i].color = getColor(0);
+          result.canvas[i].index = i;
+          result.canvas[i].blockData = [
+            colOffset(i, board.width, block.width),
+            rowOffset(i, board.width, block.width, block.height),
+            block.width,
+            block.height
+          ];
+          result.text += ' ';
+        }
+        else {
+          result.canvas[i].color = getColor(1);
+          result.canvas[i].index = i;
+          result.canvas[i].blockData = [
+            colOffset(i, board.width, block.width),
+            rowOffset(i, board.width, block.width, block.height),
+            block.width,
+            block.height
+          ];
+          result.text += '.';
+        }
+      } else {
+        result.text += currBlock;
+        result.canvas[i].color = getColor(grid[i].color);
+        result.canvas[i].index = i;
+        result.canvas[i].blockData = [
+          colOffset(i, board.width, block.width),
+          rowOffset(i, board.width, block.width, block.height),
+          block.width,
+          block.height
+          ];
+      }
+      j++;
+      if (j >= maxX) {
+        result.text += '| \n';
+        j = 0;
+      }
+    }
+    result.text += ' ^' + ('^').repeat(maxX) +'^';
+    return result;
+  };
+
   function calcBoards (grid = [], size = gridSize, cSize = canvasSize) {
     const maxX = size[0];
     const canvasWidth = cSize[0];
@@ -1200,9 +1274,24 @@ function UI (gridSize, canvasSize = [225, 450]) {
   function draw (boardChanged, grid, gridSize, canvasSize) {
     settings = getCurrentSettings();
     if (boardChanged) {
-      const boardData = calcBoards(grid);
+      //FIX THIS IS WHERE WE ADD CALLS TO UPDATE THE UI
+      // CAN REVERT:
+      //const boardData = calcBoards(grid);
+      const boardData = calcBoards2(grid);
+      /*
+      console.log(JSON.stringify(['USE INPUT', "gridSize: ", gridSize,
+                                  "canvasSize:", canvasSize,
+                                  "grid:", grid,
+                                  "OUTPUT",
+                                  "result:", boardData], null, '  '));
+                                  */
       //console.log(boardData.canvas)
       setElementInnerText('gameBoardText', boardData.text);
+
+      //calcBoards (grid = [], size = gridSize, cSize = canvasSize)
+      //const nextPieceData = calcBoards(grid);
+      //setElementInnerText('nextPieceWrapperText', boardData.text);
+
 
       if (settings.uiMode === uiMode.canvas) {
         renderCanvas('gameBoardCanvas', canvasSize, gridSize,
@@ -1227,6 +1316,9 @@ function UI (gridSize, canvasSize = [225, 450]) {
     if (currentState != newState)
       toggleVisibility(['gameBoardText', 'gameBoardCanvas']);
   }
+
+  this.calcBoards = (x,y,z) => calcBoards(x,y,z);
+  this.calcBoards2 = (x,y,z) => calcBoards2(x,y,z);
 
   this.getGridSize = () => gridSize;
   this.getCanvasSize = () => canvasSize;
