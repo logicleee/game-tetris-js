@@ -629,8 +629,208 @@ describe('UI Object', () => {
                              "result":
                              {
                                "text": "  __________ \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . 33. . | \n |. . 3 . . | \n |. . 3 . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n ^^^^^^^^^^^^",
-                               "canvas": [{"color": "#34495e", "index": 0, "blockData": [0, 0, 4, 4]}, {"color": "#3B5269", "index": 1, "blockData": [4, 0, 4, 4]}, {"color": "#34495e", "index": 2, "blockData": [8, 0, 4, 4]}, {"color": "#3B5269", "index": 3, "blockData": [12, 0, 4, 4]}, {"color": "#34495e", "index": 4, "blockData": [16, 0, 4, 4]}, {"color": "#3B5269", "index": 5, "blockData": [20, 0, 4, 4]}, {"color": "#34495e", "index": 6, "blockData": [24, 0, 4, 4]}, {"color": "#3B5269", "index": 7, "blockData": [28, 0, 4, 4]}, {"color": "#34495e", "index": 8, "blockData": [32, 0, 4, 4]}, {"color": "#3B5269", "index": 9, "blockData": [36, 0, 4, 4]}, {"color": "#34495e", "index": 10, "blockData": [0, 4, 4, 4]}, {"color": "#3B5269", "index": 11, "blockData": [4, 4, 4, 4]}, {"color": "#34495e", "index": 12, "blockData": [8, 4, 4, 4]}, {"color": "#3B5269", "index": 13, "blockData": [12, 4, 4, 4]}, {"color": "#34495e", "index": 14, "blockData": [16, 4, 4, 4]}, {"color": "#3B5269", "index": 15, "blockData": [20, 4, 4, 4]}, {"color": "#34495e", "index": 16, "blockData": [24, 4, 4, 4]}, {"color": "#3B5269", "index": 17, "blockData": [28, 4, 4, 4]}, {"color": "#34495e", "index": 18, "blockData": [32, 4, 4, 4]}, {"color": "#3B5269", "index": 19, "blockData": [36, 4, 4, 4]}, {"color": "#34495e", "index": 20, "blockData": [0, 8, 4, 4]}, {"color": "#3B5269", "index": 21, "blockData": [4, 8, 4, 4]}, {"color": "#34495e", "index": 22, "blockData": [8, 8, 4, 4]}, {"color": "#3B5269", "index": 23, "blockData": [12, 8, 4, 4]}, {"color": "#34495e", "index": 24, "blockData": [16, 8, 4, 4]}, {"color": "#3B5269", "index": 25, "blockData": [20, 8, 4, 4]}, {"color": "#34495e", "index": 26, "blockData": [24, 8, 4, 4]}, {"color": "#3B5269", "index": 27, "blockData": [28, 8, 4, 4]}, {"color": "#34495e", "index": 28, "blockData": [32, 8, 4, 4]}, {"color": "#3B5269", "index": 29, "blockData": [36, 8, 4, 4]}, {"color": "#34495e", "index": 30, "blockData": [0, 12, 4, 4]}, {"color": "#3B5269", "index": 31, "blockData": [4, 12, 4, 4]}, {"color": "#34495e", "index": 32, "blockData": [8, 12, 4, 4]}, {"color": "#3B5269", "index": 33, "blockData": [12, 12, 4, 4]}, {"color": "#34495e", "index": 34, "blockData": [16, 12, 4, 4]}, {"color": "#3B5269", "index": 35, "blockData": [20, 12, 4, 4]}, {"color": "#34495e", "index": 36, "blockData": [24, 12, 4, 4]}, {"color": "#3B5269", "index": 37, "blockData": [28, 12, 4, 4]}, {"color": "#34495e", "index": 38, "blockData": [32, 12, 4, 4]}, {"color": "#3B5269", "index": 39, "blockData": [36, 12, 4, 4]}, {"color": "#34495e", "index": 40, "blockData": [0, 16, 4, 4]}, {"color": "#3B5269", "index": 41, "blockData": [4, 16, 4, 4]}, {"color": "#34495e", "index": 42, "blockData": [8, 16, 4, 4]}, {"color": "#3B5269", "index": 43, "blockData": [12, 16, 4, 4]}, {"color": "#34495e", "index": 44, "blockData": [16, 16, 4, 4]}, {"color": "#3B5269", "index": 45, "blockData": [20, 16, 4, 4]}, {"color": "#34495e", "index": 46, "blockData": [24, 16, 4, 4]}, {"color": "#3B5269", "index": 47, "blockData": [28, 16, 4, 4]}, {"color": "#34495e", "index": 48, "blockData": [32, 16, 4, 4]}, {"color": "#3B5269", "index": 49, "blockData": [36, 16, 4, 4]}, {"color": "#34495e", "index": 50, "blockData": [0, 20, 4, 4]}, {"color": "#3B5269", "index": 51, "blockData": [4, 20, 4, 4]}, {"color": "#34495e", "index": 52, "blockData": [8, 20, 4, 4]}, {"color": "#3B5269", "index": 53, "blockData": [12, 20, 4, 4]}, {"color": "#34495e", "index": 54, "blockData": [16, 20, 4, 4]}, {"color": "#3B5269", "index": 55, "blockData": [20, 20, 4, 4]}, {"color": "#34495e", "index": 56, "blockData": [24, 20, 4, 4]}, {"color": "#3B5269", "index": 57, "blockData": [28, 20, 4, 4]}, {"color": "#34495e", "index": 58, "blockData": [32, 20, 4, 4]}, {"color": "#3B5269", "index": 59, "blockData": [36, 20, 4, 4]}, {"color": "#34495e", "index": 60, "blockData": [0, 24, 4, 4]}, {"color": "#3B5269", "index": 61, "blockData": [4, 24, 4, 4]}, {"color": "#34495e", "index": 62, "blockData": [8, 24, 4, 4]}, {"color": "#3B5269", "index": 63, "blockData": [12, 24, 4, 4]}, {"color": "#34495e", "index": 64, "blockData": [16, 24, 4, 4]}, {"color": "#3B5269", "index": 65, "blockData": [20, 24, 4, 4]}, {"color": "#34495e", "index": 66, "blockData": [24, 24, 4, 4]}, {"color": "#3B5269", "index": 67, "blockData": [28, 24, 4, 4]}, {"color": "#34495e", "index": 68, "blockData": [32, 24, 4, 4]}, {"color": "#3B5269", "index": 69, "blockData": [36, 24, 4, 4]}, {"color": "#34495e", "index": 70, "blockData": [0, 28, 4, 4]}, {"color": "#3B5269", "index": 71, "blockData": [4, 28, 4, 4]}, {"color": "#34495e", "index": 72, "blockData": [8, 28, 4, 4]}, {"color": "#3B5269", "index": 73, "blockData": [12, 28, 4, 4]}, {"color": "#34495e", "index": 74, "blockData": [16, 28, 4, 4]}, {"color": "#3B5269", "index": 75, "blockData": [20, 28, 4, 4]}, {"color": "#34495e", "index": 76, "blockData": [24, 28, 4, 4]}, {"color": "#3B5269", "index": 77, "blockData": [28, 28, 4, 4]}, {"color": "#34495e", "index": 78, "blockData": [32, 28, 4, 4]}, {"color": "#3B5269", "index": 79, "blockData": [36, 28, 4, 4]}, {"color": "#34495e", "index": 80, "blockData": [0, 32, 4, 4]}, {"color": "#3B5269", "index": 81, "blockData": [4, 32, 4, 4]}, {"color": "#34495e", "index": 82, "blockData": [8, 32, 4, 4]}, {"color": "#3B5269", "index": 83, "blockData": [12, 32, 4, 4]}, {"color": "#34495e", "index": 84, "blockData": [16, 32, 4, 4]}, {"color": "#3B5269", "index": 85, "blockData": [20, 32, 4, 4]}, {"color": "#34495e", "index": 86, "blockData": [24, 32, 4, 4]}, {"color": "#3B5269", "index": 87, "blockData": [28, 32, 4, 4]}, {"color": "#34495e", "index": 88, "blockData": [32, 32, 4, 4]}, {"color": "#3B5269", "index": 89, "blockData": [36, 32, 4, 4]}, {"color": "#34495e", "index": 90, "blockData": [0, 36, 4, 4]}, {"color": "#3B5269", "index": 91, "blockData": [4, 36, 4, 4]}, {"color": "#34495e", "index": 92, "blockData": [8, 36, 4, 4]}, {"color": "#3B5269", "index": 93, "blockData": [12, 36, 4, 4]}, {"color": "#34495e", "index": 94, "blockData": [16, 36, 4, 4]}, {"color": "#3B5269", "index": 95, "blockData": [20, 36, 4, 4]}, {"color": "#34495e", "index": 96, "blockData": [24, 36, 4, 4]}, {"color": "#3B5269", "index": 97, "blockData": [28, 36, 4, 4]}, {"color": "#34495e", "index": 98, "blockData": [32, 36, 4, 4]}, {"color": "#3B5269", "index": 99, "blockData": [36, 36, 4, 4]}, {"color": "#34495e", "index": 100, "blockData": [0, 40, 4, 4]}, {"color": "#3B5269", "index": 101, "blockData": [4, 40, 4, 4]}, {"color": "#34495e", "index": 102, "blockData": [8, 40, 4, 4]}, {"color": "#3B5269", "index": 103, "blockData": [12, 40, 4, 4]}, {"color": "#34495e", "index": 104, "blockData": [16, 40, 4, 4]}, {"color": "#3B5269", "index": 105, "blockData": [20, 40, 4, 4]}, {"color": "#34495e", "index": 106, "blockData": [24, 40, 4, 4]}, {"color": "#3B5269", "index": 107, "blockData": [28, 40, 4, 4]}, {"color": "#34495e", "index": 108, "blockData": [32, 40, 4, 4]}, {"color": "#3B5269", "index": 109, "blockData": [36, 40, 4, 4]}, {"color": "#34495e", "index": 110, "blockData": [0, 44, 4, 4]}, {"color": "#3B5269", "index": 111, "blockData": [4, 44, 4, 4]}, {"color": "#34495e", "index": 112, "blockData": [8, 44, 4, 4]}, {"color": "#3B5269", "index": 113, "blockData": [12, 44, 4, 4]}, {"color": "#34495e", "index": 114, "blockData": [16, 44, 4, 4]}, {"color": "#3B5269", "index": 115, "blockData": [20, 44, 4, 4]}, {"color": "#34495e", "index": 116, "blockData": [24, 44, 4, 4]}, {"color": "#3B5269", "index": 117, "blockData": [28, 44, 4, 4]}, {"color": "#34495e", "index": 118, "blockData": [32, 44, 4, 4]}, {"color": "#3B5269", "index": 119, "blockData": [36, 44, 4, 4]}, {"color": "#34495e", "index": 120, "blockData": [0, 48, 4, 4]}, {"color": "#3B5269", "index": 121, "blockData": [4, 48, 4, 4]}, {"color": "#34495e", "index": 122, "blockData": [8, 48, 4, 4]}, {"color": "#3B5269", "index": 123, "blockData": [12, 48, 4, 4]}, {"color": "#34495e", "index": 124, "blockData": [16, 48, 4, 4]}, {"color": "#3B5269", "index": 125, "blockData": [20, 48, 4, 4]}, {"color": "#34495e", "index": 126, "blockData": [24, 48, 4, 4]}, {"color": "#3B5269", "index": 127, "blockData": [28, 48, 4, 4]}, {"color": "#34495e", "index": 128, "blockData": [32, 48, 4, 4]}, {"color": "#3B5269", "index": 129, "blockData": [36, 48, 4, 4]}, {"color": "#34495e", "index": 130, "blockData": [0, 52, 4, 4]}, {"color": "#3B5269", "index": 131, "blockData": [4, 52, 4, 4]}, {"color": "#34495e", "index": 132, "blockData": [8, 52, 4, 4]}, {"color": "#3B5269", "index": 133, "blockData": [12, 52, 4, 4]}, {"color": "#34495e", "index": 134, "blockData": [16, 52, 4, 4]}, {"color": "#3B5269", "index": 135, "blockData": [20, 52, 4, 4]}, {"color": "#34495e", "index": 136, "blockData": [24, 52, 4, 4]}, {"color": "#3B5269", "index": 137, "blockData": [28, 52, 4, 4]}, {"color": "#34495e", "index": 138, "blockData": [32, 52, 4, 4]}, {"color": "#3B5269", "index": 139, "blockData": [36, 52, 4, 4]}, {"color": "#34495e", "index": 140, "blockData": [0, 56, 4, 4]}, {"color": "#3B5269", "index": 141, "blockData": [4, 56, 4, 4]}, {"color": "#34495e", "index": 142, "blockData": [8, 56, 4, 4]}, {"color": "#3B5269", "index": 143, "blockData": [12, 56, 4, 4]}, {"color": "#f1c40f", "index": 144, "blockData": [16, 56, 4, 4]}, {"color": "#f1c40f", "index": 145, "blockData": [20, 56, 4, 4]}, {"color": "#34495e", "index": 146, "blockData": [24, 56, 4, 4]}, {"color": "#3B5269", "index": 147, "blockData": [28, 56, 4, 4]}, {"color": "#34495e", "index": 148, "blockData": [32, 56, 4, 4]}, {"color": "#3B5269", "index": 149, "blockData": [36, 56, 4, 4]}, {"color": "#34495e", "index": 150, "blockData": [0, 60, 4, 4]}, {"color": "#3B5269", "index": 151, "blockData": [4, 60, 4, 4]}, {"color": "#34495e", "index": 152, "blockData": [8, 60, 4, 4]}, {"color": "#3B5269", "index": 153, "blockData": [12, 60, 4, 4]}, {"color": "#f1c40f", "index": 154, "blockData": [16, 60, 4, 4]}, {"color": "#3B5269", "index": 155, "blockData": [20, 60, 4, 4]}, {"color": "#34495e", "index": 156, "blockData": [24, 60, 4, 4]}, {"color": "#3B5269", "index": 157, "blockData": [28, 60, 4, 4]}, {"color": "#34495e", "index": 158, "blockData": [32, 60, 4, 4]}, {"color": "#3B5269", "index": 159, "blockData": [36, 60, 4, 4]}, {"color": "#34495e", "index": 160, "blockData": [0, 64, 4, 4]}, {"color": "#3B5269", "index": 161, "blockData": [4, 64, 4, 4]}, {"color": "#34495e", "index": 162, "blockData": [8, 64, 4, 4]}, {"color": "#3B5269", "index": 163, "blockData": [12, 64, 4, 4]}, {"color": "#f1c40f", "index": 164, "blockData": [16, 64, 4, 4]}, {"color": "#3B5269", "index": 165, "blockData": [20, 64, 4, 4]}, {"color": "#34495e", "index": 166, "blockData": [24, 64, 4, 4]}, {"color": "#3B5269", "index": 167, "blockData": [28, 64, 4, 4]}, {"color": "#34495e", "index": 168, "blockData": [32, 64, 4, 4]}, {"color": "#3B5269", "index": 169, "blockData": [36, 64, 4, 4]}, {"color": "#34495e", "index": 170, "blockData": [0, 68, 4, 4]}, {"color": "#3B5269", "index": 171, "blockData": [4, 68, 4, 4]}, {"color": "#34495e", "index": 172, "blockData": [8, 68, 4, 4]}, {"color": "#3B5269", "index": 173, "blockData": [12, 68, 4, 4]}, {"color": "#34495e", "index": 174, "blockData": [16, 68, 4, 4]}, {"color": "#3B5269", "index": 175, "blockData": [20, 68, 4, 4]}, {"color": "#34495e", "index": 176, "blockData": [24, 68, 4, 4]}, {"color": "#3B5269", "index": 177, "blockData": [28, 68, 4, 4]}, {"color": "#34495e", "index": 178, "blockData": [32, 68, 4, 4]}, {"color": "#3B5269", "index": 179, "blockData": [36, 68, 4, 4]}, {"color": "#34495e", "index": 180, "blockData": [0, 72, 4, 4]}, {"color": "#3B5269", "index": 181, "blockData": [4, 72, 4, 4]}, {"color": "#34495e", "index": 182, "blockData": [8, 72, 4, 4]}, {"color": "#3B5269", "index": 183, "blockData": [12, 72, 4, 4]}, {"color": "#34495e", "index": 184, "blockData": [16, 72, 4, 4]}, {"color": "#3B5269", "index": 185, "blockData": [20, 72, 4, 4]}, {"color": "#34495e", "index": 186, "blockData": [24, 72, 4, 4]}, {"color": "#3B5269", "index": 187, "blockData": [28, 72, 4, 4]}, {"color": "#34495e", "index": 188, "blockData": [32, 72, 4, 4]}, {"color": "#3B5269", "index": 189, "blockData": [36, 72, 4, 4]}, {"color": "#34495e", "index": 190, "blockData": [0, 76, 4, 4]}, {"color": "#3B5269", "index": 191, "blockData": [4, 76, 4, 4]}, {"color": "#34495e", "index": 192, "blockData": [8, 76, 4, 4]}, {"color": "#3B5269", "index": 193, "blockData": [12, 76, 4, 4]}, {"color": "#34495e", "index": 194, "blockData": [16, 76, 4, 4]}, {"color": "#3B5269", "index": 195, "blockData": [20, 76, 4, 4]}, {"color": "#34495e", "index": 196, "blockData": [24, 76, 4, 4]}, {"color": "#3B5269", "index": 197, "blockData": [28, 76, 4, 4]}, {"color": "#34495e", "index": 198, "blockData": [32, 76, 4, 4]}, {"color": "#3B5269", "index": 199, "blockData": [36, 76, 4, 4]}]}
-                           }};
+                               "canvas":
+    [ { color: '#34495e', index: 0, blockData: [ 0, 0, 25, 25 ] },
+      { color: '#3B5269', index: 1, blockData: [ 25, 0, 25, 25 ] },
+      { color: '#34495e', index: 2, blockData: [ 50, 0, 25, 25 ] },
+      { color: '#3B5269', index: 3, blockData: [ 75, 0, 25, 25 ] },
+      { color: '#34495e', index: 4, blockData: [ 100, 0, 25, 25 ] },
+      { color: '#3B5269', index: 5, blockData: [ 125, 0, 25, 25 ] },
+      { color: '#34495e', index: 6, blockData: [ 150, 0, 25, 25 ] },
+      { color: '#3B5269', index: 7, blockData: [ 175, 0, 25, 25 ] },
+      { color: '#34495e', index: 8, blockData: [ 200, 0, 25, 25 ] },
+      { color: '#3B5269', index: 9, blockData: [ 225, 0, 25, 25 ] },
+      { color: '#34495e', index: 10, blockData: [ 0, 25, 25, 25 ] },
+      { color: '#3B5269', index: 11, blockData: [ 25, 25, 25, 25 ] },
+      { color: '#34495e', index: 12, blockData: [ 50, 25, 25, 25 ] },
+      { color: '#3B5269', index: 13, blockData: [ 75, 25, 25, 25 ] },
+      { color: '#34495e', index: 14, blockData: [ 100, 25, 25, 25 ] },
+      { color: '#3B5269', index: 15, blockData: [ 125, 25, 25, 25 ] },
+      { color: '#34495e', index: 16, blockData: [ 150, 25, 25, 25 ] },
+      { color: '#3B5269', index: 17, blockData: [ 175, 25, 25, 25 ] },
+      { color: '#34495e', index: 18, blockData: [ 200, 25, 25, 25 ] },
+      { color: '#3B5269', index: 19, blockData: [ 225, 25, 25, 25 ] },
+      { color: '#34495e', index: 20, blockData: [ 0, 50, 25, 25 ] },
+      { color: '#3B5269', index: 21, blockData: [ 25, 50, 25, 25 ] },
+      { color: '#34495e', index: 22, blockData: [ 50, 50, 25, 25 ] },
+      { color: '#3B5269', index: 23, blockData: [ 75, 50, 25, 25 ] },
+      { color: '#34495e', index: 24, blockData: [ 100, 50, 25, 25 ] },
+      { color: '#3B5269', index: 25, blockData: [ 125, 50, 25, 25 ] },
+      { color: '#34495e', index: 26, blockData: [ 150, 50, 25, 25 ] },
+      { color: '#3B5269', index: 27, blockData: [ 175, 50, 25, 25 ] },
+      { color: '#34495e', index: 28, blockData: [ 200, 50, 25, 25 ] },
+      { color: '#3B5269', index: 29, blockData: [ 225, 50, 25, 25 ] },
+      { color: '#34495e', index: 30, blockData: [ 0, 75, 25, 25 ] },
+      { color: '#3B5269', index: 31, blockData: [ 25, 75, 25, 25 ] },
+      { color: '#34495e', index: 32, blockData: [ 50, 75, 25, 25 ] },
+      { color: '#3B5269', index: 33, blockData: [ 75, 75, 25, 25 ] },
+      { color: '#34495e', index: 34, blockData: [ 100, 75, 25, 25 ] },
+      { color: '#3B5269', index: 35, blockData: [ 125, 75, 25, 25 ] },
+      { color: '#34495e', index: 36, blockData: [ 150, 75, 25, 25 ] },
+      { color: '#3B5269', index: 37, blockData: [ 175, 75, 25, 25 ] },
+      { color: '#34495e', index: 38, blockData: [ 200, 75, 25, 25 ] },
+      { color: '#3B5269', index: 39, blockData: [ 225, 75, 25, 25 ] },
+      { color: '#34495e', index: 40, blockData: [ 0, 100, 25, 25 ] },
+      { color: '#3B5269', index: 41, blockData: [ 25, 100, 25, 25 ] },
+      { color: '#34495e', index: 42, blockData: [ 50, 100, 25, 25 ] },
+      { color: '#3B5269', index: 43, blockData: [ 75, 100, 25, 25 ] },
+      { color: '#34495e', index: 44, blockData: [ 100, 100, 25, 25 ] },
+      { color: '#3B5269', index: 45, blockData: [ 125, 100, 25, 25 ] },
+      { color: '#34495e', index: 46, blockData: [ 150, 100, 25, 25 ] },
+      { color: '#3B5269', index: 47, blockData: [ 175, 100, 25, 25 ] },
+      { color: '#34495e', index: 48, blockData: [ 200, 100, 25, 25 ] },
+      { color: '#3B5269', index: 49, blockData: [ 225, 100, 25, 25 ] },
+      { color: '#34495e', index: 50, blockData: [ 0, 125, 25, 25 ] },
+      { color: '#3B5269', index: 51, blockData: [ 25, 125, 25, 25 ] },
+      { color: '#34495e', index: 52, blockData: [ 50, 125, 25, 25 ] },
+      { color: '#3B5269', index: 53, blockData: [ 75, 125, 25, 25 ] },
+      { color: '#34495e', index: 54, blockData: [ 100, 125, 25, 25 ] },
+      { color: '#3B5269', index: 55, blockData: [ 125, 125, 25, 25 ] },
+      { color: '#34495e', index: 56, blockData: [ 150, 125, 25, 25 ] },
+      { color: '#3B5269', index: 57, blockData: [ 175, 125, 25, 25 ] },
+      { color: '#34495e', index: 58, blockData: [ 200, 125, 25, 25 ] },
+      { color: '#3B5269', index: 59, blockData: [ 225, 125, 25, 25 ] },
+      { color: '#34495e', index: 60, blockData: [ 0, 150, 25, 25 ] },
+      { color: '#3B5269', index: 61, blockData: [ 25, 150, 25, 25 ] },
+      { color: '#34495e', index: 62, blockData: [ 50, 150, 25, 25 ] },
+      { color: '#3B5269', index: 63, blockData: [ 75, 150, 25, 25 ] },
+      { color: '#34495e', index: 64, blockData: [ 100, 150, 25, 25 ] },
+      { color: '#3B5269', index: 65, blockData: [ 125, 150, 25, 25 ] },
+      { color: '#34495e', index: 66, blockData: [ 150, 150, 25, 25 ] },
+      { color: '#3B5269', index: 67, blockData: [ 175, 150, 25, 25 ] },
+      { color: '#34495e', index: 68, blockData: [ 200, 150, 25, 25 ] },
+      { color: '#3B5269', index: 69, blockData: [ 225, 150, 25, 25 ] },
+      { color: '#34495e', index: 70, blockData: [ 0, 175, 25, 25 ] },
+      { color: '#3B5269', index: 71, blockData: [ 25, 175, 25, 25 ] },
+      { color: '#34495e', index: 72, blockData: [ 50, 175, 25, 25 ] },
+      { color: '#3B5269', index: 73, blockData: [ 75, 175, 25, 25 ] },
+      { color: '#34495e', index: 74, blockData: [ 100, 175, 25, 25 ] },
+      { color: '#3B5269', index: 75, blockData: [ 125, 175, 25, 25 ] },
+      { color: '#34495e', index: 76, blockData: [ 150, 175, 25, 25 ] },
+      { color: '#3B5269', index: 77, blockData: [ 175, 175, 25, 25 ] },
+      { color: '#34495e', index: 78, blockData: [ 200, 175, 25, 25 ] },
+      { color: '#3B5269', index: 79, blockData: [ 225, 175, 25, 25 ] },
+      { color: '#34495e', index: 80, blockData: [ 0, 200, 25, 25 ] },
+      { color: '#3B5269', index: 81, blockData: [ 25, 200, 25, 25 ] },
+      { color: '#34495e', index: 82, blockData: [ 50, 200, 25, 25 ] },
+      { color: '#3B5269', index: 83, blockData: [ 75, 200, 25, 25 ] },
+      { color: '#34495e', index: 84, blockData: [ 100, 200, 25, 25 ] },
+      { color: '#3B5269', index: 85, blockData: [ 125, 200, 25, 25 ] },
+      { color: '#34495e', index: 86, blockData: [ 150, 200, 25, 25 ] },
+      { color: '#3B5269', index: 87, blockData: [ 175, 200, 25, 25 ] },
+      { color: '#34495e', index: 88, blockData: [ 200, 200, 25, 25 ] },
+      { color: '#3B5269', index: 89, blockData: [ 225, 200, 25, 25 ] },
+      { color: '#34495e', index: 90, blockData: [ 0, 225, 25, 25 ] },
+      { color: '#3B5269', index: 91, blockData: [ 25, 225, 25, 25 ] },
+      { color: '#34495e', index: 92, blockData: [ 50, 225, 25, 25 ] },
+      { color: '#3B5269', index: 93, blockData: [ 75, 225, 25, 25 ] },
+      { color: '#34495e', index: 94, blockData: [ 100, 225, 25, 25 ] },
+      { color: '#3B5269', index: 95, blockData: [ 125, 225, 25, 25 ] },
+      { color: '#34495e', index: 96, blockData: [ 150, 225, 25, 25 ] },
+      { color: '#3B5269', index: 97, blockData: [ 175, 225, 25, 25 ] },
+      { color: '#34495e', index: 98, blockData: [ 200, 225, 25, 25 ] },
+      { color: '#3B5269', index: 99, blockData: [ 225, 225, 25, 25 ] },
+      { color: '#34495e', index: 100, blockData: [ 0, 250, 25, 25 ] },
+      { color: '#3B5269', index: 101, blockData: [ 25, 250, 25, 25 ] },
+      { color: '#34495e', index: 102, blockData: [ 50, 250, 25, 25 ] },
+      { color: '#3B5269', index: 103, blockData: [ 75, 250, 25, 25 ] },
+      { color: '#34495e', index: 104, blockData: [ 100, 250, 25, 25 ] },
+      { color: '#3B5269', index: 105, blockData: [ 125, 250, 25, 25 ] },
+      { color: '#34495e', index: 106, blockData: [ 150, 250, 25, 25 ] },
+      { color: '#3B5269', index: 107, blockData: [ 175, 250, 25, 25 ] },
+      { color: '#34495e', index: 108, blockData: [ 200, 250, 25, 25 ] },
+      { color: '#3B5269', index: 109, blockData: [ 225, 250, 25, 25 ] },
+      { color: '#34495e', index: 110, blockData: [ 0, 275, 25, 25 ] },
+      { color: '#3B5269', index: 111, blockData: [ 25, 275, 25, 25 ] },
+      { color: '#34495e', index: 112, blockData: [ 50, 275, 25, 25 ] },
+      { color: '#3B5269', index: 113, blockData: [ 75, 275, 25, 25 ] },
+      { color: '#34495e', index: 114, blockData: [ 100, 275, 25, 25 ] },
+      { color: '#3B5269', index: 115, blockData: [ 125, 275, 25, 25 ] },
+      { color: '#34495e', index: 116, blockData: [ 150, 275, 25, 25 ] },
+      { color: '#3B5269', index: 117, blockData: [ 175, 275, 25, 25 ] },
+      { color: '#34495e', index: 118, blockData: [ 200, 275, 25, 25 ] },
+      { color: '#3B5269', index: 119, blockData: [ 225, 275, 25, 25 ] },
+      { color: '#34495e', index: 120, blockData: [ 0, 300, 25, 25 ] },
+      { color: '#3B5269', index: 121, blockData: [ 25, 300, 25, 25 ] },
+      { color: '#34495e', index: 122, blockData: [ 50, 300, 25, 25 ] },
+      { color: '#3B5269', index: 123, blockData: [ 75, 300, 25, 25 ] },
+      { color: '#34495e', index: 124, blockData: [ 100, 300, 25, 25 ] },
+      { color: '#3B5269', index: 125, blockData: [ 125, 300, 25, 25 ] },
+      { color: '#34495e', index: 126, blockData: [ 150, 300, 25, 25 ] },
+      { color: '#3B5269', index: 127, blockData: [ 175, 300, 25, 25 ] },
+      { color: '#34495e', index: 128, blockData: [ 200, 300, 25, 25 ] },
+      { color: '#3B5269', index: 129, blockData: [ 225, 300, 25, 25 ] },
+      { color: '#34495e', index: 130, blockData: [ 0, 325, 25, 25 ] },
+      { color: '#3B5269', index: 131, blockData: [ 25, 325, 25, 25 ] },
+      { color: '#34495e', index: 132, blockData: [ 50, 325, 25, 25 ] },
+      { color: '#3B5269', index: 133, blockData: [ 75, 325, 25, 25 ] },
+      { color: '#34495e', index: 134, blockData: [ 100, 325, 25, 25 ] },
+      { color: '#3B5269', index: 135, blockData: [ 125, 325, 25, 25 ] },
+      { color: '#34495e', index: 136, blockData: [ 150, 325, 25, 25 ] },
+      { color: '#3B5269', index: 137, blockData: [ 175, 325, 25, 25 ] },
+      { color: '#34495e', index: 138, blockData: [ 200, 325, 25, 25 ] },
+      { color: '#3B5269', index: 139, blockData: [ 225, 325, 25, 25 ] },
+      { color: '#34495e', index: 140, blockData: [ 0, 350, 25, 25 ] },
+      { color: '#3B5269', index: 141, blockData: [ 25, 350, 25, 25 ] },
+      { color: '#34495e', index: 142, blockData: [ 50, 350, 25, 25 ] },
+      { color: '#3B5269', index: 143, blockData: [ 75, 350, 25, 25 ] },
+      { color: '#f1c40f', index: 144, blockData: [ 100, 350, 25, 25 ] },
+      { color: '#f1c40f', index: 145, blockData: [ 125, 350, 25, 25 ] },
+      { color: '#34495e', index: 146, blockData: [ 150, 350, 25, 25 ] },
+      { color: '#3B5269', index: 147, blockData: [ 175, 350, 25, 25 ] },
+      { color: '#34495e', index: 148, blockData: [ 200, 350, 25, 25 ] },
+      { color: '#3B5269', index: 149, blockData: [ 225, 350, 25, 25 ] },
+      { color: '#34495e', index: 150, blockData: [ 0, 375, 25, 25 ] },
+      { color: '#3B5269', index: 151, blockData: [ 25, 375, 25, 25 ] },
+      { color: '#34495e', index: 152, blockData: [ 50, 375, 25, 25 ] },
+      { color: '#3B5269', index: 153, blockData: [ 75, 375, 25, 25 ] },
+      { color: '#f1c40f', index: 154, blockData: [ 100, 375, 25, 25 ] },
+      { color: '#3B5269', index: 155, blockData: [ 125, 375, 25, 25 ] },
+      { color: '#34495e', index: 156, blockData: [ 150, 375, 25, 25 ] },
+      { color: '#3B5269', index: 157, blockData: [ 175, 375, 25, 25 ] },
+      { color: '#34495e', index: 158, blockData: [ 200, 375, 25, 25 ] },
+      { color: '#3B5269', index: 159, blockData: [ 225, 375, 25, 25 ] },
+      { color: '#34495e', index: 160, blockData: [ 0, 400, 25, 25 ] },
+      { color: '#3B5269', index: 161, blockData: [ 25, 400, 25, 25 ] },
+      { color: '#34495e', index: 162, blockData: [ 50, 400, 25, 25 ] },
+      { color: '#3B5269', index: 163, blockData: [ 75, 400, 25, 25 ] },
+      { color: '#f1c40f', index: 164, blockData: [ 100, 400, 25, 25 ] },
+      { color: '#3B5269', index: 165, blockData: [ 125, 400, 25, 25 ] },
+      { color: '#34495e', index: 166, blockData: [ 150, 400, 25, 25 ] },
+      { color: '#3B5269', index: 167, blockData: [ 175, 400, 25, 25 ] },
+      { color: '#34495e', index: 168, blockData: [ 200, 400, 25, 25 ] },
+      { color: '#3B5269', index: 169, blockData: [ 225, 400, 25, 25 ] },
+      { color: '#34495e', index: 170, blockData: [ 0, 425, 25, 25 ] },
+      { color: '#3B5269', index: 171, blockData: [ 25, 425, 25, 25 ] },
+      { color: '#34495e', index: 172, blockData: [ 50, 425, 25, 25 ] },
+      { color: '#3B5269', index: 173, blockData: [ 75, 425, 25, 25 ] },
+      { color: '#34495e', index: 174, blockData: [ 100, 425, 25, 25 ] },
+      { color: '#3B5269', index: 175, blockData: [ 125, 425, 25, 25 ] },
+      { color: '#34495e', index: 176, blockData: [ 150, 425, 25, 25 ] },
+      { color: '#3B5269', index: 177, blockData: [ 175, 425, 25, 25 ] },
+      { color: '#34495e', index: 178, blockData: [ 200, 425, 25, 25 ] },
+      { color: '#3B5269', index: 179, blockData: [ 225, 425, 25, 25 ] },
+      { color: '#34495e', index: 180, blockData: [ 0, 450, 25, 25 ] },
+      { color: '#3B5269', index: 181, blockData: [ 25, 450, 25, 25 ] },
+      { color: '#34495e', index: 182, blockData: [ 50, 450, 25, 25 ] },
+      { color: '#3B5269', index: 183, blockData: [ 75, 450, 25, 25 ] },
+      { color: '#34495e', index: 184, blockData: [ 100, 450, 25, 25 ] },
+      { color: '#3B5269', index: 185, blockData: [ 125, 450, 25, 25 ] },
+      { color: '#34495e', index: 186, blockData: [ 150, 450, 25, 25 ] },
+      { color: '#3B5269', index: 187, blockData: [ 175, 450, 25, 25 ] },
+      { color: '#34495e', index: 188, blockData: [ 200, 450, 25, 25 ] },
+      { color: '#3B5269', index: 189, blockData: [ 225, 450, 25, 25 ] },
+      { color: '#34495e', index: 190, blockData: [ 0, 475, 25, 25 ] },
+      { color: '#3B5269', index: 191, blockData: [ 25, 475, 25, 25 ] },
+      { color: '#34495e', index: 192, blockData: [ 50, 475, 25, 25 ] },
+      { color: '#3B5269', index: 193, blockData: [ 75, 475, 25, 25 ] },
+      { color: '#34495e', index: 194, blockData: [ 100, 475, 25, 25 ] },
+      { color: '#3B5269', index: 195, blockData: [ 125, 475, 25, 25 ] },
+      { color: '#34495e', index: 196, blockData: [ 150, 475, 25, 25 ] },
+      { color: '#3B5269', index: 197, blockData: [ 175, 475, 25, 25 ] },
+      { color: '#34495e', index: 198, blockData: [ 200, 475, 25, 25 ] },
+      { color: '#3B5269', index: 199, blockData: [ 225, 475, 25, 25 ] } ],}}
+                          };
 
   describe('Temporary tests if calcBoards and calcBoards2 do the same thing',
            () => {
@@ -642,21 +842,21 @@ describe('UI Object', () => {
              test('cb and cb2 are equal when grid is empty',
                   () => {
                     const i = calcBoardsCase0.INPUT;
-                    const a = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
-                    const b = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+                    const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+                    const b = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
                     expect(a.text).toEqual(b.text);
                   });
 
              test('cb and cb2 are equal when grid is not empty',
                   () => {
                     const i = calcBoardsCase1.INPUT;
-                    const a = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
-                    const b = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+                    const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+                    const b = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
                     expect(a.text).toEqual(b.text);
                   });
            });
 
-  describe('KEEP: test if calcBoards(2) returns expected values',
+  describe('KEEP: test if calcBoards(2) returns expected values for text canvas',
            () => {
              const boardSize = [10,20];
              let canvasSize = [225, 450];
@@ -664,16 +864,38 @@ describe('UI Object', () => {
 
              test('given empty grid, output is as expected', () => {
                const i = calcBoardsCase0.INPUT;
-               const a = calcBoardsCase0.OUTPUT.result;
-               const b = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+               const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+               const b = calcBoardsCase0.OUTPUT.result;
                expect(a.text).toEqual(b.text);
              });
 
              test('given grid data, output is as expected', () => {
                const i = calcBoardsCase1.INPUT;
-               const a = calcBoardsCase1.OUTPUT.result;
-               const b = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+               const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+               const b = calcBoardsCase1.OUTPUT.result;
                expect(a.text).toEqual(b.text);
+             });
+           });
+
+  describe('KEEP: test if calcBoards(2) returns expected values for text canvas',
+           () => {
+             const boardSize = [10,20];
+             let canvasSize = [225, 450];
+             let ui = new game.UI(boardSize, canvasSize);
+
+             test('given empty grid, output is as expected', () => {
+               const i = calcBoardsCase0.INPUT;
+               const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+               const b = calcBoardsCase0.OUTPUT.result;
+               expect(a.canvas).toEqual(b.canvas);
+             });
+
+             test('given grid data, output is as expected', () => {
+               const i = calcBoardsCase1.INPUT;
+               const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+               const b = calcBoardsCase1.OUTPUT.result;
+               expect(a.canvas).toEqual(b.canvas);
+               //console.log(a.canvas.filter((x,i) => i >= 100));
              });
            });
 });

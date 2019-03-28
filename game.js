@@ -1088,61 +1088,63 @@ function UI (gridSize, canvasSize = [225, 450]) {
       blockCount: size[0] * size[1]
     };
 
-
     const block = {
       width:  Math.floor(board.width / size[0]),
       height: Math.floor(board.height / size[1])
     };
 
-    const col = (index, columnCount) => Math.floor(index % columnCount);
-    const row = (index, columnCount) => Math.floor(index / columnCount);
-    const colOffset = (i, cc, w) => col(i, cc / w) * w;
-    const rowOffset = (i, cc, w, h) => row(i, cc / w) * h;
+    function CanvasBlock(index,color,board,block) {
+      const col = (index, columnCount) => Math.floor(index % columnCount);
+      const row = (index, columnCount) => Math.floor(index / columnCount);
+      const colOffset = (i, cc, w) => col(i, cc / w) * w;
+      const rowOffset = (i, cc, w, h) => row(i, cc / w) * h;
+
+      let result = {};
+      result.color = color;
+      result.index = index;
+      result.blockData = [
+        colOffset(index, board.width, block.width),
+        rowOffset(index, board.width, block.width, block.height),
+        block.width,
+        block.height
+      ];
+      return result;
+    }
+
     let j = 0;
     //let result = '';
     // create top border
     result.text = '  ' + ('_').repeat(maxX) +' \n';
+
     for (let i=0; i < grid.length; i++) {
       result.canvas[i] = {};
       const currBlock = grid[i].color;
       //console.log('data',i, board.width, block.width, block.height);
+      //BORDER add to top border
       if ( j === 0)
         result.text += ' |';
       if (currBlock === 0) {
         if (j % 2) {
-          result.canvas[i].color = getColor(0);
-          result.canvas[i].index = i;
-          result.canvas[i].blockData = [
-            colOffset(i, board.width, block.width),
-            rowOffset(i, board.width, block.width, block.height),
-            block.width,
-            block.height
-          ];
+          const color = getColor(0);
+          result.canvas[i] = new CanvasBlock(i, color, board, block);
           result.text += ' ';
         }
         else {
-          result.canvas[i].color = getColor(1);
-          result.canvas[i].index = i;
-          result.canvas[i].blockData = [
-            colOffset(i, board.width, block.width),
-            rowOffset(i, board.width, block.width, block.height),
-            block.width,
-            block.height
-          ];
+          const color = getColor(1);
+          result.canvas[i] = new CanvasBlock(i, color, board, block);
           result.text += '.';
         }
       } else {
+        //FIX tests so that I can fill pieces with whatever
+        //result.text += '#';
         result.text += currBlock;
-        result.canvas[i].color = getColor(grid[i].color);
-        result.canvas[i].index = i;
-        result.canvas[i].blockData = [
-          colOffset(i, board.width, block.width),
-          rowOffset(i, board.width, block.width, block.height),
-          block.width,
-          block.height
-          ];
+
+        const color = getColor(grid[i].color);
+        result.canvas[i] = new CanvasBlock(i, color, board, block);
       }
+
       j++;
+
       if (j >= maxX) {
         result.text += '| \n';
         j = 0;
@@ -1278,14 +1280,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
       // CAN REVERT:
       //const boardData = calcBoards(grid);
       const boardData = calcBoards2(grid);
-      /*
-      console.log(JSON.stringify(['USE INPUT', "gridSize: ", gridSize,
-                                  "canvasSize:", canvasSize,
-                                  "grid:", grid,
-                                  "OUTPUT",
-                                  "result:", boardData], null, '  '));
-                                  */
-      //console.log(boardData.canvas)
       setElementInnerText('gameBoardText', boardData.text);
 
       //calcBoards (grid = [], size = gridSize, cSize = canvasSize)
@@ -1328,8 +1322,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
   this.initUI = () => initUI();
   this.setState = (state) => setUIstate(state);
   //this.getElementById = (id) => getElementById(id);
-  this.hideElementById = (id) => hideElementById(id);
-  this.showElementById = (id) => showElementById(id);
   this.setElementInnerText = (id, text) => setElementInnerText(id,text);
   this.getBoardUIisUpdated = () => boardNeedsUIrefresh;
   this.updateScore = (score, rows) => {
