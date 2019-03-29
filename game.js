@@ -1078,8 +1078,9 @@ function UI (gridSize, canvasSize = [225, 450]) {
     ctx.restore();
   };
 
-  function calcBoards2 (grid = [], size = gridSize, cSize = canvasSize) {
+  function calcBoards (grid = [], size = gridSize, cSize = canvasSize) {
     const maxX = size[0];
+    const maxY = size[1];
     const canvasWidth = cSize[0];
     let result = {text: '', canvas: []};
     const board = {
@@ -1111,18 +1112,134 @@ function UI (gridSize, canvasSize = [225, 450]) {
       return result;
     }
 
+    function renderTextContent(content, padding, border, margin){
+        // Box model inside -> out: content > padding > border > margin
+      if (! content)
+        return '';
+      if (! padding)
+        padding = {top: 0, bottom: 0 , left: 0, right: 0, fill: ' '};
+      if (padding.fill.length === 0)
+        padding.fill = ' ';
+      if (! border)
+        border = {topFill: '', bottomFill: '' , leftFill: '', rightFill: '' };
+      if (! margin)
+        margin = {top: 0, bottom: 0 , left: 0, right: 0, fill: ' '};
+
+      const stringFill = (fill, delimiter, width, height) =>
+            '' + ((fill).repeat(width) + delimiter).repeat(height);
+
+      padding.width = content.width + padding.left + padding.right;
+      padding.height = content.height + padding.top + padding.bottom;
+
+      border.width = padding.width + border.leftFill.length +
+        border.rightFill.length;
+      border.height = padding.height + border.topFill.length +
+        border.bottomFill.length;
+
+      border.topHeight = border.topFill.length > 0 ? 1 : 0;
+      border.bottomHeight = border.bottomFill.length > 0 ? 1 : 0;
+
+      margin.width = border.width + margin.left + margin.right;
+      margin.height = border.height + margin.top + margin.bottom;
+
+      const blankContent = padding.fill.repeat(content.width);
+      const leftMargin = margin.fill.repeat(margin.left);
+      const rightMargin = margin.fill.repeat(margin.right);
+      const leftPadding = padding.fill.repeat(padding.left);
+      const rightPadding = padding.fill.repeat(padding.right);
+
+      const leftSide = leftMargin + border.leftFill + leftPadding;
+      const rightSide = rightPadding + border.rightFill + rightMargin;
+      const rightDelimLeft = rightSide + content.delimiter + leftSide;
+
+      const topMargin  = stringFill(margin.fill, content.delimiter,
+                                         margin.width, margin.top);
+      const bottomMargin = stringFill(margin.fill, content.delimiter,
+                                      margin.width, margin.bottom);
+
+      let topBorder = '';
+      if (border.topHeight > 0) {
+        topBorder += leftMargin + border.topFill.repeat(border.width) +
+          rightMargin;
+        topBorder = stringFill(topBorder, content.delimiter,
+                               1, border.topHeight);
+      }
+
+      let bottomBorder = '';
+      if (border.bottomHeight > 0) {
+        bottomBorder += leftMargin + border.bottomFill.repeat(border.width) +
+          rightMargin;
+        bottomBorder = stringFill(bottomBorder, content.delimiter,
+                                  1, border.bottomHeight);
+      }
+
+      const topPadding = '' + stringFill(leftSide + blankContent + rightSide,
+                                         content.delimiter,
+                                         1, padding.top);
+
+      const bottomPadding = '' + stringFill(leftSide + blankContent + rightSide,
+                                            content.delimiter,
+                                            1, padding.bottom);
+
+
+      //strip delims from the end of content
+      let result = content.string.slice();
+
+      if (content.string.length === 0) {
+        result = stringFill(padding.fill, content.delimiter,
+                            content.width, content.height);
+      }
+
+      let re = new RegExp(content.delimiter + '*$');
+      result = result.replace(re, '');
+
+
+      // then replace all delimiters with rp + rb + rm + delim + lm + lb + lp
+      re = new RegExp(content.delimiter, 'g');
+      result = result.replace(re, rightDelimLeft);
+
+      // add the final right side and delimiter
+      result += rightSide + content.delimiter;
+      // then add left margin + left border + left padding to beginning
+      result = leftSide + result;
+
+      // END Add top and bottom padding, border, and margins (last step)
+      result = topMargin + topBorder + topPadding + result;
+      result += bottomPadding + bottomBorder + bottomMargin;
+
+      return result;
+
+    };
+
+
+    /*
+      const content = {string: '. . . .\n. .#. .\n. ### .\n. . . .\n\n',
+      delimiter: '\n', width: 7, height: 4};
+      const margin = {top: 0, bottom: 0 , left: 0, right: 0, fill: ' '};
+      const border = {topFill: '_', bottomFill: '^' ,
+      leftFill: '|', rightFill: '|' };
+      const padding = {top: 1, bottom: 1 , left: 1, right: 1, fill: ' '};
+      renderTextContent(content, padding, border, margin)
+    */
+
     let j = 0;
     //let result = '';
-    // create top border
-    result.text = '  ' + ('_').repeat(maxX) +' \n';
+    //REMOVE create top border
+    //result.text = '  ' + ('_').repeat(maxX) +' \n';
+
+    result.text = '';
 
     for (let i=0; i < grid.length; i++) {
       result.canvas[i] = {};
       const currBlock = grid[i].color;
       //console.log('data',i, board.width, block.width, block.height);
-      //BORDER add to top border
+
+      /*
+      //REMOVE BORDER add to top border
       if ( j === 0)
         result.text += ' |';
+        */
+
       if (currBlock === 0) {
         if (j % 2) {
           const color = getColor(0);
@@ -1146,87 +1263,25 @@ function UI (gridSize, canvasSize = [225, 450]) {
       j++;
 
       if (j >= maxX) {
-        result.text += '| \n';
+        //REMOVE Border
+        //result.text += '| \n';
+        result.text += '\n';
         j = 0;
       }
     }
-    result.text += ' ^' + ('^').repeat(maxX) +'^';
+    //REMOVE Border
+    //result.text += ' ^' + ('^').repeat(maxX) +'^';
+
+    const content = {string: result.text,
+                     delimiter: '\n', width: maxX, height: maxY};
+    const padding = {top: 0, bottom: 0 , left: 0, right: 0, fill: ' '};
+    const border = {topFill: '_', bottomFill: '^' ,
+                    leftFill: '|', rightFill: '|' };
+    const margin = {top: 0, bottom: 0 , left: 1, right: 1, fill: ' '};
+    result.text = renderTextContent(content, padding, border, margin);
     return result;
   };
 
-  function calcBoards (grid = [], size = gridSize, cSize = canvasSize) {
-    const maxX = size[0];
-    const canvasWidth = cSize[0];
-    let result = {text: '', canvas: []};
-    const board = {
-      width: (Math.floor(cSize[0] / size[0]) * size[0]),
-      height: (Math.floor(cSize[1] / size[1]) * size[1]),
-      blockCount: size[0] * size[1]
-    };
-
-
-    const block = {
-      width:  Math.floor(board.width / size[0]),
-      height: Math.floor(board.height / size[1])
-    };
-
-    const col = (index, columnCount) => Math.floor(index % columnCount);
-    const row = (index, columnCount) => Math.floor(index / columnCount);
-    const colOffset = (i, cc, w) => col(i, cc / w) * w;
-    const rowOffset = (i, cc, w, h) => row(i, cc / w) * h;
-    let j = 0;
-    //let result = '';
-    // create top border
-    result.text = '  ' + ('_').repeat(maxX) +' \n';
-    for (let i=0; i < grid.length; i++) {
-      result.canvas[i] = {};
-      const currBlock = grid[i].color;
-      //console.log('data',i, board.width, block.width, block.height);
-      if ( j === 0)
-        result.text += ' |';
-      if (currBlock === 0) {
-        if (j % 2) {
-          result.canvas[i].color = getColor(0);
-          result.canvas[i].index = i;
-          result.canvas[i].blockData = [
-            colOffset(i, board.width, block.width),
-            rowOffset(i, board.width, block.width, block.height),
-            block.width,
-            block.height
-          ];
-          result.text += ' ';
-        }
-        else {
-          result.canvas[i].color = getColor(1);
-          result.canvas[i].index = i;
-          result.canvas[i].blockData = [
-            colOffset(i, board.width, block.width),
-            rowOffset(i, board.width, block.width, block.height),
-            block.width,
-            block.height
-          ];
-          result.text += '.';
-        }
-      } else {
-        result.text += currBlock;
-        result.canvas[i].color = getColor(grid[i].color);
-        result.canvas[i].index = i;
-        result.canvas[i].blockData = [
-          colOffset(i, board.width, block.width),
-          rowOffset(i, board.width, block.width, block.height),
-          block.width,
-          block.height
-          ];
-      }
-      j++;
-      if (j >= maxX) {
-        result.text += '| \n';
-        j = 0;
-      }
-    }
-    result.text += ' ^' + ('^').repeat(maxX) +'^';
-    return result;
-  };
 
   function renderGridAsText (grid = [], size = gridSize) {
     const maxX = size[0];
@@ -1278,8 +1333,7 @@ function UI (gridSize, canvasSize = [225, 450]) {
     if (boardChanged) {
       //FIX THIS IS WHERE WE ADD CALLS TO UPDATE THE UI
       // CAN REVERT:
-      //const boardData = calcBoards(grid);
-      const boardData = calcBoards2(grid);
+      const boardData = calcBoards(grid);
       setElementInnerText('gameBoardText', boardData.text);
 
       //calcBoards (grid = [], size = gridSize, cSize = canvasSize)
@@ -1311,8 +1365,8 @@ function UI (gridSize, canvasSize = [225, 450]) {
       toggleVisibility(['gameBoardText', 'gameBoardCanvas']);
   }
 
+  //this.calcBoards = (x,y,z) => calcBoards(x,y,z);
   this.calcBoards = (x,y,z) => calcBoards(x,y,z);
-  this.calcBoards2 = (x,y,z) => calcBoards2(x,y,z);
 
   this.getGridSize = () => gridSize;
   this.getCanvasSize = () => canvasSize;

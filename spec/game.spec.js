@@ -616,7 +616,8 @@ describe('UI Object', () => {
       "grid": ""
     },
     "OUTPUT": {
-      "result": {"text": "  __________ \n ^^^^^^^^^^^^", "canvas": []}
+      //"result": {"text": " ____________\n ^^^^^^^^^^^^ \n", "canvas": []}
+      "result": {"text": " ____________ \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n ^^^^^^^^^^^^ \n", "canvas": []}
     }
   };
 
@@ -628,7 +629,7 @@ describe('UI Object', () => {
                            "OUTPUT": {
                              "result":
                              {
-                               "text": "  __________ \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . 33. . | \n |. . 3 . . | \n |. . 3 . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n ^^^^^^^^^^^^",
+                               "text": " ____________ \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . 33. . | \n |. . 3 . . | \n |. . 3 . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n ^^^^^^^^^^^^ \n",
                                "canvas":
     [ { color: '#34495e', index: 0, blockData: [ 0, 0, 25, 25 ] },
       { color: '#3B5269', index: 1, blockData: [ 25, 0, 25, 25 ] },
@@ -832,6 +833,7 @@ describe('UI Object', () => {
       { color: '#3B5269', index: 199, blockData: [ 225, 475, 25, 25 ] } ],}}
                           };
 
+  /*
   describe('Temporary tests if calcBoards and calcBoards2 do the same thing',
            () => {
              const boardSize = [10,20];
@@ -855,6 +857,7 @@ describe('UI Object', () => {
                     expect(a.text).toEqual(b.text);
                   });
            });
+           */
 
   describe('KEEP: test if calcBoards(2) returns expected values for text canvas',
            () => {
@@ -864,14 +867,14 @@ describe('UI Object', () => {
 
              test('given empty grid, output is as expected', () => {
                const i = calcBoardsCase0.INPUT;
-               const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+               const a = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
                const b = calcBoardsCase0.OUTPUT.result;
                expect(a.text).toEqual(b.text);
              });
 
              test('given grid data, output is as expected', () => {
                const i = calcBoardsCase1.INPUT;
-               const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+               const a = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
                const b = calcBoardsCase1.OUTPUT.result;
                expect(a.text).toEqual(b.text);
              });
@@ -885,14 +888,14 @@ describe('UI Object', () => {
 
              test('given empty grid, output is as expected', () => {
                const i = calcBoardsCase0.INPUT;
-               const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+               const a = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
                const b = calcBoardsCase0.OUTPUT.result;
                expect(a.canvas).toEqual(b.canvas);
              });
 
              test('given grid data, output is as expected', () => {
                const i = calcBoardsCase1.INPUT;
-               const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+               const a = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
                const b = calcBoardsCase1.OUTPUT.result;
                expect(a.canvas).toEqual(b.canvas);
                //console.log(a.canvas.filter((x,i) => i >= 100));
