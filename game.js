@@ -126,6 +126,17 @@ function Piece (type, rotation = 0, gridSize = [10,20], indexOffset = 3) {
     'color': templates.data[type].color
   };
 
+  this.renderGrid = () => {
+    const block = {'color': 0};
+    function reset ([x,y]) { return Array(x*y).fill(block); }
+    let result = reset(this.gridSize);
+    this.blocks.forEach(b =>{
+      result[b] = {'color': this.color};
+    });
+
+    return result;
+  };
+
   this.normalMode = true; // allows left right commands to split blocks
   this.gridSize = gridSize;
   this.indexOffset = indexOffset;
@@ -274,8 +285,12 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
     this.currentPiece = new Piece(p.type, p.rotation,
                                   p.gridSize, p.indexOffset);
     const np = this.shuffled[this.shuffled.length - 1];
-    this.nextPiece = new Piece(np.type, np.rotation,
-                               np.gridSize, np.indexOffset);
+    /*
+      this.nextPiece = new Piece(np.type, np.rotation,
+      [4,4], np.indexOffset);
+    */
+      this.nextPiece = new Piece(np.type, np.rotation,
+      [4,4], 0);
 
   };
 
@@ -379,6 +394,7 @@ function Board(size = [10,20]) {
     return true;  // if in bounds, return true
   };
 
+
   this.overlay = function (piece) {
     let result = this.grid.slice();
     piece.blocks.forEach(b =>{
@@ -419,6 +435,7 @@ function Controller () {
   let piece = pieces.getCurrentPiece();
   piece.generateBlockData();
   let nextPiece = pieces.getNextPiece();
+  nextPiece.generateBlockData();
 
   let pieceData = [];
   let playingGame = false;
@@ -452,6 +469,7 @@ function Controller () {
   this.eventQueue = () => eventQueue;
   // for testing END
 
+  this.getNextPieceGrid = () => board.overlay(this.nextPiece);
 
   function handle(event) {
     switch (event) {
@@ -459,6 +477,7 @@ function Controller () {
     case 'moveRight': move('right'); break;
     case 'moveUp': move('up'); break;
     case 'moveDown': move('down'); break;
+    case 'awardDrop': board.score.awardDrop(); break;
     case 'moveRotate': move('rotate'); break;
     case 'toggleNormalMode': piece.toggleNormalMode(); break;
     case 'pauseGame':
@@ -527,7 +546,6 @@ function Controller () {
     case 'down':
       const oldOffset = piece.indexOffset;
       piece.down();
-      board.score.awardDrop();
       const newOffset = piece.indexOffset;
       if (oldOffset != newOffset && board.fits(piece.blocks)) {
         pieceData.push(piece.getPieceSpecs());
@@ -547,6 +565,8 @@ function Controller () {
         pieces.refreshList();
         piece = pieces.getCurrentPiece();
         piece.generateBlockData();
+        nextPiece = pieces.getNextPiece();
+        nextPiece.generateBlockData();
         eventQueue = [];
         // FIX THIS
         let uiSettings = ui.currentSettings();
@@ -574,7 +594,11 @@ function Controller () {
       switch (kbEvent.code) {
       case 'KeyK': eventQueue.push('moveUp'); handled = true; break;
       case 'KeyJ':
-      case 'ArrowDown': eventQueue.push('moveDown'); handled = true; break;
+      case 'ArrowDown':
+        eventQueue.push('moveDown');
+        eventQueue.push('awardDrop');
+        handled = true;
+        break;
       case 'KeyH':
       case 'ArrowLeft': eventQueue.push('moveLeft'); handled = true; break;
       case 'KeyL':
@@ -633,7 +657,8 @@ function Controller () {
     function frame () {
       now = timeStamp();
       update(Math.min(1, (now - last) / 1000.0));
-      ui.draw(boardChanged, textGrid, board.size, canvasSize);
+      ui.draw(boardChanged, textGrid, board.size, canvasSize,
+              nextPiece.renderGrid());
       boardChanged = ui.getBoardUIisUpdated();
       last = now;
       sleep(50).then(() => {
@@ -671,9 +696,6 @@ function Controller () {
 
 
   const copyTouch = (t) => { return { pageX: t.pageX, pageY: t.pageY } };
-
-  function Touches() {
-  }
 
   function handleMove(evt) {
     evt.preventDefault();
@@ -837,6 +859,8 @@ function Controller () {
 
 function UI (gridSize, canvasSize = [225, 450]) {
   let boardNeedsUIrefresh = false;
+  const nextPieceCanvasSize = [Math.floor(canvasSize[1] / 10),
+                               Math.floor(canvasSize[1] / 10)];
   const uiMode = {'text': 'text', 'canvas': 'canvas'};
   const gameMode = {'normal': 'normalMode', 'noBoundaries': 'noBoundaries'};
   let settings = {'uiMode': uiMode.text, 'gameMode': gameMode.normal};
@@ -964,6 +988,8 @@ function UI (gridSize, canvasSize = [225, 450]) {
                                              'nextPieceWrapperText');
     let nextPieceWrapperCanvas = new domElement('div', statsDiv,
                                              'nextPieceWrapperCanvas');
+    let nextPieceCanvas = new domElement('canvas', nextPieceWrapperCanvas,
+                                         'nextPieceCanvas');
     let statsWrapperText = new domElement('div', statsDiv);
 
     let statsTable = new TableElement(statsWrapperText, 'statsTable',
@@ -1021,14 +1047,19 @@ function UI (gridSize, canvasSize = [225, 450]) {
 
     gameBoardText.style.fontFamily = 'monospace';
     gameBoardText.style.whiteSpace = 'pre-wrap';
-    gameBoardText.style.whiteSpace = 'pre-wrap';
+    nextPieceWrapperText.style.fontFamily = 'monospace';
+    nextPieceWrapperText.style.whiteSpace = 'pre-wrap';
+    //gameBoardText.style.whiteSpace = 'pre-wrap';
 
     gameBoardCanvas.classList.toggle('is-hidden');
-    nextPieceWrapperCanvas.classList.toggle('is-hidden');
     gameBoardCanvas.setAttribute('width', canvasSize[0]);
     gameBoardCanvas.setAttribute('height', canvasSize[1]);
-    const ctx = gameBoardCanvas.getContext('2d');
-    console.log('canvas ctx', ctx)
+
+    nextPieceWrapperCanvas.classList.toggle('is-hidden');
+    nextPieceCanvas.setAttribute('width', nextPieceCanvasSize[0]);
+    nextPieceCanvas.setAttribute('height', nextPieceCanvasSize[1]);
+    //const ctx = gameBoardCanvas.getContext('2d');
+    //console.log('canvas ctx', ctx)
 
         /*
       let nextPiece = new domElement('div', nextPieceWrapperText, 'nextPiece');
@@ -1356,22 +1387,28 @@ function UI (gridSize, canvasSize = [225, 450]) {
     }
   }
 
-  function draw (boardChanged, grid, gridSize, canvasSize) {
+  function draw (boardChanged, grid, gridSize, canvasSize, nextPieceGrid) {
     settings = getCurrentSettings();
+    const nextPieceCanvasSize = [Math.floor(canvasSize[1] / 10),
+                                 Math.floor(canvasSize[1] / 10)];
+    const nextPieceGridSize = [4,4];
     if (boardChanged) {
       //FIX THIS IS WHERE WE ADD CALLS TO UPDATE THE UI
       // CAN REVERT:
       const boardData = calcBoards(grid, gridSize, canvasSize);
       setElementInnerText('gameBoardText', boardData.text);
 
-      //calcBoards (grid = [], size = gridSize, cSize = canvasSize)
-      //const nextPieceData = calcBoards(grid);
-      //setElementInnerText('nextPieceWrapperText', boardData.text);
+      const nextPieceData = calcNextPiece(nextPieceGrid,
+                                          nextPieceGridSize,
+                                          nextPieceCanvasSize);
+      setElementInnerText('nextPieceWrapperText', nextPieceData.text);
 
 
       if (settings.uiMode === uiMode.canvas) {
         renderCanvas('gameBoardCanvas', canvasSize, gridSize,
                      boardData.canvas);
+        renderCanvas('nextPieceCanvas', nextPieceCanvasSize, nextPieceGridSize,
+                     nextPieceData.canvas);
       }
 
       boardNeedsUIrefresh = false;
@@ -1390,16 +1427,16 @@ function UI (gridSize, canvasSize = [225, 450]) {
     let text = getElementById('gameBoardText');
     const currentState = text.classList.contains("is-hidden");
     if (currentState != newState)
-      toggleVisibility(['gameBoardText', 'gameBoardCanvas']);
+      toggleVisibility(['gameBoardText', 'gameBoardCanvas',
+                        'nextPieceWrapperText', 'nextPieceWrapperCanvas']);
   }
 
   this.calcBoards = (x,y,z) => calcBoards(x,y,z);
-  this.calcNextPiece = (x,y,z) => calcBoards(x,y,z);
+  this.calcNextPiece = (x,y,z) => calcNextPiece(x,y,z);
 
   this.getGridSize = () => gridSize;
   this.getCanvasSize = () => canvasSize;
-  this.draw = (boardChanged, grid, size, canvasSize) =>
-    draw(boardChanged, grid, size, canvasSize);
+  this.draw = (v, w, x, y, z) => draw(v, w, x, y, z);
   this.initUI = () => initUI();
   this.setState = (state) => setUIstate(state);
   //this.getElementById = (id) => getElementById(id);

@@ -440,9 +440,10 @@ describe('Pieces Object', () => {
     pieceList.refreshList();
     let p1 = pieceList.getCurrentPiece();
     let np2 = pieceList.getNextPiece();
-    expect(np2.gridSize).toEqual([10,20]);
+    //expect(np2.gridSize).toEqual([10,20]);
+    expect(np2.gridSize).toEqual([4,4]);
 
-    const len = pieceList.shuffled.length
+    const len = pieceList.shuffled.length;
 
     pieceList.refreshList();
     let p2 = pieceList.getCurrentPiece();
