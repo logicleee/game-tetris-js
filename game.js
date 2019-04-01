@@ -414,11 +414,12 @@ function Controller () {
   let canvasSize = [225, 450];
   let board = new Board(boardSize);
   let pieces = new Pieces(boardSize);
-  let ui = new UI(boardSize, canvasSize);
-  //REMOVE-Z let piece = pieces.nextPiece();
   pieces.refreshList();
+  let ui = new UI(boardSize, canvasSize);
   let piece = pieces.getCurrentPiece();
   piece.generateBlockData();
+  let nextPiece = pieces.getNextPiece();
+
   let pieceData = [];
   let playingGame = false;
   let boardChanged = true;
@@ -1195,28 +1196,81 @@ function UI (gridSize, canvasSize = [225, 450]) {
     return result;
   }
 
-  function getBoardBackgrounds(j) {
+  const boardBackgroundsNormal = {'text': ' ', 'canvasColor':  getColor(0)};
+
+  const boardBackgroundsAlternate = {'text': '.', 'canvasColor':  getColor(1)};
+
+  function calcBoardBackgrounds(j) {
     if (j % 2) {
-      return {'text': ' ',
-              'canvasColor':  getColor(0)
-             };
+      return boardBackgroundsNormal;
     }
     else {
-      return {'text': '.',
-              'canvasColor':  getColor(1)
-             };
+      return boardBackgroundsAlternate;
     }
   };
 
+  function calcBlockColorWithBg (i, j, block, board, blockColor) {
+    let result = {'canvas': {}, 'text': ''};
+    if (blockColor === 0) {
+      const backgrounds = calcBoardBackgrounds(0);
+      result.canvas = new CanvasBlock(i, backgrounds.canvasColor,
+                                      board, block);
+      result.text += backgrounds.text;
+    } else {
+      const color = getColor(blockColor);
+      result.canvas = new CanvasBlock(i, color, board, block);
+      result.text += 'X';
+    }
+
+    if ((j + 1) >= board.columns) {
+      result.text += '\n';
+    }
+
+    return result;
+  }
+
+  function calcBlockColorWithAltBg (i, j, block, board, blockColor) {
+    let result = {'canvas': {}, 'text': ''};
+    if (blockColor === 0) {
+      const backgrounds = calcBoardBackgrounds(j);
+      result.canvas = new CanvasBlock(i, backgrounds.canvasColor,
+                                      board, block);
+      result.text += backgrounds.text;
+    } else {
+      const color = getColor(blockColor);
+      result.canvas = new CanvasBlock(i, color, board, block);
+      result.text += 'X';
+    }
+
+    if ((j + 1) >= board.columns) {
+      result.text += '\n';
+    }
+
+    return result;
+  }
+
+  function renderTextGameBoard (string, board) {
+    const content = {string: string,
+                     delimiter: '\n', width: board.columns,
+                     height: board.rows};
+    const padding = {top: 0, bottom: 0 , left: 0, right: 0, fill: ' '};
+    const border = {topFill: '_', bottomFill: '^' ,
+                    leftFill: '|', rightFill: '|' };
+    const margin = {top: 0, bottom: 0 , left: 1, right: 1, fill: ' '};
+
+    return renderTextContent(content, padding, border, margin);
+
+  }
+
   function calcBoards (grid = [], size = gridSize, cSize = canvasSize) {
-    const maxX = size[0];
-    const maxY = size[1];
-    const canvasWidth = cSize[0];
     let result = {text: '', canvas: []};
+
     const board = {
       width: (Math.floor(cSize[0] / size[0]) * size[0]),
       height: (Math.floor(cSize[1] / size[1]) * size[1]),
-      blockCount: size[0] * size[1]
+      blockCount: size[0] * size[1],
+      columns: size[0],
+      rows: size[1]
     };
 
     const block = {
@@ -1224,68 +1278,66 @@ function UI (gridSize, canvasSize = [225, 450]) {
       height: Math.floor(board.height / size[1])
     };
 
+
     let j = 0;
 
     for (let i=0; i < grid.length; i++) {
       result.canvas[i] = {};
-      const currBlock = grid[i].color;
 
-      if (currBlock === 0) {
-        const backgrounds = getBoardBackgrounds(j);
-        result.canvas[i] = new CanvasBlock(i, backgrounds.canvasColor,
-                                           board, block);
-        result.text += backgrounds.text;
-      } else {
-        const color = getColor(grid[i].color);
-        result.canvas[i] = new CanvasBlock(i, color, board, block);
-        result.text += 'X';
-      }
+      const blockColor = grid[i].color;
+      const blockValues = calcBlockColorWithAltBg(i, j, block, board, blockColor);
+      result.canvas[i] = blockValues.canvas;
+      result.text += blockValues.text;
 
       j++;
 
-      if (j >= maxX) {
-        result.text += '\n';
+      if (j >= board.columns) {
         j = 0;
       }
     }
 
-    const content = {string: result.text,
-                     delimiter: '\n', width: maxX, height: maxY};
-    const padding = {top: 0, bottom: 0 , left: 0, right: 0, fill: ' '};
-    const border = {topFill: '_', bottomFill: '^' ,
-                    leftFill: '|', rightFill: '|' };
-    const margin = {top: 0, bottom: 0 , left: 1, right: 1, fill: ' '};
-    result.text = renderTextContent(content, padding, border, margin);
+    result.text = renderTextGameBoard(result.text, board);
+
     return result;
   };
 
-  function renderGridAsText (grid = [], size = gridSize) {
-    const maxX = size[0];
+  function calcNextPiece (grid = [], size = gridSize, cSize = canvasSize) {
+    let result = {text: '', canvas: []};
+
+    const board = {
+      width: (Math.floor(cSize[0] / size[0]) * size[0]),
+      height: (Math.floor(cSize[1] / size[1]) * size[1]),
+      blockCount: size[0] * size[1],
+      columns: size[0],
+      rows: size[1]
+    };
+
+    const block = {
+      width:  Math.floor(board.width / size[0]),
+      height: Math.floor(board.height / size[1])
+    };
+
+
     let j = 0;
-    //let result = '';
-    // create top border
-    let result = '  ' + ('_').repeat(maxX) +' \n';
+
     for (let i=0; i < grid.length; i++) {
-      const currBlock = grid[i].color;
-      if ( j === 0)
-        result += ' |';
-      if (currBlock === 0) {
-        if (j % 2)
-          result += ' ';
-        else
-          result += '.';
-      } else {
-        result += currBlock;
-      }
+      result.canvas[i] = {};
+
+      const blockColor = grid[i].color;
+      const blockValues = calcBlockColorWithBg(i, j, block, board, blockColor);
+      result.canvas[i] = blockValues.canvas;
+      result.text += blockValues.text;
+
       j++;
-      if (j >= maxX) {
-        result += '| \n';
+
+      if (j >= board.columns) {
         j = 0;
       }
     }
-    result += ' ^' + ('^').repeat(maxX) +'^';
+
     return result;
   };
+
 
   function setUIstate (state) {
     switch (state) {
@@ -1309,7 +1361,7 @@ function UI (gridSize, canvasSize = [225, 450]) {
     if (boardChanged) {
       //FIX THIS IS WHERE WE ADD CALLS TO UPDATE THE UI
       // CAN REVERT:
-      const boardData = calcBoards(grid);
+      const boardData = calcBoards(grid, gridSize, canvasSize);
       setElementInnerText('gameBoardText', boardData.text);
 
       //calcBoards (grid = [], size = gridSize, cSize = canvasSize)
@@ -1341,14 +1393,13 @@ function UI (gridSize, canvasSize = [225, 450]) {
       toggleVisibility(['gameBoardText', 'gameBoardCanvas']);
   }
 
-  //this.calcBoards = (x,y,z) => calcBoards(x,y,z);
   this.calcBoards = (x,y,z) => calcBoards(x,y,z);
+  this.calcNextPiece = (x,y,z) => calcBoards(x,y,z);
 
   this.getGridSize = () => gridSize;
   this.getCanvasSize = () => canvasSize;
   this.draw = (boardChanged, grid, size, canvasSize) =>
     draw(boardChanged, grid, size, canvasSize);
-  this.renderGridAsText = (grid) => renderGridAsText(grid);
   this.initUI = () => initUI();
   this.setState = (state) => setUIstate(state);
   //this.getElementById = (id) => getElementById(id);
