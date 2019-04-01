@@ -126,6 +126,17 @@ function Piece (type, rotation = 0, gridSize = [10,20], indexOffset = 3) {
     'color': templates.data[type].color
   };
 
+  this.renderGrid = () => {
+    const block = {'color': 0};
+    function reset ([x,y]) { return Array(x*y).fill(block); }
+    let result = reset(this.gridSize);
+    this.blocks.forEach(b =>{
+      result[b] = {'color': this.color};
+    });
+
+    return result;
+  };
+
   this.normalMode = true; // allows left right commands to split blocks
   this.gridSize = gridSize;
   this.indexOffset = indexOffset;
@@ -218,72 +229,37 @@ function Piece (type, rotation = 0, gridSize = [10,20], indexOffset = 3) {
 function Pieces (gridSize = [10,20], indexOffset = 3) {
    this.data = {
     "i": {
-      "allBlocks": [
-        [1,5,9,13],
-        [4,5,6,7],
-        [2,6,10,14],
-        [8,9,10,11]
-      ],
+      "allBlocks": [[1,5,9,13], [4,5,6,7], [2,6,10,14], [8,9,10,11]],
       "size": [4,4],
       "color": 2
     },
     "j": {
-      "allBlocks": [
-        [1,5,8,9],
-        [0,4,5,6],
-        [1,2,5,9],
-        [0,1,2,6]
-      ],
+      "allBlocks": [[1,5,8,9], [0,4,5,6], [1,2,5,9], [0,1,2,6]],
       "size": [4,4],
       "color": 3
     },
     "l": {
-      "allBlocks": [
-        [1,5,9,10],
-        [4,5,6,8],
-        [0,1,5,9],
-        [2,4,5,6]
-      ],
+      "allBlocks": [[1,5,9,10], [4,5,6,8], [0,1,5,9], [2,4,5,6]],
       "size": [4,4],
       "color": 4
     },
     "o": {
-      "allBlocks": [
-        [0,1,4,5],
-        [0,1,4,5],
-        [0,1,4,5],
-        [0,1,4,5]
-      ],
+      "allBlocks": [[0,1,4,5], [0,1,4,5], [0,1,4,5], [0,1,4,5]],
       "size": [4,4],
       "color": 5
     },
     "s": {
-      "allBlocks": [
-        [5,6,8,9],
-        [0,4,5,9],
-        [1,2,4,5],
-        [1,5,6,10]
-      ],
+      "allBlocks": [[5,6,8,9], [0,4,5,9], [1,2,4,5], [1,5,6,10]],
       "size": [4,4],
       "color": 6
     },
     "t": {
-      "allBlocks": [
-        [4,5,6,9],
-        [1,4,5,9],
-        [1,4,5,6],
-        [1,5,6,9]
-      ],
+      "allBlocks": [[4,5,6,9], [1,4,5,9], [1,4,5,6], [1,5,6,9]],
       "size": [4,4],
       "color": 7
     },
     "z": {
-      "allBlocks": [
-        [4,5,9,10],
-        [1,4,5,8],
-        [0,1,5,6],
-        [2,5,6,9]
-      ],
+      "allBlocks": [[4,5,9,10], [1,4,5,8], [0,1,5,6], [2,5,6,9]],
       "size": [4,4],
       "color": 8
     }
@@ -291,15 +267,31 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
 
   this.ordered = generateList(this.data);
   this.list = shuffle(this.ordered);
-  this.shuffle = function() { this.shuffled = shuffle(this.ordered); };
-  this.shuffle();
-  this.nextPiece = function() {
-    if (this.shuffled.length < 1) {
+  this.getCurrentPiece = () => this.currentPiece;
+  this.getNextPiece = () => this.nextPiece;
+
+  this.shuffle = function() {
+    if (! Array.isArray(this.shuffled))
+      this.shuffled = [];
+    //this.shuffled = this.shuffled.concat(shuffle(this.ordered));
+    this.shuffled = shuffle(this.ordered).concat(this.shuffled);
+  };
+
+  this.refreshList = function() {
+    if (this.shuffled.length < 3) {
       this.shuffle();
     }
     const p = this.shuffled.pop();
-    let newPiece = new Piece(p.type, p.rotation, p.gridSize, p.indexOffset);
-    return newPiece;
+    this.currentPiece = new Piece(p.type, p.rotation,
+                                  p.gridSize, p.indexOffset);
+    const np = this.shuffled[this.shuffled.length - 1];
+    /*
+      this.nextPiece = new Piece(np.type, np.rotation,
+      [4,4], np.indexOffset);
+    */
+      this.nextPiece = new Piece(np.type, np.rotation,
+      [4,4], 0);
+
   };
 
   function generateList (p) {
@@ -315,11 +307,11 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
     return result;
   }
 
-  /*
-    Implementing Fisher and Yates shuffle based on wikipedia:
-    https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
-  */
   function shuffle(array) {
+    /*
+      Implementing Fisher and Yates shuffle based on wikipedia:
+      https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
+    */
     let arr = array.slice();
     const swapInArr = (a,x,y) => [a[x], a[y]] = [a[y], a[x]];
     const len = arr.length;
@@ -331,6 +323,14 @@ function Pieces (gridSize = [10,20], indexOffset = 3) {
     }
     return arr;
   }
+
+  this.init = () => {
+    this.shuffle();
+    this.currentPiece = {};
+    this.nextPiece = [];
+  };
+
+  this.init();
 }
 
 function Board(size = [10,20]) {
@@ -394,6 +394,7 @@ function Board(size = [10,20]) {
     return true;  // if in bounds, return true
   };
 
+
   this.overlay = function (piece) {
     let result = this.grid.slice();
     piece.blocks.forEach(b =>{
@@ -404,6 +405,7 @@ function Board(size = [10,20]) {
   };
 
   this.update = function (piece) {
+    //FIX/REMOVE hardDrop doesn't do anything
     let hardDrop=false;
     const overlay = this.overlay(piece);
     const newRowsObject =
@@ -428,9 +430,13 @@ function Controller () {
   let canvasSize = [225, 450];
   let board = new Board(boardSize);
   let pieces = new Pieces(boardSize);
+  pieces.refreshList();
   let ui = new UI(boardSize, canvasSize);
-  let piece = pieces.nextPiece();
+  let piece = pieces.getCurrentPiece();
   piece.generateBlockData();
+  let nextPiece = pieces.getNextPiece();
+  nextPiece.generateBlockData();
+
   let pieceData = [];
   let playingGame = false;
   let boardChanged = true;
@@ -463,6 +469,7 @@ function Controller () {
   this.eventQueue = () => eventQueue;
   // for testing END
 
+  this.getNextPieceGrid = () => board.overlay(this.nextPiece);
 
   function handle(event) {
     switch (event) {
@@ -470,6 +477,7 @@ function Controller () {
     case 'moveRight': move('right'); break;
     case 'moveUp': move('up'); break;
     case 'moveDown': move('down'); break;
+    case 'awardDrop': board.score.awardDrop(); break;
     case 'moveRotate': move('rotate'); break;
     case 'toggleNormalMode': piece.toggleNormalMode(); break;
     case 'pauseGame':
@@ -538,7 +546,6 @@ function Controller () {
     case 'down':
       const oldOffset = piece.indexOffset;
       piece.down();
-      board.score.awardDrop();
       const newOffset = piece.indexOffset;
       if (oldOffset != newOffset && board.fits(piece.blocks)) {
         pieceData.push(piece.getPieceSpecs());
@@ -554,8 +561,12 @@ function Controller () {
         boardEvent = board.update(piece);
         boardChanged = boardEvent.boardChanged;
         scoreChanged = boardEvent.scoreChanged;
-        piece = pieces.nextPiece();
+        //REMOVE- piece = pieces.nextPiece();
+        pieces.refreshList();
+        piece = pieces.getCurrentPiece();
         piece.generateBlockData();
+        nextPiece = pieces.getNextPiece();
+        nextPiece.generateBlockData();
         eventQueue = [];
         // FIX THIS
         let uiSettings = ui.currentSettings();
@@ -583,7 +594,11 @@ function Controller () {
       switch (kbEvent.code) {
       case 'KeyK': eventQueue.push('moveUp'); handled = true; break;
       case 'KeyJ':
-      case 'ArrowDown': eventQueue.push('moveDown'); handled = true; break;
+      case 'ArrowDown':
+        eventQueue.push('moveDown');
+        eventQueue.push('awardDrop');
+        handled = true;
+        break;
       case 'KeyH':
       case 'ArrowLeft': eventQueue.push('moveLeft'); handled = true; break;
       case 'KeyL':
@@ -642,7 +657,8 @@ function Controller () {
     function frame () {
       now = timeStamp();
       update(Math.min(1, (now - last) / 1000.0));
-      ui.draw(boardChanged, textGrid, board.size, canvasSize);
+      ui.draw(boardChanged, textGrid, board.size, canvasSize,
+              nextPiece.renderGrid());
       boardChanged = ui.getBoardUIisUpdated();
       last = now;
       sleep(50).then(() => {
@@ -680,9 +696,6 @@ function Controller () {
 
 
   const copyTouch = (t) => { return { pageX: t.pageX, pageY: t.pageY } };
-
-  function Touches() {
-  }
 
   function handleMove(evt) {
     evt.preventDefault();
@@ -815,7 +828,11 @@ function Controller () {
     ui.setState('paused');
     board = new Board(boardSize);
     pieces = new Pieces(boardSize);
-    piece = pieces.nextPiece();
+
+    //REMOVE- piece = pieces.nextPiece();
+    pieces.refreshList();
+    piece = pieces.getCurrentPiece();
+
     piece.generateBlockData();
     pieceData = [];
     playingGame = false;
@@ -841,8 +858,9 @@ function Controller () {
 }
 
 function UI (gridSize, canvasSize = [225, 450]) {
-  console.log('this is the canvas size', canvasSize)
   let boardNeedsUIrefresh = false;
+  const nextPieceCanvasSize = [Math.floor(canvasSize[1] / 10),
+                               Math.floor(canvasSize[1] / 10)];
   const uiMode = {'text': 'text', 'canvas': 'canvas'};
   const gameMode = {'normal': 'normalMode', 'noBoundaries': 'noBoundaries'};
   let settings = {'uiMode': uiMode.text, 'gameMode': gameMode.normal};
@@ -860,9 +878,8 @@ function UI (gridSize, canvasSize = [225, 450]) {
 
   const colors = ['slateBlueLight', 'slateBlue', 'red', 'yellow',
                   'purple', 'darkBlue', 'teal', 'green', 'orange'];
+
   const getColor = (n) => colorScheme[colors[n]];
-
-
   const getElementById = (id) => document.getElementById(id);
   const setElementInnerText = (id, text) => getElementById(id).innerText = text;
 
@@ -880,7 +897,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
     return result;
   }
 
-  //let a = new TableElement (parent, id, colWidths, fixed, width)
   function TableElement (parent = false, id = false, colWidths = [],
                          fixed = true, width = '100%') {
 
@@ -924,8 +940,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
     };
   }
 
-
-  // (parent , id , name , value , checked , label )
   function RadioButtonAndLabel (parent = false, id = false, name = false,
                                 value = false, checked = false, label = false) {
 
@@ -967,13 +981,18 @@ function UI (gridSize, canvasSize = [225, 450]) {
     let tetrisGame = new domElement('div', viewPort, 'tetris-content');
     let statsDiv = new domElement('div', tetrisGame, 'statsDiv', 'stats');
     let settingsWrapper = new domElement('div', statsDiv, 'settingsWrapper');
-    let settingsButton = new domElement('button', settingsWrapper, false, 'button', 'Settings');
+    let settingsButton = new domElement('button', settingsWrapper,
+                                        false, 'button', 'Settings');
     settingsButton.classList.add('open-modal');
-    let nextPieceWrapper = new domElement('div', statsDiv, 'nextPieceWrapper');
-    let statsWrapper = new domElement('div', statsDiv);
+    let nextPieceWrapperText = new domElement('div', statsDiv,
+                                             'nextPieceWrapperText');
+    let nextPieceWrapperCanvas = new domElement('div', statsDiv,
+                                             'nextPieceWrapperCanvas');
+    let nextPieceCanvas = new domElement('canvas', nextPieceWrapperCanvas,
+                                         'nextPieceCanvas');
+    let statsWrapperText = new domElement('div', statsDiv);
 
-    //let a = new TableElement (parent, id, colWidths, fixed, width)
-    let statsTable = new TableElement(statsWrapper, 'statsTable',
+    let statsTable = new TableElement(statsWrapperText, 'statsTable',
                                       ['30%', '70%'], true, '100%');
     let row0 = new domElement('tr',statsTable);
     let row1 = new domElement('tr',statsTable);
@@ -1000,7 +1019,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
                                           'Play Setting');
     let modalRadioDiv1 = new domElement('div', modalForm, false, false);
 
-    // (parent , id , name , value , checked , label )
     let modalPlayNormalButton =
         new RadioButtonAndLabel(modalRadioDiv1, 'tetris-modal-normal-mode',
                                 'playMode', gameMode.normal,
@@ -1029,17 +1047,23 @@ function UI (gridSize, canvasSize = [225, 450]) {
 
     gameBoardText.style.fontFamily = 'monospace';
     gameBoardText.style.whiteSpace = 'pre-wrap';
-    gameBoardText.style.whiteSpace = 'pre-wrap';
+    nextPieceWrapperText.style.fontFamily = 'monospace';
+    nextPieceWrapperText.style.whiteSpace = 'pre-wrap';
+    //gameBoardText.style.whiteSpace = 'pre-wrap';
 
     gameBoardCanvas.classList.toggle('is-hidden');
     gameBoardCanvas.setAttribute('width', canvasSize[0]);
     gameBoardCanvas.setAttribute('height', canvasSize[1]);
-    const ctx = gameBoardCanvas.getContext('2d');
-    console.log('canvas ctx', ctx)
+
+    nextPieceWrapperCanvas.classList.toggle('is-hidden');
+    nextPieceCanvas.setAttribute('width', nextPieceCanvasSize[0]);
+    nextPieceCanvas.setAttribute('height', nextPieceCanvasSize[1]);
+    //const ctx = gameBoardCanvas.getContext('2d');
+    //console.log('canvas ctx', ctx)
 
         /*
-      let nextPiece = new domElement('div', nextPieceWrapper, 'nextPiece');
-      let nextPiece = new domElement('canvas', nextPieceWrapper,
+      let nextPiece = new domElement('div', nextPieceWrapperText, 'nextPiece');
+      let nextPiece = new domElement('canvas', nextPieceWrapperText,
                                      'nextPiece');
                                      */
   }
@@ -1086,107 +1110,265 @@ function UI (gridSize, canvasSize = [225, 450]) {
     ctx.restore();
   };
 
+  function renderTextContent(content, padding, border, margin){
+    // Box model inside -> out: content > padding > border > margin
+    if (! content)
+      return '';
+    if (! padding)
+      padding = {top: 0, bottom: 0 , left: 0, right: 0, fill: ' '};
+    if (padding.fill.length === 0)
+      padding.fill = ' ';
+    if (! border)
+      border = {topFill: '', bottomFill: '' , leftFill: '', rightFill: '' };
+    if (! margin)
+      margin = {top: 0, bottom: 0 , left: 0, right: 0, fill: ' '};
+
+    const stringFill = (fill, delimiter, width, height) =>
+          '' + ((fill).repeat(width) + delimiter).repeat(height);
+
+    padding.width = content.width + padding.left + padding.right;
+    padding.height = content.height + padding.top + padding.bottom;
+
+    border.width = padding.width + border.leftFill.length +
+      border.rightFill.length;
+    border.height = padding.height + border.topFill.length +
+      border.bottomFill.length;
+
+    border.topHeight = border.topFill.length > 0 ? 1 : 0;
+    border.bottomHeight = border.bottomFill.length > 0 ? 1 : 0;
+
+    margin.width = border.width + margin.left + margin.right;
+    margin.height = border.height + margin.top + margin.bottom;
+
+    const blankContent = padding.fill.repeat(content.width);
+    const leftMargin = margin.fill.repeat(margin.left);
+    const rightMargin = margin.fill.repeat(margin.right);
+    const leftPadding = padding.fill.repeat(padding.left);
+    const rightPadding = padding.fill.repeat(padding.right);
+
+    const leftSide = leftMargin + border.leftFill + leftPadding;
+    const rightSide = rightPadding + border.rightFill + rightMargin;
+    const rightDelimLeft = rightSide + content.delimiter + leftSide;
+
+    const topMargin  = stringFill(margin.fill, content.delimiter,
+                                  margin.width, margin.top);
+    const bottomMargin = stringFill(margin.fill, content.delimiter,
+                                    margin.width, margin.bottom);
+
+    let topBorder = '';
+    if (border.topHeight > 0) {
+      topBorder += leftMargin + border.topFill.repeat(border.width) +
+        rightMargin;
+      topBorder = stringFill(topBorder, content.delimiter,
+                             1, border.topHeight);
+    }
+
+    let bottomBorder = '';
+    if (border.bottomHeight > 0) {
+      bottomBorder += leftMargin + border.bottomFill.repeat(border.width) +
+        rightMargin;
+      bottomBorder = stringFill(bottomBorder, content.delimiter,
+                                1, border.bottomHeight);
+    }
+
+    const topPadding = '' + stringFill(leftSide + blankContent + rightSide,
+                                       content.delimiter,
+                                       1, padding.top);
+
+    const bottomPadding = '' + stringFill(leftSide + blankContent + rightSide,
+                                          content.delimiter,
+                                          1, padding.bottom);
+
+
+    //strip delims from the end of content
+    let result = content.string.slice();
+
+    if (content.string.length === 0) {
+      result = stringFill(padding.fill, content.delimiter,
+                          content.width, content.height);
+    }
+
+    let re = new RegExp(content.delimiter + '*$');
+    result = result.replace(re, '');
+
+
+    // then replace all delimiters with rp + rb + rm + delim + lm + lb + lp
+    re = new RegExp(content.delimiter, 'g');
+    result = result.replace(re, rightDelimLeft);
+
+    // add the final right side and delimiter
+    result += rightSide + content.delimiter;
+    // then add left margin + left border + left padding to beginning
+    result = leftSide + result;
+
+    // END Add top and bottom padding, border, and margins (last step)
+    result = topMargin + topBorder + topPadding + result;
+    result += bottomPadding + bottomBorder + bottomMargin;
+
+    return result;
+
+  };
+
+  function CanvasBlock(index,color,board,block) {
+    const col = (index, columnCount) => Math.floor(index % columnCount);
+    const row = (index, columnCount) => Math.floor(index / columnCount);
+    const colOffset = (i, cc, w) => col(i, cc / w) * w;
+    const rowOffset = (i, cc, w, h) => row(i, cc / w) * h;
+
+    let result = {};
+    result.color = color;
+    result.index = index;
+    result.blockData = [
+      colOffset(index, board.width, block.width),
+      rowOffset(index, board.width, block.width, block.height),
+      block.width,
+      block.height
+    ];
+    return result;
+  }
+
+  const boardBackgroundsNormal = {'text': ' ', 'canvasColor':  getColor(0)};
+
+  const boardBackgroundsAlternate = {'text': '.', 'canvasColor':  getColor(1)};
+
+  function calcBoardBackgrounds(j) {
+    if (j % 2) {
+      return boardBackgroundsNormal;
+    }
+    else {
+      return boardBackgroundsAlternate;
+    }
+  };
+
+  function calcBlockColorWithBg (i, j, block, board, blockColor) {
+    let result = {'canvas': {}, 'text': ''};
+    if (blockColor === 0) {
+      const backgrounds = calcBoardBackgrounds(0);
+      result.canvas = new CanvasBlock(i, backgrounds.canvasColor,
+                                      board, block);
+      result.text += backgrounds.text;
+    } else {
+      const color = getColor(blockColor);
+      result.canvas = new CanvasBlock(i, color, board, block);
+      result.text += 'X';
+    }
+
+    if ((j + 1) >= board.columns) {
+      result.text += '\n';
+    }
+
+    return result;
+  }
+
+  function calcBlockColorWithAltBg (i, j, block, board, blockColor) {
+    let result = {'canvas': {}, 'text': ''};
+    if (blockColor === 0) {
+      const backgrounds = calcBoardBackgrounds(j);
+      result.canvas = new CanvasBlock(i, backgrounds.canvasColor,
+                                      board, block);
+      result.text += backgrounds.text;
+    } else {
+      const color = getColor(blockColor);
+      result.canvas = new CanvasBlock(i, color, board, block);
+      result.text += 'X';
+    }
+
+    if ((j + 1) >= board.columns) {
+      result.text += '\n';
+    }
+
+    return result;
+  }
+
+  function renderTextGameBoard (string, board) {
+    const content = {string: string,
+                     delimiter: '\n', width: board.columns,
+                     height: board.rows};
+    const padding = {top: 0, bottom: 0 , left: 0, right: 0, fill: ' '};
+    const border = {topFill: '_', bottomFill: '^' ,
+                    leftFill: '|', rightFill: '|' };
+    const margin = {top: 0, bottom: 0 , left: 1, right: 1, fill: ' '};
+
+    return renderTextContent(content, padding, border, margin);
+
+  }
+
   function calcBoards (grid = [], size = gridSize, cSize = canvasSize) {
-    const maxX = size[0];
-    const canvasWidth = cSize[0];
     let result = {text: '', canvas: []};
+
     const board = {
       width: (Math.floor(cSize[0] / size[0]) * size[0]),
       height: (Math.floor(cSize[1] / size[1]) * size[1]),
-      blockCount: size[0] * size[1]
+      blockCount: size[0] * size[1],
+      columns: size[0],
+      rows: size[1]
     };
-
 
     const block = {
       width:  Math.floor(board.width / size[0]),
       height: Math.floor(board.height / size[1])
     };
 
-    const col = (index, columnCount) => Math.floor(index % columnCount);
-    const row = (index, columnCount) => Math.floor(index / columnCount);
-    const colOffset = (i, cc, w) => col(i, cc / w) * w;
-    const rowOffset = (i, cc, w, h) => row(i, cc / w) * h;
+
     let j = 0;
-    //let result = '';
-    // create top border
-    result.text = '  ' + ('_').repeat(maxX) +' \n';
+
     for (let i=0; i < grid.length; i++) {
       result.canvas[i] = {};
-      const currBlock = grid[i].color;
-      //console.log('data',i, board.width, block.width, block.height);
-      if ( j === 0)
-        result.text += ' |';
-      if (currBlock === 0) {
-        if (j % 2) {
-          result.canvas[i].color = getColor(0);
-          result.canvas[i].index = i;
-          result.canvas[i].blockData = [
-            colOffset(i, board.width, block.width),
-            rowOffset(i, board.width, block.width, block.height),
-            block.width,
-            block.height
-          ];
-          result.text += ' ';
-        }
-        else {
-          result.canvas[i].color = getColor(1);
-          result.canvas[i].index = i;
-          result.canvas[i].blockData = [
-            colOffset(i, board.width, block.width),
-            rowOffset(i, board.width, block.width, block.height),
-            block.width,
-            block.height
-          ];
-          result.text += '.';
-        }
-      } else {
-        result.text += currBlock;
-        result.canvas[i].color = getColor(grid[i].color);
-        result.canvas[i].index = i;
-        result.canvas[i].blockData = [
-          colOffset(i, board.width, block.width),
-          rowOffset(i, board.width, block.width, block.height),
-          block.width,
-          block.height
-          ];
-      }
+
+      const blockColor = grid[i].color;
+      const blockValues = calcBlockColorWithAltBg(i, j, block, board, blockColor);
+      result.canvas[i] = blockValues.canvas;
+      result.text += blockValues.text;
+
       j++;
-      if (j >= maxX) {
-        result.text += '| \n';
+
+      if (j >= board.columns) {
         j = 0;
       }
     }
-    result.text += ' ^' + ('^').repeat(maxX) +'^';
+
+    result.text = renderTextGameBoard(result.text, board);
+
     return result;
   };
 
-  function renderGridAsText (grid = [], size = gridSize) {
-    const maxX = size[0];
+  function calcNextPiece (grid = [], size = gridSize, cSize = canvasSize) {
+    let result = {text: '', canvas: []};
+
+    const board = {
+      width: (Math.floor(cSize[0] / size[0]) * size[0]),
+      height: (Math.floor(cSize[1] / size[1]) * size[1]),
+      blockCount: size[0] * size[1],
+      columns: size[0],
+      rows: size[1]
+    };
+
+    const block = {
+      width:  Math.floor(board.width / size[0]),
+      height: Math.floor(board.height / size[1])
+    };
+
+
     let j = 0;
-    //let result = '';
-    // create top border
-    let result = '  ' + ('_').repeat(maxX) +' \n';
+
     for (let i=0; i < grid.length; i++) {
-      const currBlock = grid[i].color;
-      if ( j === 0)
-        result += ' |';
-      if (currBlock === 0) {
-        if (j % 2)
-          result += ' ';
-        else
-          result += '.';
-      } else {
-        result += currBlock;
-      }
+      result.canvas[i] = {};
+
+      const blockColor = grid[i].color;
+      const blockValues = calcBlockColorWithBg(i, j, block, board, blockColor);
+      result.canvas[i] = blockValues.canvas;
+      result.text += blockValues.text;
+
       j++;
-      if (j >= maxX) {
-        result += '| \n';
+
+      if (j >= board.columns) {
         j = 0;
       }
     }
-    result += ' ^' + ('^').repeat(maxX) +'^';
+
     return result;
   };
+
 
   function setUIstate (state) {
     switch (state) {
@@ -1205,16 +1387,28 @@ function UI (gridSize, canvasSize = [225, 450]) {
     }
   }
 
-  function draw (boardChanged, grid, gridSize, canvasSize) {
+  function draw (boardChanged, grid, gridSize, canvasSize, nextPieceGrid) {
     settings = getCurrentSettings();
+    const nextPieceCanvasSize = [Math.floor(canvasSize[1] / 10),
+                                 Math.floor(canvasSize[1] / 10)];
+    const nextPieceGridSize = [4,4];
     if (boardChanged) {
-      const boardData = calcBoards(grid);
-      //console.log(boardData.canvas)
+      //FIX THIS IS WHERE WE ADD CALLS TO UPDATE THE UI
+      // CAN REVERT:
+      const boardData = calcBoards(grid, gridSize, canvasSize);
       setElementInnerText('gameBoardText', boardData.text);
+
+      const nextPieceData = calcNextPiece(nextPieceGrid,
+                                          nextPieceGridSize,
+                                          nextPieceCanvasSize);
+      setElementInnerText('nextPieceWrapperText', nextPieceData.text);
+
 
       if (settings.uiMode === uiMode.canvas) {
         renderCanvas('gameBoardCanvas', canvasSize, gridSize,
                      boardData.canvas);
+        renderCanvas('nextPieceCanvas', nextPieceCanvasSize, nextPieceGridSize,
+                     nextPieceData.canvas);
       }
 
       boardNeedsUIrefresh = false;
@@ -1233,19 +1427,19 @@ function UI (gridSize, canvasSize = [225, 450]) {
     let text = getElementById('gameBoardText');
     const currentState = text.classList.contains("is-hidden");
     if (currentState != newState)
-      toggleVisibility(['gameBoardText', 'gameBoardCanvas']);
+      toggleVisibility(['gameBoardText', 'gameBoardCanvas',
+                        'nextPieceWrapperText', 'nextPieceWrapperCanvas']);
   }
+
+  this.calcBoards = (x,y,z) => calcBoards(x,y,z);
+  this.calcNextPiece = (x,y,z) => calcNextPiece(x,y,z);
 
   this.getGridSize = () => gridSize;
   this.getCanvasSize = () => canvasSize;
-  this.draw = (boardChanged, grid, size, canvasSize) =>
-    draw(boardChanged, grid, size, canvasSize);
-  this.renderGridAsText = (grid) => renderGridAsText(grid);
+  this.draw = (v, w, x, y, z) => draw(v, w, x, y, z);
   this.initUI = () => initUI();
   this.setState = (state) => setUIstate(state);
   //this.getElementById = (id) => getElementById(id);
-  this.hideElementById = (id) => hideElementById(id);
-  this.showElementById = (id) => showElementById(id);
   this.setElementInnerText = (id, text) => setElementInnerText(id,text);
   this.getBoardUIisUpdated = () => boardNeedsUIrefresh;
   this.updateScore = (score, rows) => {

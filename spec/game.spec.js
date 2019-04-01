@@ -419,18 +419,54 @@ describe('Pieces Object', () => {
     expect(pieceList.shuffled.length).toBe(pieceList.ordered.length);
   });
 
-  test('nextPiece returns unique pieces', () => {
-    //console.log(pieceList.nextPiece());
-    let p1 = pieceList.nextPiece();
-    let p2 = pieceList.nextPiece();
+  test('It returns unique pieces when Pieces.refreshList() is called', () => {
+    pieceList.refreshList();
+    let p1 = pieceList.getCurrentPiece();
+    pieceList.refreshList();
+    let p2 = pieceList.getCurrentPiece();
     expect(Array.isArray(p1.gridSize)).toBe(true);
     expect(p1.gridSize).toEqual([10,20]);
     expect((p1.type != p2.type) || (p1.rotation != p2.rotation)).toBe(true);
-    for (let i=0; i < 28; i++) {pieceList.nextPiece();}
-    let p3 = pieceList.nextPiece();
+    for (let i=0; i < 28; i++) {
+      pieceList.refreshList();
+    }
+    pieceList.refreshList();
+    // REMOVE
+    let p3 = pieceList.getCurrentPiece();
     expect(Array.isArray(p3.gridSize)).toBe(true);
   });
 
+  test('It returns correct value for Pieces.getNextPiece()', () => {
+    pieceList.refreshList();
+    let p1 = pieceList.getCurrentPiece();
+    let np2 = pieceList.getNextPiece();
+    //expect(np2.gridSize).toEqual([10,20]);
+    expect(np2.gridSize).toEqual([4,4]);
+
+    const len = pieceList.shuffled.length;
+
+    pieceList.refreshList();
+    let p2 = pieceList.getCurrentPiece();
+    let np3 = pieceList.getNextPiece();
+
+    expect(Array.isArray(p1.gridSize)).toBe(true);
+    expect(np2.type === p2.type).toBe(true);
+    expect(np2.rotation === p2.rotation).toBe(true);
+
+    pieceList.refreshList();
+    let p3 = pieceList.getCurrentPiece();
+    expect(np3.type === p3.type).toBe(true);
+    expect(np3.rotation === p3.rotation).toBe(true);
+    //console.log(Object.keys(pieceList))
+
+    for (let i=0; i < 60; i++) {
+      const np = pieceList.getNextPiece();
+      pieceList.refreshList();
+      const p = pieceList.getCurrentPiece();
+      expect(np.type).toEqual(p.type);
+      expect(np.rotation).toEqual(p.rotation);
+    }
+  });
 });
 
 describe('Piece and Board integration', () => {
@@ -566,4 +602,304 @@ describe('Score Object', () => {
     score.awardPoints(2,0);
     expect(score.current).toBe(5203);
   });
+});
+
+
+
+
+
+
+describe('UI Object', () => {
+  const calcBoardsCase0 = {
+    "INPUT": {
+      "gridSize":  [10, 20],
+      "canvasSize": [43, 87],
+      "grid": ""
+    },
+    "OUTPUT": {
+      //"result": {"text": " ____________\n ^^^^^^^^^^^^ \n", "canvas": []}
+      "result": {"text": " ____________ \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n |          | \n ^^^^^^^^^^^^ \n", "canvas": []}
+    }
+  };
+
+  const calcBoardsCase1 = {"INPUT": {
+    "gridSize": [10, 20],
+    "canvasSize": [250, 500],
+    "grid":
+    [{"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 3}, {"color": 3}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 3}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 3}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}, {"color": 0}]},
+                           "OUTPUT": {
+                             "result":
+                             {
+                               "text": " ____________ \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n |. . XX. . | \n |. . X . . | \n |. . X . . | \n |. . . . . | \n |. . . . . | \n |. . . . . | \n ^^^^^^^^^^^^ \n",
+                               "canvas":
+    [ { color: '#34495e', index: 0, blockData: [ 0, 0, 25, 25 ] },
+      { color: '#3B5269', index: 1, blockData: [ 25, 0, 25, 25 ] },
+      { color: '#34495e', index: 2, blockData: [ 50, 0, 25, 25 ] },
+      { color: '#3B5269', index: 3, blockData: [ 75, 0, 25, 25 ] },
+      { color: '#34495e', index: 4, blockData: [ 100, 0, 25, 25 ] },
+      { color: '#3B5269', index: 5, blockData: [ 125, 0, 25, 25 ] },
+      { color: '#34495e', index: 6, blockData: [ 150, 0, 25, 25 ] },
+      { color: '#3B5269', index: 7, blockData: [ 175, 0, 25, 25 ] },
+      { color: '#34495e', index: 8, blockData: [ 200, 0, 25, 25 ] },
+      { color: '#3B5269', index: 9, blockData: [ 225, 0, 25, 25 ] },
+      { color: '#34495e', index: 10, blockData: [ 0, 25, 25, 25 ] },
+      { color: '#3B5269', index: 11, blockData: [ 25, 25, 25, 25 ] },
+      { color: '#34495e', index: 12, blockData: [ 50, 25, 25, 25 ] },
+      { color: '#3B5269', index: 13, blockData: [ 75, 25, 25, 25 ] },
+      { color: '#34495e', index: 14, blockData: [ 100, 25, 25, 25 ] },
+      { color: '#3B5269', index: 15, blockData: [ 125, 25, 25, 25 ] },
+      { color: '#34495e', index: 16, blockData: [ 150, 25, 25, 25 ] },
+      { color: '#3B5269', index: 17, blockData: [ 175, 25, 25, 25 ] },
+      { color: '#34495e', index: 18, blockData: [ 200, 25, 25, 25 ] },
+      { color: '#3B5269', index: 19, blockData: [ 225, 25, 25, 25 ] },
+      { color: '#34495e', index: 20, blockData: [ 0, 50, 25, 25 ] },
+      { color: '#3B5269', index: 21, blockData: [ 25, 50, 25, 25 ] },
+      { color: '#34495e', index: 22, blockData: [ 50, 50, 25, 25 ] },
+      { color: '#3B5269', index: 23, blockData: [ 75, 50, 25, 25 ] },
+      { color: '#34495e', index: 24, blockData: [ 100, 50, 25, 25 ] },
+      { color: '#3B5269', index: 25, blockData: [ 125, 50, 25, 25 ] },
+      { color: '#34495e', index: 26, blockData: [ 150, 50, 25, 25 ] },
+      { color: '#3B5269', index: 27, blockData: [ 175, 50, 25, 25 ] },
+      { color: '#34495e', index: 28, blockData: [ 200, 50, 25, 25 ] },
+      { color: '#3B5269', index: 29, blockData: [ 225, 50, 25, 25 ] },
+      { color: '#34495e', index: 30, blockData: [ 0, 75, 25, 25 ] },
+      { color: '#3B5269', index: 31, blockData: [ 25, 75, 25, 25 ] },
+      { color: '#34495e', index: 32, blockData: [ 50, 75, 25, 25 ] },
+      { color: '#3B5269', index: 33, blockData: [ 75, 75, 25, 25 ] },
+      { color: '#34495e', index: 34, blockData: [ 100, 75, 25, 25 ] },
+      { color: '#3B5269', index: 35, blockData: [ 125, 75, 25, 25 ] },
+      { color: '#34495e', index: 36, blockData: [ 150, 75, 25, 25 ] },
+      { color: '#3B5269', index: 37, blockData: [ 175, 75, 25, 25 ] },
+      { color: '#34495e', index: 38, blockData: [ 200, 75, 25, 25 ] },
+      { color: '#3B5269', index: 39, blockData: [ 225, 75, 25, 25 ] },
+      { color: '#34495e', index: 40, blockData: [ 0, 100, 25, 25 ] },
+      { color: '#3B5269', index: 41, blockData: [ 25, 100, 25, 25 ] },
+      { color: '#34495e', index: 42, blockData: [ 50, 100, 25, 25 ] },
+      { color: '#3B5269', index: 43, blockData: [ 75, 100, 25, 25 ] },
+      { color: '#34495e', index: 44, blockData: [ 100, 100, 25, 25 ] },
+      { color: '#3B5269', index: 45, blockData: [ 125, 100, 25, 25 ] },
+      { color: '#34495e', index: 46, blockData: [ 150, 100, 25, 25 ] },
+      { color: '#3B5269', index: 47, blockData: [ 175, 100, 25, 25 ] },
+      { color: '#34495e', index: 48, blockData: [ 200, 100, 25, 25 ] },
+      { color: '#3B5269', index: 49, blockData: [ 225, 100, 25, 25 ] },
+      { color: '#34495e', index: 50, blockData: [ 0, 125, 25, 25 ] },
+      { color: '#3B5269', index: 51, blockData: [ 25, 125, 25, 25 ] },
+      { color: '#34495e', index: 52, blockData: [ 50, 125, 25, 25 ] },
+      { color: '#3B5269', index: 53, blockData: [ 75, 125, 25, 25 ] },
+      { color: '#34495e', index: 54, blockData: [ 100, 125, 25, 25 ] },
+      { color: '#3B5269', index: 55, blockData: [ 125, 125, 25, 25 ] },
+      { color: '#34495e', index: 56, blockData: [ 150, 125, 25, 25 ] },
+      { color: '#3B5269', index: 57, blockData: [ 175, 125, 25, 25 ] },
+      { color: '#34495e', index: 58, blockData: [ 200, 125, 25, 25 ] },
+      { color: '#3B5269', index: 59, blockData: [ 225, 125, 25, 25 ] },
+      { color: '#34495e', index: 60, blockData: [ 0, 150, 25, 25 ] },
+      { color: '#3B5269', index: 61, blockData: [ 25, 150, 25, 25 ] },
+      { color: '#34495e', index: 62, blockData: [ 50, 150, 25, 25 ] },
+      { color: '#3B5269', index: 63, blockData: [ 75, 150, 25, 25 ] },
+      { color: '#34495e', index: 64, blockData: [ 100, 150, 25, 25 ] },
+      { color: '#3B5269', index: 65, blockData: [ 125, 150, 25, 25 ] },
+      { color: '#34495e', index: 66, blockData: [ 150, 150, 25, 25 ] },
+      { color: '#3B5269', index: 67, blockData: [ 175, 150, 25, 25 ] },
+      { color: '#34495e', index: 68, blockData: [ 200, 150, 25, 25 ] },
+      { color: '#3B5269', index: 69, blockData: [ 225, 150, 25, 25 ] },
+      { color: '#34495e', index: 70, blockData: [ 0, 175, 25, 25 ] },
+      { color: '#3B5269', index: 71, blockData: [ 25, 175, 25, 25 ] },
+      { color: '#34495e', index: 72, blockData: [ 50, 175, 25, 25 ] },
+      { color: '#3B5269', index: 73, blockData: [ 75, 175, 25, 25 ] },
+      { color: '#34495e', index: 74, blockData: [ 100, 175, 25, 25 ] },
+      { color: '#3B5269', index: 75, blockData: [ 125, 175, 25, 25 ] },
+      { color: '#34495e', index: 76, blockData: [ 150, 175, 25, 25 ] },
+      { color: '#3B5269', index: 77, blockData: [ 175, 175, 25, 25 ] },
+      { color: '#34495e', index: 78, blockData: [ 200, 175, 25, 25 ] },
+      { color: '#3B5269', index: 79, blockData: [ 225, 175, 25, 25 ] },
+      { color: '#34495e', index: 80, blockData: [ 0, 200, 25, 25 ] },
+      { color: '#3B5269', index: 81, blockData: [ 25, 200, 25, 25 ] },
+      { color: '#34495e', index: 82, blockData: [ 50, 200, 25, 25 ] },
+      { color: '#3B5269', index: 83, blockData: [ 75, 200, 25, 25 ] },
+      { color: '#34495e', index: 84, blockData: [ 100, 200, 25, 25 ] },
+      { color: '#3B5269', index: 85, blockData: [ 125, 200, 25, 25 ] },
+      { color: '#34495e', index: 86, blockData: [ 150, 200, 25, 25 ] },
+      { color: '#3B5269', index: 87, blockData: [ 175, 200, 25, 25 ] },
+      { color: '#34495e', index: 88, blockData: [ 200, 200, 25, 25 ] },
+      { color: '#3B5269', index: 89, blockData: [ 225, 200, 25, 25 ] },
+      { color: '#34495e', index: 90, blockData: [ 0, 225, 25, 25 ] },
+      { color: '#3B5269', index: 91, blockData: [ 25, 225, 25, 25 ] },
+      { color: '#34495e', index: 92, blockData: [ 50, 225, 25, 25 ] },
+      { color: '#3B5269', index: 93, blockData: [ 75, 225, 25, 25 ] },
+      { color: '#34495e', index: 94, blockData: [ 100, 225, 25, 25 ] },
+      { color: '#3B5269', index: 95, blockData: [ 125, 225, 25, 25 ] },
+      { color: '#34495e', index: 96, blockData: [ 150, 225, 25, 25 ] },
+      { color: '#3B5269', index: 97, blockData: [ 175, 225, 25, 25 ] },
+      { color: '#34495e', index: 98, blockData: [ 200, 225, 25, 25 ] },
+      { color: '#3B5269', index: 99, blockData: [ 225, 225, 25, 25 ] },
+      { color: '#34495e', index: 100, blockData: [ 0, 250, 25, 25 ] },
+      { color: '#3B5269', index: 101, blockData: [ 25, 250, 25, 25 ] },
+      { color: '#34495e', index: 102, blockData: [ 50, 250, 25, 25 ] },
+      { color: '#3B5269', index: 103, blockData: [ 75, 250, 25, 25 ] },
+      { color: '#34495e', index: 104, blockData: [ 100, 250, 25, 25 ] },
+      { color: '#3B5269', index: 105, blockData: [ 125, 250, 25, 25 ] },
+      { color: '#34495e', index: 106, blockData: [ 150, 250, 25, 25 ] },
+      { color: '#3B5269', index: 107, blockData: [ 175, 250, 25, 25 ] },
+      { color: '#34495e', index: 108, blockData: [ 200, 250, 25, 25 ] },
+      { color: '#3B5269', index: 109, blockData: [ 225, 250, 25, 25 ] },
+      { color: '#34495e', index: 110, blockData: [ 0, 275, 25, 25 ] },
+      { color: '#3B5269', index: 111, blockData: [ 25, 275, 25, 25 ] },
+      { color: '#34495e', index: 112, blockData: [ 50, 275, 25, 25 ] },
+      { color: '#3B5269', index: 113, blockData: [ 75, 275, 25, 25 ] },
+      { color: '#34495e', index: 114, blockData: [ 100, 275, 25, 25 ] },
+      { color: '#3B5269', index: 115, blockData: [ 125, 275, 25, 25 ] },
+      { color: '#34495e', index: 116, blockData: [ 150, 275, 25, 25 ] },
+      { color: '#3B5269', index: 117, blockData: [ 175, 275, 25, 25 ] },
+      { color: '#34495e', index: 118, blockData: [ 200, 275, 25, 25 ] },
+      { color: '#3B5269', index: 119, blockData: [ 225, 275, 25, 25 ] },
+      { color: '#34495e', index: 120, blockData: [ 0, 300, 25, 25 ] },
+      { color: '#3B5269', index: 121, blockData: [ 25, 300, 25, 25 ] },
+      { color: '#34495e', index: 122, blockData: [ 50, 300, 25, 25 ] },
+      { color: '#3B5269', index: 123, blockData: [ 75, 300, 25, 25 ] },
+      { color: '#34495e', index: 124, blockData: [ 100, 300, 25, 25 ] },
+      { color: '#3B5269', index: 125, blockData: [ 125, 300, 25, 25 ] },
+      { color: '#34495e', index: 126, blockData: [ 150, 300, 25, 25 ] },
+      { color: '#3B5269', index: 127, blockData: [ 175, 300, 25, 25 ] },
+      { color: '#34495e', index: 128, blockData: [ 200, 300, 25, 25 ] },
+      { color: '#3B5269', index: 129, blockData: [ 225, 300, 25, 25 ] },
+      { color: '#34495e', index: 130, blockData: [ 0, 325, 25, 25 ] },
+      { color: '#3B5269', index: 131, blockData: [ 25, 325, 25, 25 ] },
+      { color: '#34495e', index: 132, blockData: [ 50, 325, 25, 25 ] },
+      { color: '#3B5269', index: 133, blockData: [ 75, 325, 25, 25 ] },
+      { color: '#34495e', index: 134, blockData: [ 100, 325, 25, 25 ] },
+      { color: '#3B5269', index: 135, blockData: [ 125, 325, 25, 25 ] },
+      { color: '#34495e', index: 136, blockData: [ 150, 325, 25, 25 ] },
+      { color: '#3B5269', index: 137, blockData: [ 175, 325, 25, 25 ] },
+      { color: '#34495e', index: 138, blockData: [ 200, 325, 25, 25 ] },
+      { color: '#3B5269', index: 139, blockData: [ 225, 325, 25, 25 ] },
+      { color: '#34495e', index: 140, blockData: [ 0, 350, 25, 25 ] },
+      { color: '#3B5269', index: 141, blockData: [ 25, 350, 25, 25 ] },
+      { color: '#34495e', index: 142, blockData: [ 50, 350, 25, 25 ] },
+      { color: '#3B5269', index: 143, blockData: [ 75, 350, 25, 25 ] },
+      { color: '#f1c40f', index: 144, blockData: [ 100, 350, 25, 25 ] },
+      { color: '#f1c40f', index: 145, blockData: [ 125, 350, 25, 25 ] },
+      { color: '#34495e', index: 146, blockData: [ 150, 350, 25, 25 ] },
+      { color: '#3B5269', index: 147, blockData: [ 175, 350, 25, 25 ] },
+      { color: '#34495e', index: 148, blockData: [ 200, 350, 25, 25 ] },
+      { color: '#3B5269', index: 149, blockData: [ 225, 350, 25, 25 ] },
+      { color: '#34495e', index: 150, blockData: [ 0, 375, 25, 25 ] },
+      { color: '#3B5269', index: 151, blockData: [ 25, 375, 25, 25 ] },
+      { color: '#34495e', index: 152, blockData: [ 50, 375, 25, 25 ] },
+      { color: '#3B5269', index: 153, blockData: [ 75, 375, 25, 25 ] },
+      { color: '#f1c40f', index: 154, blockData: [ 100, 375, 25, 25 ] },
+      { color: '#3B5269', index: 155, blockData: [ 125, 375, 25, 25 ] },
+      { color: '#34495e', index: 156, blockData: [ 150, 375, 25, 25 ] },
+      { color: '#3B5269', index: 157, blockData: [ 175, 375, 25, 25 ] },
+      { color: '#34495e', index: 158, blockData: [ 200, 375, 25, 25 ] },
+      { color: '#3B5269', index: 159, blockData: [ 225, 375, 25, 25 ] },
+      { color: '#34495e', index: 160, blockData: [ 0, 400, 25, 25 ] },
+      { color: '#3B5269', index: 161, blockData: [ 25, 400, 25, 25 ] },
+      { color: '#34495e', index: 162, blockData: [ 50, 400, 25, 25 ] },
+      { color: '#3B5269', index: 163, blockData: [ 75, 400, 25, 25 ] },
+      { color: '#f1c40f', index: 164, blockData: [ 100, 400, 25, 25 ] },
+      { color: '#3B5269', index: 165, blockData: [ 125, 400, 25, 25 ] },
+      { color: '#34495e', index: 166, blockData: [ 150, 400, 25, 25 ] },
+      { color: '#3B5269', index: 167, blockData: [ 175, 400, 25, 25 ] },
+      { color: '#34495e', index: 168, blockData: [ 200, 400, 25, 25 ] },
+      { color: '#3B5269', index: 169, blockData: [ 225, 400, 25, 25 ] },
+      { color: '#34495e', index: 170, blockData: [ 0, 425, 25, 25 ] },
+      { color: '#3B5269', index: 171, blockData: [ 25, 425, 25, 25 ] },
+      { color: '#34495e', index: 172, blockData: [ 50, 425, 25, 25 ] },
+      { color: '#3B5269', index: 173, blockData: [ 75, 425, 25, 25 ] },
+      { color: '#34495e', index: 174, blockData: [ 100, 425, 25, 25 ] },
+      { color: '#3B5269', index: 175, blockData: [ 125, 425, 25, 25 ] },
+      { color: '#34495e', index: 176, blockData: [ 150, 425, 25, 25 ] },
+      { color: '#3B5269', index: 177, blockData: [ 175, 425, 25, 25 ] },
+      { color: '#34495e', index: 178, blockData: [ 200, 425, 25, 25 ] },
+      { color: '#3B5269', index: 179, blockData: [ 225, 425, 25, 25 ] },
+      { color: '#34495e', index: 180, blockData: [ 0, 450, 25, 25 ] },
+      { color: '#3B5269', index: 181, blockData: [ 25, 450, 25, 25 ] },
+      { color: '#34495e', index: 182, blockData: [ 50, 450, 25, 25 ] },
+      { color: '#3B5269', index: 183, blockData: [ 75, 450, 25, 25 ] },
+      { color: '#34495e', index: 184, blockData: [ 100, 450, 25, 25 ] },
+      { color: '#3B5269', index: 185, blockData: [ 125, 450, 25, 25 ] },
+      { color: '#34495e', index: 186, blockData: [ 150, 450, 25, 25 ] },
+      { color: '#3B5269', index: 187, blockData: [ 175, 450, 25, 25 ] },
+      { color: '#34495e', index: 188, blockData: [ 200, 450, 25, 25 ] },
+      { color: '#3B5269', index: 189, blockData: [ 225, 450, 25, 25 ] },
+      { color: '#34495e', index: 190, blockData: [ 0, 475, 25, 25 ] },
+      { color: '#3B5269', index: 191, blockData: [ 25, 475, 25, 25 ] },
+      { color: '#34495e', index: 192, blockData: [ 50, 475, 25, 25 ] },
+      { color: '#3B5269', index: 193, blockData: [ 75, 475, 25, 25 ] },
+      { color: '#34495e', index: 194, blockData: [ 100, 475, 25, 25 ] },
+      { color: '#3B5269', index: 195, blockData: [ 125, 475, 25, 25 ] },
+      { color: '#34495e', index: 196, blockData: [ 150, 475, 25, 25 ] },
+      { color: '#3B5269', index: 197, blockData: [ 175, 475, 25, 25 ] },
+      { color: '#34495e', index: 198, blockData: [ 200, 475, 25, 25 ] },
+      { color: '#3B5269', index: 199, blockData: [ 225, 475, 25, 25 ] } ],}}
+                          };
+
+  /*
+  describe('Temporary tests if calcBoards and calcBoards2 do the same thing',
+           () => {
+             const boardSize = [10,20];
+             let canvasSize = [225, 450];
+             let ui = new game.UI(boardSize, canvasSize);
+             const ci1 = calcBoardsCase1;
+
+             test('cb and cb2 are equal when grid is empty',
+                  () => {
+                    const i = calcBoardsCase0.INPUT;
+                    const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+                    const b = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
+                    expect(a.text).toEqual(b.text);
+                  });
+
+             test('cb and cb2 are equal when grid is not empty',
+                  () => {
+                    const i = calcBoardsCase1.INPUT;
+                    const a = ui.calcBoards2(i.grid, i.gridSize, i.canvasSize);
+                    const b = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
+                    expect(a.text).toEqual(b.text);
+                  });
+           });
+           */
+
+  describe('KEEP: test if calcBoards(2) returns expected values for text canvas',
+           () => {
+             const boardSize = [10,20];
+             let canvasSize = [225, 450];
+             let ui = new game.UI(boardSize, canvasSize);
+
+             test('given empty grid, output is as expected', () => {
+               const i = calcBoardsCase0.INPUT;
+               const a = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
+               const b = calcBoardsCase0.OUTPUT.result;
+               expect(a.text).toEqual(b.text);
+             });
+
+             test('given grid data, output is as expected', () => {
+               const i = calcBoardsCase1.INPUT;
+               const a = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
+               const b = calcBoardsCase1.OUTPUT.result;
+               expect(a.text).toEqual(b.text);
+             });
+           });
+
+  describe('KEEP: test if calcBoards(2) returns expected values for text canvas',
+           () => {
+             const boardSize = [10,20];
+             let canvasSize = [225, 450];
+             let ui = new game.UI(boardSize, canvasSize);
+
+             test('given empty grid, output is as expected', () => {
+               const i = calcBoardsCase0.INPUT;
+               const a = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
+               const b = calcBoardsCase0.OUTPUT.result;
+               expect(a.canvas).toEqual(b.canvas);
+             });
+
+             test('given grid data, output is as expected', () => {
+               const i = calcBoardsCase1.INPUT;
+               const a = ui.calcBoards(i.grid, i.gridSize, i.canvasSize);
+               const b = calcBoardsCase1.OUTPUT.result;
+               expect(a.canvas).toEqual(b.canvas);
+               //console.log(a.canvas.filter((x,i) => i >= 100));
+             });
+           });
 });
