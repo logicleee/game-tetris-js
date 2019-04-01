@@ -54,16 +54,6 @@ describe('Board Object', () => {
     expect(result.grid).toEqual(expectedGrid);
     expect(result.rowsCleared).toBe(2);
 
-    // TODO Consider this case?
-    /* unlikely condition that breaks test
-    grid = new0Grid([5,5]);
-    for (let i=0; i < 5; i++) { grid[i] = 1;};
-    for (let i=20; i < 25; i++) { grid[i] = 1;};
-    expectedGrid = new0Grid([5,5]);
-    result = board.clearRows(grid, new0Grid([5,5]),[5,5], blockNotEmpty);
-    expect(result.grid).toEqual(expectedGrid);
-    expect(result.rowsCleared).toBe(2);
-    */
 
   });
 
@@ -348,16 +338,6 @@ describe('Piece Object', () => {
     expect(piece.isValid).toBe(true);
   });
 
-  // test('loggging', () => {
-  //   let piece = new game.Piece('t', 0);
-  //   piece.generateBlockData();
-
-  //   //console.log(piece.allBlocksIR[7][0]);
-  //   //console.log(' -> expect(piece.blocks).toEqual([' + piece.blocks + '])');
-  //   //console.log(' -> expect(piece.offsetXY).toEqual([' + piece.offsetXY + '])');
-  //   //console.log(' -> expect(piece.isValid).toBe(' + piece.isValid + ')');
-
-  // });
 
 });
 

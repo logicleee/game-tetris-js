@@ -61,7 +61,6 @@ function Piece (type, rotation = 0, gridSize = [10,20], indexOffset = 3) {
   };
 
   function generateBlockData (origBlocks, blockSize, gridSize, boardGrid) {
-    //console.time('generateBlockData');
     function reset ([x,y]) { return Array(x*y).fill({'color': 0}); }
     function blockNotEmpty (grid, index) {return grid[index].color > 0; }
     const blockMaxX = blockSize[0];
@@ -111,7 +110,6 @@ function Piece (type, rotation = 0, gridSize = [10,20], indexOffset = 3) {
 
     }
 
-    //console.timeEnd('generateBlockData');
     return result;
 
   };
@@ -1073,7 +1071,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
     elementList.forEach(x => getElementById(x).classList.toggle('is-hidden'));
   }
 
-  //function renderCanvas(canvasId, cSize, grid, gSize)
   function renderCanvas (canvasId, cSize = canvasSize,
                          gSize = gridSize, blocks) {
     const canvas = getElementById(canvasId);
@@ -1093,7 +1090,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
       height:  Math.floor(board.width / gSize[1])
     };
 
-    //console.log('renderCanvas adjusted', cSize, board, gSize, block)
     function drawBlock (ctx, block) {
       //console.log('drawing', block)
       ctx.fillStyle = block.color;
@@ -1103,7 +1099,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
     ctx.save();
     ctx.lineWidth = 1;
     ctx.translate(0.5, 0.5);
-    //ctx.clearRect(0, 0, cSize[0], cSize[1]);
 
     drawBlock(ctx, board);
     blocks.forEach(x => drawBlock(ctx, x));
@@ -1191,13 +1186,13 @@ function UI (gridSize, canvasSize = [225, 450]) {
     let re = new RegExp(content.delimiter + '*$');
     result = result.replace(re, '');
 
-
     // then replace all delimiters with rp + rb + rm + delim + lm + lb + lp
     re = new RegExp(content.delimiter, 'g');
     result = result.replace(re, rightDelimLeft);
 
     // add the final right side and delimiter
     result += rightSide + content.delimiter;
+
     // then add left margin + left border + left padding to beginning
     result = leftSide + result;
 
@@ -1393,8 +1388,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
                                  Math.floor(canvasSize[1] / 10)];
     const nextPieceGridSize = [4,4];
     if (boardChanged) {
-      //FIX THIS IS WHERE WE ADD CALLS TO UPDATE THE UI
-      // CAN REVERT:
       const boardData = calcBoards(grid, gridSize, canvasSize);
       setElementInnerText('gameBoardText', boardData.text);
 
@@ -1439,14 +1432,12 @@ function UI (gridSize, canvasSize = [225, 450]) {
   this.draw = (v, w, x, y, z) => draw(v, w, x, y, z);
   this.initUI = () => initUI();
   this.setState = (state) => setUIstate(state);
-  //this.getElementById = (id) => getElementById(id);
   this.setElementInnerText = (id, text) => setElementInnerText(id,text);
   this.getBoardUIisUpdated = () => boardNeedsUIrefresh;
   this.updateScore = (score, rows) => {
     setElementInnerText('score', score);
     setElementInnerText('rowsCleared', rows);
   };
-  //this.toggleModalState = () => toggleModalState();
   this.modalIsVisible = (x) => modalIsVisible(x);
   this.currentSettings = () => getCurrentSettings();
 };
