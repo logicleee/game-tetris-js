@@ -677,9 +677,9 @@ function Controller () {
     // touch
     //let el = document.getElementById("gameBoardDiv");
     let el = document.getElementById("tetris");
-    el.addEventListener("touchstart", handleStart, false);
-    el.addEventListener("touchmove", handleMove, false);
-    el.addEventListener("touchend", handleEnd, false);
+    el.addEventListener("touchstart", handleTouchStart, false);
+    el.addEventListener("touchmove", handleTouchMove, false);
+    el.addEventListener("touchend", handleTouchEnd, false);
 
     document.addEventListener('keydown', keydown, false);
     window.addEventListener('resize', resize, false);
@@ -693,12 +693,11 @@ function Controller () {
 
   const copyTouch = (t) => { return { pageX: t.pageX, pageY: t.pageY } };
 
-  function handleMove(evt) {
+  function handleTouchMove(evt) {
     evt.preventDefault();
   }
 
-  function handleStart(evt) {
-    //evt.preventDefault();
+  function handleTouchStart(evt) {
     const el = document.getElementsByTagName("canvas")[0];
     const ctx = el.getContext("2d");
     let touches = evt.changedTouches;
@@ -706,8 +705,7 @@ function Controller () {
     recentTouches.push(copyTouch(touches[touches.length - 1]));
   };
 
-  function handleEnd(evt) {
-    //evt.preventDefault();
+  function handleTouchEnd(evt) {
     const el = document.getElementsByTagName("canvas")[0];
     const ctx = el.getContext("2d");
     let touches = evt.changedTouches;
@@ -758,7 +756,7 @@ function Controller () {
     function determineDirection (m) {
       let result;
       switch (true) {
-      case m.deltaX === m.deltaY:
+      case m.deltaX === 0 && m.deltaY === 0:
         result = "STATIC";
         break;
       case Math.abs(m.deltaX) > Math.abs(m.deltaY) && m.deltaX >= 0:
@@ -770,7 +768,7 @@ function Controller () {
       case m.deltaY > 0:
         result = "UP";
         break;
-      case m.deltaY < 0:
+      default:
         result = "DOWN";
         break;
       }
