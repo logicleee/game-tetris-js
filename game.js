@@ -762,15 +762,15 @@ function Controller () {
         result = "STATIC";
         break;
       case Math.abs(m.deltaX) > Math.abs(m.deltaY) && m.deltaX >= 0:
-        result = "RIGHT";
+        result = "LEFT";
         break;
       case Math.abs(m.deltaX) > Math.abs(m.deltaY):
-        result = "LEFT";
+        result = "RIGHT";
         break;
       case m.deltaY > 0:
         result = "UP";
         break;
-      default:
+      case m.deltaY < 0:
         result = "DOWN";
         break;
       }
