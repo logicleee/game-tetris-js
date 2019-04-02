@@ -791,7 +791,7 @@ function Controller () {
     if (playingGame) {
       switch (movement.dir) {
       case 'DOWN':
-        for (let i = 0; i < movement.deltaY / 50 ; i++) {
+        for (let i = 0; i < Math.abs(movement.deltaY) / 50 ; i++) {
             eventQueue.push('moveDown');
         }
         handled = true;
