@@ -490,7 +490,9 @@ function Controller () {
       playingGame = playGame(true);
       ui.modalIsVisible(false);
       let uiSettings = ui.currentSettings();
-      piece.normalMode =  (uiSettings.normalMode === 'normalMode');
+      console.log('THESE ARE SETTINGS!', uiSettings)
+      console.log('THIS IS what is set for normal mode!', uiSettings.playMode === 'normalMode')
+      piece.normalMode =  (uiSettings.playMode === 'normalMode');
       break;
     case 'togglePlayingGame':
       if (playingGame != true)
@@ -568,7 +570,7 @@ function Controller () {
         eventQueue = [];
         // FIX THIS
         let uiSettings = ui.currentSettings();
-        piece.normalMode = (uiSettings.normalMode === 'normalMode');
+        piece.normalMode = (uiSettings.playMode === 'normalMode');
       }
       break;
     case 'rotate':
@@ -861,7 +863,7 @@ function UI (gridSize, canvasSize = [225, 450]) {
                                Math.floor(canvasSize[1] / 10)];
   const uiMode = {'text': 'text', 'canvas': 'canvas'};
   const gameMode = {'normal': 'normalMode', 'noBoundaries': 'noBoundaries'};
-  let settings = {'uiMode': uiMode.text, 'gameMode': gameMode.normal};
+  let settings = {'uiMode': uiMode.canvas, 'gameMode': gameMode.normal};
   const colorScheme = {
     'slateBlueLight': '#3B5269',
     'slateBlue': '#34495e',
@@ -1043,17 +1045,17 @@ function UI (gridSize, canvasSize = [225, 450]) {
                                 settings.uiMode === uiMode.text,
                                 'Retro Text Board');
 
+    gameBoardText.classList.toggle('is-hidden');
     gameBoardText.style.fontFamily = 'monospace';
     gameBoardText.style.whiteSpace = 'pre-wrap';
+    nextPieceWrapperText.classList.toggle('is-hidden');
     nextPieceWrapperText.style.fontFamily = 'monospace';
     nextPieceWrapperText.style.whiteSpace = 'pre-wrap';
     //gameBoardText.style.whiteSpace = 'pre-wrap';
 
-    gameBoardCanvas.classList.toggle('is-hidden');
     gameBoardCanvas.setAttribute('width', canvasSize[0]);
     gameBoardCanvas.setAttribute('height', canvasSize[1]);
 
-    nextPieceWrapperCanvas.classList.toggle('is-hidden');
     nextPieceCanvas.setAttribute('width', nextPieceCanvasSize[0]);
     nextPieceCanvas.setAttribute('height', nextPieceCanvasSize[1]);
     //const ctx = gameBoardCanvas.getContext('2d');
