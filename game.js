@@ -484,14 +484,10 @@ function Controller () {
       break;
     case 'startGame':
       settings = ui.currentSettings();
-      console.log('settings', settings);
       ui.setState(settings.uiMode);
-      console.log('settings', settings);
       playingGame = playGame(true);
       ui.modalIsVisible(false);
       let uiSettings = ui.currentSettings();
-      console.log('THESE ARE SETTINGS!', uiSettings)
-      console.log('THIS IS what is set for normal mode!', uiSettings.playMode === 'normalMode')
       piece.normalMode =  (uiSettings.playMode === 'normalMode');
       break;
     case 'togglePlayingGame':
@@ -720,6 +716,9 @@ function Controller () {
     let closeModal = document.querySelector(".close-button");
     let gameBoardDiv = document.querySelector('.gameBoardDiv');
 
+    /*
+    //FIX touch
+    //ORIGINAL version
     function determineDirection (m) {
       let result;
       switch (true) {
@@ -752,6 +751,41 @@ function Controller () {
       ratioX: end.pageX / start.pageX,
       ratioY: end.pageY / start.pageY,
     };
+    */
+
+    //FIX touch
+    //NEW version
+    function determineDirection (m) {
+      let result;
+      switch (true) {
+      case m.deltaX === m.deltaY:
+        result = "STATIC";
+        break;
+      case Math.abs(m.deltaX) > Math.abs(m.deltaY) && m.deltaX >= 0:
+        result = "RIGHT";
+        break;
+      case Math.abs(m.deltaX) > Math.abs(m.deltaY):
+        result = "LEFT";
+        break;
+      case m.deltaY > 0:
+        result = "UP";
+        break;
+      default:
+        result = "DOWN";
+        break;
+      }
+      return result;
+    }
+
+    recentTouches.push(copyTouch(touches[touches.length - 1]));
+
+    const end = recentTouches.pop();
+    const start = recentTouches.pop();
+    let movement = {
+      deltaX: start.pageX - end.pageX,
+      deltaY: start.pageY - end.pageY,
+    };
+
     movement.dir = determineDirection(movement);
     console.log('swipe event:', movement.dir, movement);
 
@@ -1069,8 +1103,11 @@ function UI (gridSize, canvasSize = [225, 450]) {
   }
 
   function toggleVisibility (elementList) {
-    console.log('element list:', elementList);
     elementList.forEach(x => getElementById(x).classList.toggle('is-hidden'));
+  }
+
+  function toggleMonoSpace (elementList) {
+    elementList.forEach(x => getElementById(x).classList.toggle('monospace'));
   }
 
   function renderCanvas (canvasId, cSize = canvasSize,
@@ -1421,9 +1458,11 @@ function UI (gridSize, canvasSize = [225, 450]) {
     let canvas = getElementById('gameBoardCanvas');
     let text = getElementById('gameBoardText');
     const currentState = text.classList.contains("is-hidden");
-    if (currentState != newState)
+    if (currentState != newState) {
       toggleVisibility(['gameBoardText', 'gameBoardCanvas',
                         'nextPieceWrapperText', 'nextPieceWrapperCanvas']);
+      toggleMonoSpace(['statsTable']);
+    }
   }
 
   this.calcBoards = (x,y,z) => calcBoards(x,y,z);

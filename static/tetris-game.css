@@ -113,6 +113,11 @@ html {
     display: none;
 }
 
+.monospace {
+    font-family: monospace;
+    whitespace: pre-wrap;
+}
+
 button {
     display: inline-block;
     border: none;
