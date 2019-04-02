@@ -716,6 +716,9 @@ function Controller () {
     let closeModal = document.querySelector(".close-button");
     let gameBoardDiv = document.querySelector('.gameBoardDiv');
 
+    /*
+    //FIX touch
+    //ORIGINAL version
     function determineDirection (m) {
       let result;
       switch (true) {
@@ -748,6 +751,41 @@ function Controller () {
       ratioX: end.pageX / start.pageX,
       ratioY: end.pageY / start.pageY,
     };
+    */
+
+    //FIX touch
+    //NEW version
+    function determineDirection (m) {
+      let result;
+      switch (true) {
+      case m.deltaX === m.deltaY:
+        result = "STATIC";
+        break;
+      case Math.abs(m.deltaX) > Math.abs(m.deltaY) && m.deltaX >= 0:
+        result = "RIGHT";
+        break;
+      case Math.abs(m.deltaX) > Math.abs(m.deltaY):
+        result = "LEFT";
+        break;
+      case m.deltaY > 0:
+        result = "UP";
+        break;
+      default:
+        result = "DOWN";
+        break;
+      }
+      return result;
+    }
+
+    recentTouches.push(copyTouch(touches[touches.length - 1]));
+
+    const end = recentTouches.pop();
+    const start = recentTouches.pop();
+    let movement = {
+      deltaX: start.pageX - end.pageX,
+      deltaY: start.pageY - end.pageY,
+    };
+
     movement.dir = determineDirection(movement);
     console.log('swipe event:', movement.dir, movement);
 
