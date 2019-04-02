@@ -490,7 +490,9 @@ function Controller () {
       playingGame = playGame(true);
       ui.modalIsVisible(false);
       let uiSettings = ui.currentSettings();
-      piece.normalMode =  (uiSettings.normalMode === 'normalMode');
+      console.log('THESE ARE SETTINGS!', uiSettings)
+      console.log('THIS IS what is set for normal mode!', uiSettings.playMode === 'normalMode')
+      piece.normalMode =  (uiSettings.playMode === 'normalMode');
       break;
     case 'togglePlayingGame':
       if (playingGame != true)
@@ -568,7 +570,7 @@ function Controller () {
         eventQueue = [];
         // FIX THIS
         let uiSettings = ui.currentSettings();
-        piece.normalMode = (uiSettings.normalMode === 'normalMode');
+        piece.normalMode = (uiSettings.playMode === 'normalMode');
       }
       break;
     case 'rotate':
