@@ -484,14 +484,10 @@ function Controller () {
       break;
     case 'startGame':
       settings = ui.currentSettings();
-      console.log('settings', settings);
       ui.setState(settings.uiMode);
-      console.log('settings', settings);
       playingGame = playGame(true);
       ui.modalIsVisible(false);
       let uiSettings = ui.currentSettings();
-      console.log('THESE ARE SETTINGS!', uiSettings)
-      console.log('THIS IS what is set for normal mode!', uiSettings.playMode === 'normalMode')
       piece.normalMode =  (uiSettings.playMode === 'normalMode');
       break;
     case 'togglePlayingGame':
@@ -1069,8 +1065,11 @@ function UI (gridSize, canvasSize = [225, 450]) {
   }
 
   function toggleVisibility (elementList) {
-    console.log('element list:', elementList);
     elementList.forEach(x => getElementById(x).classList.toggle('is-hidden'));
+  }
+
+  function toggleMonoSpace (elementList) {
+    elementList.forEach(x => getElementById(x).classList.toggle('monospace'));
   }
 
   function renderCanvas (canvasId, cSize = canvasSize,
@@ -1421,9 +1420,11 @@ function UI (gridSize, canvasSize = [225, 450]) {
     let canvas = getElementById('gameBoardCanvas');
     let text = getElementById('gameBoardText');
     const currentState = text.classList.contains("is-hidden");
-    if (currentState != newState)
+    if (currentState != newState) {
       toggleVisibility(['gameBoardText', 'gameBoardCanvas',
                         'nextPieceWrapperText', 'nextPieceWrapperCanvas']);
+      toggleMonoSpace(['statsTable']);
+    }
   }
 
   this.calcBoards = (x,y,z) => calcBoards(x,y,z);
