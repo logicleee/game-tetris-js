@@ -442,7 +442,7 @@ function Controller () {
   let eventQueue = [];
   let timeDelta = 0;
   let step = 1;
-  let speed = {inital: 1, min: .1, multiplier: .05};
+  let speed = {inital: 1, min: .1, multiplier: .1};
   let settings;
   let recentTouches = [];
 
@@ -674,8 +674,6 @@ function Controller () {
   }
 
   function addAllEventListeners() {
-    // touch
-    //let el = document.getElementById("gameBoardDiv");
     let el = document.getElementById("tetris");
     el.addEventListener("touchstart", handleTouchStart, false);
     el.addEventListener("touchmove", handleTouchMove, false);
@@ -686,12 +684,7 @@ function Controller () {
     window.addEventListener('click', windowOnClick);
   }
 
-  //////////////////////////////
-  // BEGIN TOUCH
-
-
-
-  const copyTouch = (t) => { return { pageX: t.pageX, pageY: t.pageY } };
+  const copyTouch = (t) => { return { pageX: t.pageX, pageY: t.pageY }; };
 
   function handleTouchMove(evt) {
     evt.preventDefault();
@@ -714,45 +707,6 @@ function Controller () {
     let closeModal = document.querySelector(".close-button");
     let gameBoardDiv = document.querySelector('.gameBoardDiv');
 
-    /*
-    //FIX touch
-    //ORIGINAL version
-    function determineDirection (m) {
-      let result;
-      switch (true) {
-      case m.ratioX === m.ratioY:
-        result = "STATIC";
-        break;
-      case m.ratioX > m.ratioY && m.ratioX >= 1:
-        result = "RIGHT";
-        break;
-      case m.ratioX < m.ratioY && m.ratioX < 1:
-        result = "LEFT";
-        break;
-      case m.ratioX < m.ratioY && m.ratioY >= 1:
-        result = "DOWN";
-        break;
-      case m.ratioY < 1:
-        result = "UP";
-        break;
-      }
-      return result;
-    }
-
-    recentTouches.push(copyTouch(touches[touches.length - 1]));
-
-    const end = recentTouches.pop();
-    const start = recentTouches.pop();
-    let movement = {
-      deltaX: end.pageX - start.pageX,
-      deltaY: end.pageY - start.pageY,
-      ratioX: end.pageX / start.pageX,
-      ratioY: end.pageY / start.pageY,
-    };
-    */
-
-    //FIX touch
-    //NEW version
     function determineDirection (m) {
       let result;
       switch (true) {
@@ -791,7 +745,7 @@ function Controller () {
     if (playingGame) {
       switch (movement.dir) {
       case 'DOWN':
-        for (let i = 0; i < Math.abs(movement.deltaY) / 50 ; i++) {
+        for (let i = 0; i < Math.abs(movement.deltaY) / 80 ; i++) {
             eventQueue.push('moveDown');
         }
         handled = true;
@@ -820,14 +774,11 @@ function Controller () {
        eventQueue.push('startGame');
        break;
       }
-      //eventQueue.push('togglePlayingGame');
     }
+
     if (handled)
       evt.preventDefault();
   };
-
-  // END TOUCH
-  /////////////////////////////
 
   function update (idt) {
     if (playingGame) {
@@ -842,8 +793,6 @@ function Controller () {
   }
 
   function resize () {
-    //canvasSize = [225, 450];
-    //let proportion = [225, 450];
     let proportion = [225, 450];
     const padding = .8;
     const maxXY = [window.innerWidth * padding / proportion[0],
