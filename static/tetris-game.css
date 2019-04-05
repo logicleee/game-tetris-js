@@ -1,8 +1,31 @@
-#tetris-content {
+#canvasDiv {
+    white-space: pre-wrap;
+    background-color: red;
+}
+
+html {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.statsDiv {
+    width: 80%;
+}
+
+#settingsWrapper {
+    //white-space: nowrap;
+    //overflow: hidden;
+    //text-overflow: ellipsis;
+}
+
+#nextPieceWrapperText {
+   //float:right;
+   //white-space:nowrap;
 
 }
 
-#statsDiv {
+#statsTable {
+   //float:right;
+   //white-space:nowrap;
 
 }
 
@@ -10,51 +33,12 @@
 
 }
 
-#menu {
-    background-color: teal;
-}
-#upcoming {
-    background-color: blue;
-}
-#upcomingParent {
-    background-color: black;
-}
-
-#canvasDiv {
-    font-family: monospace;
-    white-space: pre-wrap;
-    background-color: red;
-}
-
-#canvas {
-    background-color: pink;
-}
-
-#score {
-    background-color: green;
-}
-
-#start {
-    background-color: pink;
-}
-
-
-html {
-    font-family: "Helvetica Neue", Helvetica, sans-serif;
-}
-
-/* BELOW HERE IS FOR MODAL */
-
-
 #tetris {
     height: 100%;
     width: 100%;
     display: table;
-    /*
-    color: whitesmoke;
-    background-color: midnightblue;
-    */
 }
+
 .tetris-container {
     height: 100%;
     width: 90%;
@@ -65,6 +49,7 @@ html {
     background-color: whitesmoke;
     /* text-shadow: 0 1px 2px rgba(0,0,0,.5); */
 }
+
 .modal {
     position: fixed;
     left: 0;
@@ -76,17 +61,45 @@ html {
     visibility: hidden;
     transform: scale(1.1);
     transition: visibility 0s linear 0.25s, opacity 0.25s 0s, transform 0.25s;
+    text-align: center;
 }
+
 .modal-content {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: white;
+    color: darkslategray;
+    background: #f2f2f2;
     padding: 1rem 1.5rem;
     width: 24rem;
     border-radius: 0.5rem;
+    font-size: 1em;
+    background-color: whitesmoke;
 }
+
+.modal-content h1 {
+    //font-weight: normal;
+    font-size: 2vh;
+    text-transform: uppercase;
+    margin: 0px;
+    padding: 0px;
+}
+
+.modal-content p {
+    font-size: 2vh;
+    //font-weight: bold;
+    text-transform: uppercase;
+    margin: 0px;
+    padding: 0px;
+}
+
+.modal-content h2 {
+    font-weight: 500;
+    font-size: 3vh;
+    margin-bottom: 6px;
+}
+
 .close-button {
     font-weight: bold;
     float: right;
@@ -98,6 +111,7 @@ html {
     background-color: tomato;
     color: whitesmoke;
 }
+
 .close-button:hover {
     background-color: darkgray;
 }
@@ -121,12 +135,14 @@ html {
 button {
     display: inline-block;
     border: none;
-    padding: .8rem .8rem;
+    padding: .6rem .6rem;
     margin: 0;
     text-decoration: none;
-    background: mediumblue;
+    background: darkblue;
     color: snow;
-    font-size: .8rem;
+    font-weight: bold;
+    font-size: .7em;
+    text-transform: uppercase;
     cursor: pointer;
     text-align: center;
     transition: background 250ms ease-in-out,
@@ -149,8 +165,6 @@ button:active {
     transform: scale(0.99);
 }
 
-/* https://viralpatel.net/blogs/css-radio-button-checkbox-background/ */
-
 input[type=radio] {
     position:fixed;
     opacity:0;
@@ -161,11 +175,13 @@ input[type=radio] + label {
     margin:-2px;
     padding: 4px 12px;
     background-color: whitesmoke;
-    border-color: darkslategrey;
+    color: darkslategray;
+    border: 2px solid darkslateblue;
 }
 
 input[type=radio]:checked + label {
     background-image: none;
-    color: snow;
-    background-color: mediumblue;
+    color: whitesmoke;
+    background-color: darkslateblue;
+    margin-bottom: 8px;
 }
