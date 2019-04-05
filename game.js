@@ -1224,7 +1224,7 @@ function UI (gridSize, canvasSize = [225, 450]) {
   function calcBlockColorWithBg (i, j, block, board, blockColor) {
     let result = {'canvas': {}, 'text': ''};
     if (blockColor === 0) {
-      const backgrounds = calcBoardBackgrounds(0);
+      const backgrounds = calcBoardBackgrounds(1);
       result.canvas = new CanvasBlock(i, backgrounds.canvasColor,
                                       board, block);
       result.text += backgrounds.text;
