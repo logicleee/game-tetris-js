@@ -962,28 +962,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
     if (viewPort.children[0])
       viewPort.children[0].remove();
     let tetrisGame = new domElement('div', viewPort, 'tetris-content');
-    let statsDiv = new domElement('div', tetrisGame, 'statsDiv', 'stats');
-    let settingsWrapper = new domElement('div', statsDiv, 'settingsWrapper');
-    let settingsButton = new domElement('button', settingsWrapper,
-                                        false, 'button', 'Settings');
-    settingsButton.classList.add('open-modal');
-    let nextPieceWrapperText = new domElement('div', statsDiv,
-                                             'nextPieceWrapperText');
-    let nextPieceWrapperCanvas = new domElement('div', statsDiv,
-                                             'nextPieceWrapperCanvas');
-    let nextPieceCanvas = new domElement('canvas', nextPieceWrapperCanvas,
-                                         'nextPieceCanvas');
-    let statsWrapperText = new domElement('div', statsDiv);
-
-    let statsTable = new domElement('div',statsWrapperText, 'statsTable');
-    let row0 = new domElement('div',statsTable);
-    let row1 = new domElement('div',statsTable);
-
-    let scoreLabel = new domElement('span', row0, false, false, 'Score:');
-    let score = new domElement('span', row0, 'score', false, '0000');
-
-    let rowsClearedLabel = new domElement('span', row1, false, false, 'Rows:');
-    let rowsCleared = new domElement('span', row1, 'rowsCleared', false, '1010');
 
     let gameBoardDiv = new domElement('div', tetrisGame, 'gameBoardDiv');
     let gameBoardText = new domElement('div', gameBoardDiv, 'gameBoardText');
@@ -1029,6 +1007,28 @@ function UI (gridSize, canvasSize = [225, 450]) {
                                 settings.uiMode === uiMode.text,
                                 'Retro Text Board');
 
+    let statsDiv = new domElement('div', tetrisGame, 'statsDiv', 'stats');
+    let settingsWrapper = new domElement('div', statsDiv, 'settingsWrapper');
+    let settingsButton = new domElement('button', settingsWrapper,
+                                        false, 'button', 'Settings');
+    settingsButton.classList.add('open-modal');
+    let nextPieceWrapperText = new domElement('div', statsDiv,
+                                             'nextPieceWrapperText');
+    let nextPieceWrapperCanvas = new domElement('div', statsDiv,
+                                             'nextPieceWrapperCanvas');
+    let nextPieceCanvas = new domElement('canvas', nextPieceWrapperCanvas,
+                                         'nextPieceCanvas');
+    let statsWrapperText = new domElement('div', statsDiv);
+
+    let statsTable = new domElement('div',statsWrapperText, 'statsTable');
+    let row0 = new domElement('div',statsTable);
+    let row1 = new domElement('div',statsTable);
+
+    let scoreLabel = new domElement('span', row0, false, false, 'Score:');
+    let score = new domElement('span', row0, 'score', false, '0000');
+
+    let rowsClearedLabel = new domElement('span', row1, false, false, 'Rows:');
+    let rowsCleared = new domElement('span', row1, 'rowsCleared', false, '1010');
     gameBoardText.classList.toggle('is-hidden');
     gameBoardText.style.fontFamily = 'monospace';
     gameBoardText.style.whiteSpace = 'pre-wrap';
