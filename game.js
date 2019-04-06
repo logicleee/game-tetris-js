@@ -745,6 +745,7 @@ function Controller () {
     if (playingGame) {
       switch (movement.dir) {
       case 'DOWN':
+        eventQueue.push('awardDrop');
         for (let i = 0; i < Math.abs(movement.deltaY) / 80 ; i++) {
             eventQueue.push('moveDown');
         }
@@ -840,8 +841,9 @@ function Controller () {
 
 function UI (gridSize, canvasSize = [225, 450]) {
   let boardNeedsUIrefresh = false;
-  const nextPieceCanvasSize = [Math.floor(canvasSize[1] / 10),
-                               Math.floor(canvasSize[1] / 10)];
+  const nextPieceCanvasFactor = 8;
+  const nextPieceCanvasSize = [Math.floor(canvasSize[1] / nextPieceCanvasFactor),
+                               Math.floor(canvasSize[1] / nextPieceCanvasFactor)];
   const uiMode = {'text': 'text', 'canvas': 'canvas'};
   const gameMode = {'normal': 'normalMode', 'noBoundaries': 'noBoundaries'};
   let settings = {'uiMode': uiMode.canvas, 'gameMode': gameMode.normal};
@@ -960,27 +962,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
     if (viewPort.children[0])
       viewPort.children[0].remove();
     let tetrisGame = new domElement('div', viewPort, 'tetris-content');
-    let statsDiv = new domElement('div', tetrisGame, 'statsDiv', 'stats');
-    let settingsWrapper = new domElement('div', statsDiv, 'settingsWrapper');
-    let settingsButton = new domElement('button', settingsWrapper,
-                                        false, 'button', 'Settings');
-    settingsButton.classList.add('open-modal');
-    let nextPieceWrapperText = new domElement('div', statsDiv,
-                                             'nextPieceWrapperText');
-    let nextPieceWrapperCanvas = new domElement('div', statsDiv,
-                                             'nextPieceWrapperCanvas');
-    let nextPieceCanvas = new domElement('canvas', nextPieceWrapperCanvas,
-                                         'nextPieceCanvas');
-    let statsWrapperText = new domElement('div', statsDiv);
-
-    let statsTable = new TableElement(statsWrapperText, 'statsTable',
-                                      ['30%', '70%'], true, '100%');
-    let row0 = new domElement('tr',statsTable);
-    let row1 = new domElement('tr',statsTable);
-    let scoreLabel = new domElement('td', row0, false, false, 'Score:');
-    let score = new domElement('td', row0, 'score', false, '0000');
-    let rowsClearedLabel = new domElement('td', row1, false, false, 'Rows:');
-    let rowsCleared = new domElement('td', row1, 'rowsCleared', false, '1010');
 
     let gameBoardDiv = new domElement('div', tetrisGame, 'gameBoardDiv');
     let gameBoardText = new domElement('div', gameBoardDiv, 'gameBoardText');
@@ -1026,6 +1007,28 @@ function UI (gridSize, canvasSize = [225, 450]) {
                                 settings.uiMode === uiMode.text,
                                 'Retro Text Board');
 
+    let statsDiv = new domElement('div', tetrisGame, 'statsDiv', 'stats');
+    let settingsWrapper = new domElement('div', statsDiv, 'settingsWrapper');
+    let settingsButton = new domElement('button', settingsWrapper,
+                                        false, 'button', 'Settings');
+    settingsButton.classList.add('open-modal');
+    let nextPieceWrapperText = new domElement('div', statsDiv,
+                                             'nextPieceWrapperText');
+    let nextPieceWrapperCanvas = new domElement('div', statsDiv,
+                                             'nextPieceWrapperCanvas');
+    let nextPieceCanvas = new domElement('canvas', nextPieceWrapperCanvas,
+                                         'nextPieceCanvas');
+    let statsWrapperText = new domElement('div', statsDiv);
+
+    let statsTable = new domElement('div',statsWrapperText, 'statsTable');
+    let row0 = new domElement('div',statsTable);
+    let row1 = new domElement('div',statsTable);
+
+    let scoreLabel = new domElement('span', row0, false, false, 'Score:');
+    let score = new domElement('span', row0, 'score', false, '0000');
+
+    let rowsClearedLabel = new domElement('span', row1, false, false, 'Rows:');
+    let rowsCleared = new domElement('span', row1, 'rowsCleared', false, '1010');
     gameBoardText.classList.toggle('is-hidden');
     gameBoardText.style.fontFamily = 'monospace';
     gameBoardText.style.whiteSpace = 'pre-wrap';
@@ -1224,7 +1227,7 @@ function UI (gridSize, canvasSize = [225, 450]) {
   function calcBlockColorWithBg (i, j, block, board, blockColor) {
     let result = {'canvas': {}, 'text': ''};
     if (blockColor === 0) {
-      const backgrounds = calcBoardBackgrounds(0);
+      const backgrounds = calcBoardBackgrounds(1);
       result.canvas = new CanvasBlock(i, backgrounds.canvasColor,
                                       board, block);
       result.text += backgrounds.text;
@@ -1370,8 +1373,8 @@ function UI (gridSize, canvasSize = [225, 450]) {
 
   function draw (boardChanged, grid, gridSize, canvasSize, nextPieceGrid) {
     settings = getCurrentSettings();
-    const nextPieceCanvasSize = [Math.floor(canvasSize[1] / 10),
-                                 Math.floor(canvasSize[1] / 10)];
+    const nextPieceCanvasSize = [Math.floor(canvasSize[1] / nextPieceCanvasFactor),
+                                 Math.floor(canvasSize[1] / nextPieceCanvasFactor)];
     const nextPieceGridSize = [4,4];
     if (boardChanged) {
       const boardData = calcBoards(grid, gridSize, canvasSize);

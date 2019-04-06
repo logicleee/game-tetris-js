@@ -1,27 +1,26 @@
-#canvasDiv {
-    white-space: pre-wrap;
-    background-color: red;
+#tetris {
+    height: 100%;
+    width: 100%;
+    display: table;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    align-content: center;
+    margin: 0 auto;
 }
 
+/*
 html {
     font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
-
-.statsDiv {
-    width: 80%;
-}
+*/
 
 #settingsWrapper {
-    //white-space: nowrap;
-    //overflow: hidden;
-    //text-overflow: ellipsis;
+    margin-bottom: 10px;
 }
 
-#nextPieceWrapperText {
-   //float:right;
-   //white-space:nowrap;
-
+#statsDiv {
+    margin-bottom: 10px;
 }
+
 
 #statsTable {
    //float:right;
@@ -30,24 +29,21 @@ html {
 }
 
 #gameBoardDiv {
-
+    width: auto;
+    float: left;
 }
 
-#tetris {
-    height: 100%;
-    width: 100%;
-    display: table;
-}
 
-.tetris-container {
+#tetris-content {
     height: 100%;
-    width: 90%;
+    width: 80%;
     min-height:640px;
     min-width:480px;
     font-size: 14px;
     color: darkslategrey;
     background-color: whitesmoke;
-    /* text-shadow: 0 1px 2px rgba(0,0,0,.5); */
+    align-content: center;
+    margin: 0 auto;
 }
 
 .modal {
