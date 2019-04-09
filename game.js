@@ -795,9 +795,22 @@ function Controller () {
 
   function resize () {
     let proportion = [225, 450];
-    const padding = .8;
-    const maxXY = [window.innerWidth * padding / proportion[0],
-                   window.innerHeight * padding / proportion[1]];
+    const padding = .9;
+
+    const windowProportion = window.innerWidth / window.innerHeight;
+    let w = {};
+
+    if (windowProportion < 1.1) {
+      w.innerWidth =  window.innerWidth;
+      w.innerHeight =  window.innerHeight * .8;
+    } else {
+      w.innerWidth =  window.innerWidth;
+      w.innerHeight =  window.innerHeight;
+
+    };
+
+    const maxXY = [w.innerWidth * padding / proportion[0],
+                   w.innerHeight * padding / proportion[1]];
     const factor = maxXY[0] > maxXY[1] ? maxXY[1] : maxXY[0];
 
     canvasSize = [Math.floor(proportion[0] * factor),
@@ -841,7 +854,7 @@ function Controller () {
 
 function UI (gridSize, canvasSize = [225, 450]) {
   let boardNeedsUIrefresh = false;
-  const nextPieceCanvasFactor = 8;
+  const nextPieceCanvasFactor = 6;
   const nextPieceCanvasSize = [Math.floor(canvasSize[1] / nextPieceCanvasFactor),
                                Math.floor(canvasSize[1] / nextPieceCanvasFactor)];
   const uiMode = {'text': 'text', 'canvas': 'canvas'};
@@ -958,14 +971,18 @@ function UI (gridSize, canvasSize = [225, 450]) {
   }
 
   function initUI () {
-    let viewPort = getElementById('tetris');
-    if (viewPort.children[0])
-      viewPort.children[0].remove();
-    let tetrisGame = new domElement('div', viewPort, 'tetris-content');
+    let tetrisParentDiv = getElementById('tetris');
+    if (tetrisParentDiv.children[0])
+      tetrisParentDiv.children[0].remove();
+    let tetrisGame = new domElement('div', tetrisParentDiv, 'tetris-content');
 
+    let settingsWrapper = new domElement('div', tetrisGame, 'settingsWrapper');
     let gameBoardDiv = new domElement('div', tetrisGame, 'gameBoardDiv');
-    let gameBoardText = new domElement('div', gameBoardDiv, 'gameBoardText');
-    let gameBoardCanvas = new domElement('canvas', gameBoardDiv,
+    let statsDiv = new domElement('div', tetrisGame, 'statsDiv', 'stats');
+
+    let gameBoardWrapperDiv = new domElement('div', gameBoardDiv, 'gameBoardWrapperDiv');
+    let gameBoardText = new domElement('div', gameBoardWrapperDiv, 'gameBoardText');
+    let gameBoardCanvas = new domElement('canvas', gameBoardWrapperDiv,
                                          'gameBoardCanvas');
 
     let modalDiv = new domElement('div', tetrisGame, false, 'modal');
@@ -1007,8 +1024,6 @@ function UI (gridSize, canvasSize = [225, 450]) {
                                 settings.uiMode === uiMode.text,
                                 'Retro Text Board');
 
-    let statsDiv = new domElement('div', tetrisGame, 'statsDiv', 'stats');
-    let settingsWrapper = new domElement('div', statsDiv, 'settingsWrapper');
     let settingsButton = new domElement('button', settingsWrapper,
                                         false, 'button', 'Settings');
     settingsButton.classList.add('open-modal');
@@ -1030,26 +1045,20 @@ function UI (gridSize, canvasSize = [225, 450]) {
     let rowsClearedLabel = new domElement('span', row1, false, false, 'Rows:');
     let rowsCleared = new domElement('span', row1, 'rowsCleared', false, '1010');
     gameBoardText.classList.toggle('is-hidden');
-    gameBoardText.style.fontFamily = 'monospace';
-    gameBoardText.style.whiteSpace = 'pre-wrap';
+
+    toggleMonoSpace(['gameBoardText']);
+
     nextPieceWrapperText.classList.toggle('is-hidden');
-    nextPieceWrapperText.style.fontFamily = 'monospace';
-    nextPieceWrapperText.style.whiteSpace = 'pre-wrap';
-    //gameBoardText.style.whiteSpace = 'pre-wrap';
+
+    toggleMonoSpace(['nextPieceWrapperText']);
+
 
     gameBoardCanvas.setAttribute('width', canvasSize[0]);
     gameBoardCanvas.setAttribute('height', canvasSize[1]);
 
     nextPieceCanvas.setAttribute('width', nextPieceCanvasSize[0]);
     nextPieceCanvas.setAttribute('height', nextPieceCanvasSize[1]);
-    //const ctx = gameBoardCanvas.getContext('2d');
-    //console.log('canvas ctx', ctx)
 
-        /*
-      let nextPiece = new domElement('div', nextPieceWrapperText, 'nextPiece');
-      let nextPiece = new domElement('canvas', nextPieceWrapperText,
-                                     'nextPiece');
-                                     */
   }
 
   function toggleVisibility (elementList) {
@@ -1383,7 +1392,7 @@ function UI (gridSize, canvasSize = [225, 450]) {
       const nextPieceData = calcNextPiece(nextPieceGrid,
                                           nextPieceGridSize,
                                           nextPieceCanvasSize);
-      setElementInnerText('nextPieceWrapperText', nextPieceData.text);
+      setElementInnerText('nextPieceWrapperText', 'NEXT:\n' + nextPieceData.text);
 
 
       if (settings.uiMode === uiMode.canvas) {

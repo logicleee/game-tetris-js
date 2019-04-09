@@ -1,49 +1,54 @@
+body, html {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    height: 100%
+}
+
 #tetris {
     height: 100%;
     width: 100%;
     display: table;
-    font-family: "Helvetica Neue", Helvetica, sans-serif;
     align-content: center;
     margin: 0 auto;
 }
 
-/*
-html {
-    font-family: "Helvetica Neue", Helvetica, sans-serif;
-}
-*/
-
-#settingsWrapper {
-    margin-bottom: 10px;
-}
-
-#statsDiv {
-    margin-bottom: 10px;
-}
-
-
-#statsTable {
-   //float:right;
-   //white-space:nowrap;
-
-}
-
-#gameBoardDiv {
-    width: auto;
-    float: left;
-}
-
-
 #tetris-content {
     height: 100%;
-    width: 80%;
+    width: 75%;
     min-height:640px;
-    min-width:480px;
-    font-size: 14px;
+    min-width: 600px;
+    font-size: 16px;
     color: darkslategrey;
     background-color: whitesmoke;
     align-content: center;
     margin: 0 auto;
+}
+
+@media only screen and (max-width: 768px) {
+    #tetris-content {
+        height: 100%;
+        width: 95%;
+        font-size: 14px;
+    }
+}
+
+#settingsWrapper {
+    width: 25%;
+    float: left;
+    margin-bottom: 10px;
+}
+
+#statsDiv {
+    width: 25%;
+    margin-bottom: 10px;
+    font-size: 1.3em;
+    float: left;
+    text-align: left;
+}
+
+#gameBoardDiv {
+    float: left;
+    width: 50%;
+    align-content: center;
 }
 
 .modal {
@@ -67,24 +72,22 @@ html {
     transform: translate(-50%, -50%);
     color: darkslategray;
     background: #f2f2f2;
-    padding: 1rem 1.5rem;
-    width: 24rem;
-    border-radius: 0.5rem;
+    padding: 1em 1.5em;
+    width: 24em;
+    border-radius: 0.5em;
     font-size: 1em;
     background-color: whitesmoke;
 }
 
 .modal-content h1 {
-    //font-weight: normal;
-    font-size: 2vh;
+    font-size: .7em;
     text-transform: uppercase;
     margin: 0px;
     padding: 0px;
 }
 
 .modal-content p {
-    font-size: 2vh;
-    //font-weight: bold;
+    font-size: .8em;
     text-transform: uppercase;
     margin: 0px;
     padding: 0px;
@@ -92,18 +95,18 @@ html {
 
 .modal-content h2 {
     font-weight: 500;
-    font-size: 3vh;
+    font-size: 1em;
     margin-bottom: 6px;
 }
 
 .close-button {
     font-weight: bold;
     float: right;
-    width: 1.5rem;
-    line-height: 1.5rem;
+    width: 1.5em;
+    line-height: 1.5em;
     text-align: center;
     cursor: pointer;
-    border-radius: 0.25rem;
+    border-radius: 0.25em;
     background-color: tomato;
     color: whitesmoke;
 }
@@ -126,12 +129,13 @@ html {
 .monospace {
     font-family: monospace;
     whitespace: pre-wrap;
+    font-size: 1.3em;
 }
 
 button {
     display: inline-block;
     border: none;
-    padding: .6rem .6rem;
+    padding: .6em .6em;
     margin: 0;
     text-decoration: none;
     background: darkblue;
@@ -147,8 +151,7 @@ button {
     -moz-appearance: none;
 }
 
-button:hover,
-button:focus {
+button:hover, button:focus {
     background: #0053ba;
 }
 
