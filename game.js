@@ -557,7 +557,6 @@ function Controller () {
         boardEvent = board.update(piece);
         boardChanged = boardEvent.boardChanged;
         scoreChanged = boardEvent.scoreChanged;
-        //REMOVE- piece = pieces.nextPiece();
         pieces.refreshList();
         piece = pieces.getCurrentPiece();
         piece.generateBlockData();
@@ -793,24 +792,15 @@ function Controller () {
     }
   }
 
-  function resize () {
+
+  function resize() {
     let proportion = [225, 450];
     const padding = .9;
 
-    const windowProportion = window.innerWidth / window.innerHeight;
-    let w = {};
+    let div = document.getElementById('tetris');
 
-    if (windowProportion < 1.1) {
-      w.innerWidth =  window.innerWidth;
-      w.innerHeight =  window.innerHeight * .8;
-    } else {
-      w.innerWidth =  window.innerWidth;
-      w.innerHeight =  window.innerHeight;
-
-    };
-
-    const maxXY = [w.innerWidth * padding / proportion[0],
-                   w.innerHeight * padding / proportion[1]];
+    const maxXY = [div.offsetWidth * padding / proportion[0],
+                   div.offsetHeight * padding / proportion[1]];
     const factor = maxXY[0] > maxXY[1] ? maxXY[1] : maxXY[0];
 
     canvasSize = [Math.floor(proportion[0] * factor),
@@ -824,7 +814,6 @@ function Controller () {
     board = new Board(boardSize);
     pieces = new Pieces(boardSize);
 
-    //REMOVE- piece = pieces.nextPiece();
     pieces.refreshList();
     piece = pieces.getCurrentPiece();
 
@@ -974,15 +963,22 @@ function UI (gridSize, canvasSize = [225, 450]) {
     let tetrisParentDiv = getElementById('tetris');
     if (tetrisParentDiv.children[0])
       tetrisParentDiv.children[0].remove();
-    let tetrisGame = new domElement('div', tetrisParentDiv, 'tetris-content');
+    let tetrisGame = new domElement('div', tetrisParentDiv, 'tetris-content',
+                                   'tetris-row');
 
-    let settingsWrapper = new domElement('div', tetrisGame, 'settingsWrapper');
-    let gameBoardDiv = new domElement('div', tetrisGame, 'gameBoardDiv');
-    let statsDiv = new domElement('div', tetrisGame, 'statsDiv', 'stats');
+    let gameBoardDiv = new domElement('div', tetrisGame, 'gameBoardDiv',
+                                     'tetris-col-md');
+    let statsDiv = new domElement('div', tetrisGame, 'statsDiv',
+                                  'tetris-col-md');
+    let settingsWrapper = new domElement('div', statsDiv, 'settingsWrapper',
+                                        'tetris-col-md');
+    let settingsButtonWrapper = new domElement('div', settingsWrapper,
+                                               'settingsButtonWrapper',
+                                        'tetris-col-md');
 
-    let gameBoardWrapperDiv = new domElement('div', gameBoardDiv, 'gameBoardWrapperDiv');
-    let gameBoardText = new domElement('div', gameBoardWrapperDiv, 'gameBoardText');
-    let gameBoardCanvas = new domElement('canvas', gameBoardWrapperDiv,
+    let gameBoardText = new domElement('div', gameBoardDiv,
+                                       'gameBoardText');
+    let gameBoardCanvas = new domElement('canvas', gameBoardDiv,
                                          'gameBoardCanvas');
 
     let modalDiv = new domElement('div', tetrisGame, false, 'modal');
@@ -1024,18 +1020,20 @@ function UI (gridSize, canvasSize = [225, 450]) {
                                 settings.uiMode === uiMode.text,
                                 'Retro Text Board');
 
-    let settingsButton = new domElement('button', settingsWrapper,
+    let settingsButton = new domElement('button', settingsButtonWrapper,
                                         false, 'button', 'Settings');
     settingsButton.classList.add('open-modal');
-    let nextPieceWrapperText = new domElement('div', statsDiv,
+    let nextPieceWrapper = new domElement('div', statsDiv, 'nextPieceWrapper');
+    let nextPieceWrapperText = new domElement('div', nextPieceWrapper,
                                              'nextPieceWrapperText');
-    let nextPieceWrapperCanvas = new domElement('div', statsDiv,
+    let nextPieceWrapperCanvas = new domElement('div', nextPieceWrapper,
                                              'nextPieceWrapperCanvas');
     let nextPieceCanvas = new domElement('canvas', nextPieceWrapperCanvas,
                                          'nextPieceCanvas');
-    let statsWrapperText = new domElement('div', statsDiv);
+    //let statsWrapperText = new domElement('div', statsDiv, 'scoreWrapper');
 
-    let statsTable = new domElement('div',statsWrapperText, 'statsTable');
+    //let statsTable = new domElement('div',statsWrapperText, 'statsTable');
+    let statsTable = new domElement('div',statsDiv, 'statsTable');
     let row0 = new domElement('div',statsTable);
     let row1 = new domElement('div',statsTable);
 
